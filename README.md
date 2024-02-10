@@ -2,8 +2,8 @@
 
 # MAKE SURE THAT YOU ARE INSIDE /transitrack_web
 
-# TO RUN IN CHROME
+# TO RUN LOCALLY IN CHROME
 # flutter run -d chrome
 
-# TO DEPLOY TO FIREBASE
+# TO DEPLOY TO FIREBASE WEB HOSTING
 # firebase deploy
