@@ -1921,6 +1921,239 @@ class _DashboardState extends State<Dashboard> {
                                 ],
                               ),
                               const SizedBox(height: Constants.defaultPadding),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Expanded(child: GestureDetector(
+                                      onTap: () async {
+                                        setState(() {
+                                
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(Constants.defaultPadding),
+                                        margin:  const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            width: 2,
+                                            color: Colors.white
+                                          ),
+                                          borderRadius: const BorderRadius.all(Radius.circular(Constants.defaultPadding)),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Expanded(
+                                                  child: Container(
+                                                    child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                        children: [
+                                                          Icon(Icons.account_box, color: Colors.white),
+                                                          const SizedBox(width: Constants.defaultPadding),
+                                                          Text('Login/SIngup', style: TextStyle(color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis,)
+                                                        ]
+                                                    ),
+                                                  ),
+                                                ),
+
+                                                if(_showJeepHistoryTab)
+                                                  DownloadHistoricalJeepCSV(route_choice: route_choice, selectedStartDateTime: _selectedDateStartHeatMap, selectedEndDateTime: _selectedDateEndHeatMap),
+                                              ],
+                                            ),
+                                            if(_showJeepHistoryTab)
+                                              Container(
+                                                child: Column(
+                                                  children: [
+                                                    const SizedBox(height: Constants.defaultPadding/2),
+                                                    const Divider(),
+                                                    const SizedBox(height: Constants.defaultPadding/2),
+                                                    Row(
+                                                      children:
+                                                      [
+                                                        Expanded(
+                                                          flex: 3,
+                                                          child: GestureDetector(
+                                                            onTap: () => _selectDateStartHeatMap(context),
+                                                            child: Container(
+                                                                padding: const EdgeInsets.all(Constants.defaultPadding/2),
+                                                                decoration: const BoxDecoration(
+                                                                  color: Constants.primaryColor,
+                                                                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                                                                ),
+                                                                child: Column(
+                                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                                  children: [
+                                                                    const Text(
+                                                                      'Start Time',
+                                                                      style: TextStyle(fontSize: 16),
+                                                                      overflow: TextOverflow.ellipsis,
+                                                                      maxLines: 1,
+                                                                    ),
+                                                                    Text(
+                                                                      '${DateFormat('yyyy-MM-dd').format(_selectedDateStartHeatMap)}\n${DateFormat('HH:mm:ss').format(_selectedDateStartHeatMap)}',
+                                                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                                                      overflow: TextOverflow.ellipsis,
+                                                                      textAlign: TextAlign.center,
+                                                                      maxLines: 2,
+                                                                    ),
+                                                                  ],
+                                                                )
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(width: Constants.defaultPadding),
+                                                        Expanded(
+                                                          flex: 3,
+                                                          child: GestureDetector(
+                                                            onTap: () => _selectDateEndHeatMap(context),
+                                                            child: Container(
+                                                                padding: const EdgeInsets.all(Constants.defaultPadding/2),
+                                                                decoration: const BoxDecoration(
+                                                                  color: Constants.primaryColor,
+                                                                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                                                                ),
+                                                                child: Column(
+                                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                                  children: [
+                                                                    const Text(
+                                                                      'End Time',
+                                                                      style: TextStyle(fontSize: 16),
+                                                                      overflow: TextOverflow.ellipsis,
+                                                                      maxLines: 1,
+                                                                    ),
+                                                                    Text(
+                                                                      '${DateFormat('yyyy-MM-dd').format(_selectedDateEndHeatMap)}\n${DateFormat('HH:mm:ss').format(_selectedDateEndHeatMap)}',
+                                                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                                                      overflow: TextOverflow.ellipsis,
+                                                                      textAlign: TextAlign.center,
+                                                                      maxLines: 2,
+                                                                    ),
+                                                                  ],
+                                                                )
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: Constants.defaultPadding),
+                                                    Row(
+                                                      mainAxisAlignment: MainAxisAlignment.end,
+                                                      children: [
+                                                        Expanded(
+                                                          flex: 5,
+                                                          child: GestureDetector(
+                                                            onTap: (){
+                                                              _addSeconds(30, false);
+                                                            },
+                                                            child: Container(
+                                                              padding: const EdgeInsets.all(Constants.defaultPadding/2),
+                                                              decoration: BoxDecoration(
+                                                                border: Border.all(
+                                                                  width: 2,
+                                                                  color: Colors.lightBlue,
+                                                                ),
+                                                                borderRadius: const BorderRadius.all(Radius.circular(Constants.defaultPadding)),
+                                                              ),
+                                                              child: const Text("-30s", style: TextStyle(
+                                                                color:Colors.lightBlue,
+                                                              ),
+                                                                overflow: TextOverflow.ellipsis,
+                                                                maxLines: 1,
+                                                                textAlign: TextAlign.center,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        const Spacer(),
+                                                        Expanded(
+                                                          flex:5,
+                                                          child: GestureDetector(
+                                                            onTap: (){
+                                                              _addSeconds(5, false);
+                                                            },
+                                                            child: Container(
+                                                              padding: const EdgeInsets.all(Constants.defaultPadding/2),
+                                                              decoration: BoxDecoration(
+                                                                border: Border.all(
+                                                                  width: 2,
+                                                                  color: Colors.lightBlue,
+                                                                ),
+                                                                borderRadius: const BorderRadius.all(Radius.circular(Constants.defaultPadding)),
+                                                              ),
+                                                              child: const Text("-5s", style: TextStyle(
+                                                                color: Colors.lightBlue,
+                                                              ),
+                                                                overflow: TextOverflow.ellipsis,
+                                                                maxLines: 1,
+                                                                textAlign: TextAlign.center,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        const Spacer(),
+                                                        Expanded(
+                                                          flex:5,
+                                                          child: GestureDetector(
+                                                            onTap: (){
+                                                              _addSeconds(5, true);
+                                                            },
+                                                            child: Container(
+                                                              padding: const EdgeInsets.all(Constants.defaultPadding/2),
+                                                              decoration: BoxDecoration(
+                                                                border: Border.all(
+                                                                  width: 2,
+                                                                  color: Colors.lightBlue,
+                                                                ),
+                                                                borderRadius: const BorderRadius.all(Radius.circular(Constants.defaultPadding)),
+                                                              ),
+                                                              child: const Text("+5s", style: TextStyle(
+                                                                color: Colors.lightBlue,
+                                                              ),
+                                                                overflow: TextOverflow.ellipsis,
+                                                                maxLines: 1,
+                                                                textAlign: TextAlign.center,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        const Spacer(),
+                                                        Expanded(
+                                                          flex: 5,
+                                                          child: GestureDetector(
+                                                            onTap: (){
+                                                              _addSeconds(30, true);
+                                                            },
+                                                            child: Container(
+                                                              padding: const EdgeInsets.all(Constants.defaultPadding/2),
+                                                              decoration: BoxDecoration(
+                                                                border: Border.all(
+                                                                  width: 2,
+                                                                  color: Colors.lightBlue,
+                                                                ),
+                                                                borderRadius: const BorderRadius.all(Radius.circular(Constants.defaultPadding)),
+                                                              ),
+                                                              child: const Text("+30s", style: TextStyle(
+                                                                color: Colors.lightBlue,
+                                                              ),
+                                                                overflow: TextOverflow.ellipsis,
+                                                                maxLines: 1,
+                                                                textAlign: TextAlign.center,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      )))
+                                ],
+                              ),
                             ],
                           ),
                         ),

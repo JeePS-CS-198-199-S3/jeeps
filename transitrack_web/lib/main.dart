@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'TransiTrack',
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Constants.bgColor,
+        scaffoldBackgroundColor: Constants.secondaryColor,
         textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme).apply(bodyColor: Colors.white),
         canvasColor: Constants.secondaryColor
       ),
