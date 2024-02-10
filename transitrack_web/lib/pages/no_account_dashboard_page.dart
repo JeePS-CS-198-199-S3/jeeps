@@ -1,9 +1,12 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:provider/provider.dart';
+import 'package:transitrack_web/style/style.dart';
 import '../MenuController.dart';
 
+import '../components/account_related/login_signup_form.dart';
 import '../components/header.dart';
 import '../components/logo.dart';
 import '../config/keys.dart';
@@ -11,14 +14,14 @@ import '../config/responsive.dart';
 import '../config/size_config.dart';
 import '../style/constants.dart';
 
-class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+class NoAccountDashboard extends StatefulWidget {
+  const NoAccountDashboard({Key? key}) : super(key: key);
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  State<NoAccountDashboard> createState() => _NoAccountDashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _NoAccountDashboardState extends State<NoAccountDashboard> {
   late MapboxMapController _mapController;
 
   void _onMapCreated(MapboxMapController controller) {
@@ -119,7 +122,11 @@ class _DashboardState extends State<Dashboard> {
                                   child: GestureDetector(
                                     onTap: () async {
                                       setState(() {
-
+                                        AwesomeDialog(
+                                          context: context,
+                                          dialogType: DialogType.noHeader,
+                                          body: const LoginSignupForm()
+                                        ).show();
                                       });
                                     },
                                     child: Container(
@@ -143,7 +150,7 @@ class _DashboardState extends State<Dashboard> {
                                                     children: [
                                                       Icon(Icons.account_box, color: Colors.white),
                                                       SizedBox(width: Constants.defaultPadding),
-                                                      Text('Login/Singup', style: TextStyle(color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis,)
+                                                      Text('Login/Sign Up', style: TextStyle(color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis,)
                                                     ]
                                                 ),
                                               ),
@@ -315,6 +322,8 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 }
+
+
 
 
 

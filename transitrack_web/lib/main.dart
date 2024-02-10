@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:transitrack_web/MenuController.dart';
+import 'package:transitrack_web/pages/auth_page.dart';
 import 'package:transitrack_web/style/constants.dart';
-import 'package:transitrack_web/widgets/dashboard.dart';
+import 'package:transitrack_web/pages/no_account_dashboard_page.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -12,7 +13,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'TransiTrack',
+      title: 'JeePS',
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Constants.secondaryColor,
         textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme).apply(bodyColor: Colors.white),
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
             create: (context) => MenuControllers(),
           ),
         ],
-        child: Dashboard(),
+        child: const AuthPage(),
       ),
     );
   }
