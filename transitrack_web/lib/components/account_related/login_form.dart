@@ -46,6 +46,7 @@ class _LoginFormState extends State<LoginForm> {
 
       // pop loading circle
       Navigator.pop(context);
+      Navigator.pop(context);
 
     } on FirebaseAuthException catch (e) {
 
@@ -167,68 +168,6 @@ class _LoginFormState extends State<LoginForm> {
           )
         ],
       )
-      // child: Column(
-      //   mainAxisAlignment: MainAxisAlignment.center,
-      //   children: [
-      //     InputTextField(controller: emailController, hintText: "Email", obscureText: false),
-      //
-      //     const SizedBox(height: Constants.defaultPadding),
-      //
-      //     InputTextField(controller: passwordController, hintText: "Password", obscureText: true),
-      //
-      //     const SizedBox(height: Constants.defaultPadding/2),
-      //
-      //     Row(
-      //       mainAxisAlignment: MainAxisAlignment.end,
-      //       children: [
-      //         Text(
-      //           "Forgot Password?",
-      //           style: TextStyle(color: Colors.grey[600]),
-      //         ),
-      //       ],
-      //     ),
-      //
-      //     const SizedBox(height: Constants.defaultPadding*2),
-      //
-      //     Button(onTap: signUserIn, text: "Sign In",),
-      //
-      //     const SizedBox(height: Constants.defaultPadding*2.5),
-      //
-      //     const Row(
-      //       children: [
-      //         Expanded(
-      //           child: Divider(
-      //             thickness: 0.5,
-      //             color: Colors.white,
-      //           ),
-      //         ),
-      //         Padding(
-      //           padding: EdgeInsets.symmetric(horizontal: 10.0),
-      //           child: Text(
-      //             "Or continue with",
-      //             style: TextStyle(
-      //                 color: Colors.white
-      //             ),
-      //           ),
-      //         ),
-      //         Expanded(
-      //           child: Divider(
-      //             thickness: 0.5,
-      //             color: Colors.white,
-      //           ),
-      //         ),
-      //       ],
-      //     ),
-      //
-      //     const SizedBox(height: Constants.defaultPadding*2.5),
-      //
-      //     SquareTile(imagePath: 'lib/images/google.png', onTap: () async {
-      //       UserCredential? userCredential = await AuthService().signInWithGoogle();
-      //       AuthService().createUserDocument(userCredential?.user);
-      //     }
-      //     ),
-      //   ],
-      // ),
     );
   }
 }

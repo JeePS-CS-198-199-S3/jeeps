@@ -41,13 +41,16 @@ class _SignupFormState extends State<SignupForm> {
     try {
       // check if password is confirmed
       if (passwordController.text == confirmPasswordController.text) {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        UserCredential? userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
             email: emailController.text,
             password: passwordController.text
         );
 
+        AuthService().createUserDocument(userCredential.user);
         // pop loading circle
         Navigator.pop(context);
+        Navigator.pop(context);
+
       } else {
         // pop loading circle
         Navigator.pop(context);

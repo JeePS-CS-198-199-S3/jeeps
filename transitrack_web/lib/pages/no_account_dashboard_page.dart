@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:provider/provider.dart';
-import 'package:transitrack_web/style/style.dart';
 import '../MenuController.dart';
 
 import '../components/account_related/login_signup_form.dart';

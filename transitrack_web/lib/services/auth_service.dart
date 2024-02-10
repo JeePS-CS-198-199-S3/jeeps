@@ -32,7 +32,7 @@ class AuthService {
       if (!(await userDocRef.get()).exists) {
         // If the document doesn't exist, create it
         await userDocRef.set({
-          'name': user.displayName,
+          'name': "",
           'email': user.email,
           'isOperating': false,
           'jeepDriving': "",
