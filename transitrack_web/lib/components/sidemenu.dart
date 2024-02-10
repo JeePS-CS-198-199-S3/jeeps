@@ -44,8 +44,8 @@ class DrawerListTile extends StatelessWidget {
       horizontalTitleGap: 0.0,
       contentPadding: EdgeInsets.only(left: Constants.defaultPadding),
       trailing: icon,
-      title: Text(Route.name, style: const TextStyle(color: Colors.white54), overflow: TextOverflow.ellipsis, maxLines: 1,),
-      subtitle: Text(formatTime(Route.OpHours), style: const TextStyle(color: Colors.white30), overflow: TextOverflow.ellipsis, maxLines: 1,),
+      title: Text(Route.routeName, style: const TextStyle(color: Colors.white54), overflow: TextOverflow.ellipsis, maxLines: 1,),
+      subtitle: Text(formatTime(Route.routeTime), style: const TextStyle(color: Colors.white30), overflow: TextOverflow.ellipsis, maxLines: 1,),
       selected: isSelected,
       selectedTileColor: Colors.white10
       // selectedTileColor: Colors.blue,

@@ -9,7 +9,7 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: SingleChildScrollView(
-        padding: EdgeInsets.all(Constants.defaultPadding),
+        padding: const EdgeInsets.all(Constants.defaultPadding),
         child: Container(
           color: Colors.green,
         ),
