@@ -32,4 +32,34 @@ class AccountData{
         is_verified: is_verified,
     );
   }
+
+  static Future<AccountData?> getAccountByEmail(String email) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('accounts')
+          .where('account_email', isEqualTo: email)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return AccountData.fromSnapshot(querySnapshot.docs.first);
+      } else {
+        return null; // No document found with the given email
+      }
+    } catch (e) {
+      print('Error fetching account data: $e');
+      return null;
+    }
+  }
+
+  static Map<String, int> accountTypeMap = {
+    'Commuter': 0,
+    'Driver': 1,
+    'Route Manager': 2,
+  };
+
+  static List<String> accountType = [
+    'Commuter',
+    'Driver',
+    'Route Manager'
+  ];
 }

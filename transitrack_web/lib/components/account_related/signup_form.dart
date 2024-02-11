@@ -6,7 +6,6 @@ import '../../services/auth_service.dart';
 import '../../style/constants.dart';
 import '../../style/style.dart';
 import '../button.dart';
-import '../dropdown_account_type.dart';
 import '../text_field.dart';
 
 class SignupForm extends StatefulWidget {
@@ -29,11 +28,6 @@ class _SignupFormState extends State<SignupForm> {
   final confirmPasswordController = TextEditingController();
   String accountType = "Commuter";
 
-  Map<String, int> accountTypeMap = {
-    'Commuter': 0,
-    'Driver': 1,
-    'Route Manager': 2,
-  };
 
   // sign user in method
   void signUserUp() async {
@@ -59,7 +53,7 @@ class _SignupFormState extends State<SignupForm> {
         AccountData newAccount = AccountData(
           account_email: emailController.text,
           account_name: "${firstNameController.text} ${lastNameController.text}",
-          account_type: accountTypeMap[accountType]!,
+          account_type: AccountData.accountTypeMap[accountType]!,
           is_operating: false,
           is_verified: false,
         );
@@ -159,7 +153,7 @@ class _SignupFormState extends State<SignupForm> {
                     });
                   }
                 },
-                items: accountTypeMap.keys.map<DropdownMenuItem<String>>((String value) {
+                items: AccountData.accountTypeMap.keys.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
