@@ -93,7 +93,7 @@ class _SignupFormState extends State<SignupForm> {
         children: [
            const Row(
             children: [
-              PrimaryText(text: "Create an Account", color: Colors.white, size: 50, fontWeight: FontWeight.w700,)
+              PrimaryText(text: "Sign Up", color: Colors.white, size: 40, fontWeight: FontWeight.w700,)
             ],
           ),
 

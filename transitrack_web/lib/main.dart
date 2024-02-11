@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:transitrack_web/MenuController.dart';
-import 'package:transitrack_web/pages/auth_page.dart';
 import 'package:transitrack_web/style/constants.dart';
-import 'package:transitrack_web/pages/no_account_dashboard_page.dart';
+import 'package:transitrack_web/pages/dashboard_page.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -37,7 +36,7 @@ class MyApp extends StatelessWidget {
             create: (context) => MenuControllers(),
           ),
         ],
-        child: const AuthPage(),
+        child: Dashboard(),
       ),
     );
   }

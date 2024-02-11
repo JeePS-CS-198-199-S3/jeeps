@@ -1,11 +1,12 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:provider/provider.dart';
-
 import '../MenuController.dart';
+
+import '../components/account_related/account_stream.dart';
 import '../components/account_related/login_signup_form.dart';
 import '../components/header.dart';
 import '../components/logo.dart';
@@ -13,16 +14,15 @@ import '../config/keys.dart';
 import '../config/responsive.dart';
 import '../config/size_config.dart';
 import '../style/constants.dart';
-import '../style/style.dart';
 
-class AccountDashboard extends StatefulWidget {
-  const AccountDashboard({super.key});
+class Dashboard extends StatefulWidget {
+  const Dashboard({Key? key}) : super(key: key);
 
   @override
-  State<AccountDashboard> createState() => _AccountDashboardState();
+  State<Dashboard> createState() => _DashboardState();
 }
 
-class _AccountDashboardState extends State<AccountDashboard> {
+class _DashboardState extends State<Dashboard> {
   late MapboxMapController _mapController;
 
   void _onMapCreated(MapboxMapController controller) {
@@ -45,37 +45,38 @@ class _AccountDashboardState extends State<AccountDashboard> {
     return Scaffold(
       key: context.read<MenuControllers>().scaffoldKey,
       drawer: Drawer(
-          elevation: 0.0,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const DrawerHeader(
-                    child: Logo()
-                ),
-                // DrawerListTile(
-                //     Route: JeepRoutes[0],
-                //     icon: Image.asset(JeepSide[0]),
-                //     isSelected: route_choice == 0,
-                //     press: (){
-                //       if(route_choice == 0){
-                //         switchRoute(-1);
-                //       } else {
-                //         setState(() {
-                //           _isLoaded = false;
-                //         });
-                //         switchRoute(0);
-                //       }
-                //     }),
+        elevation: 0.0,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const DrawerHeader(
+                child: Logo()
+              ),
+              // DrawerListTile(
+              //     Route: JeepRoutes[0],
+              //     icon: Image.asset(JeepSide[0]),
+              //     isSelected: route_choice == 0,
+              //     press: (){
+              //       if(route_choice == 0){
+              //         switchRoute(-1);
+              //       } else {
+              //         setState(() {
+              //           _isLoaded = false;
+              //         });
+              //         switchRoute(0);
+              //       }
+              //     }),
 
-                const SizedBox(height: Constants.defaultPadding),
-                Container(
-                    padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
-                    child: const Divider()
-                ),
-                const SizedBox(height: Constants.defaultPadding),
-              ],
-            ),
-          )
+              const SizedBox(height: Constants.defaultPadding),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
+                child: const Divider()
+              ),
+              const SizedBox(height: Constants.defaultPadding),
+              const AccountStream()
+            ],
+          ),
+        )
       ),
       body:  SafeArea(
         child: Stack(
@@ -112,52 +113,11 @@ class _AccountDashboardState extends State<AccountDashboard> {
                             ),
                             const SizedBox(height: Constants.defaultPadding),
                             Container(
-                                padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
-                                child: const Divider()
+                              padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
+                              child: const Divider()
                             ),
                             const SizedBox(height: Constants.defaultPadding),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Expanded(
-                                    child: GestureDetector(
-                                        onTap: () async {
-                                          FirebaseAuth.instance.signOut();
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.all(Constants.defaultPadding),
-                                          margin:  const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                width: 2,
-                                                color: Colors.white
-                                            ),
-                                            borderRadius: const BorderRadius.all(Radius.circular(Constants.defaultPadding)),
-                                          ),
-                                          child: const Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Expanded(
-                                                    child: Row(
-                                                        mainAxisAlignment: MainAxisAlignment.start,
-                                                        children: [
-                                                          Icon(Icons.account_box, color: Colors.white),
-                                                          SizedBox(width: Constants.defaultPadding),
-                                                          Text('Logout', style: TextStyle(color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis,)
-                                                        ]
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                    )
-                                )
-                              ],
-                            ),
+                            const AccountStream()
                           ],
                         ),
                       ),

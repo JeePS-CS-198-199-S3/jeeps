@@ -83,7 +83,7 @@ class _LoginFormState extends State<LoginForm> {
         children: [
           const Row(
             children: [
-              PrimaryText(text: "Login with your Account", color: Colors.white, size: 50, fontWeight: FontWeight.w700,)
+              PrimaryText(text: "Login", color: Colors.white, size: 40, fontWeight: FontWeight.w700,)
             ],
           ),
 
