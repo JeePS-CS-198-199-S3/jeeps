@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../models/account_model.dart';
+
 class AuthService {
 
   // Google Sign In
@@ -23,20 +25,20 @@ class AuthService {
     }
   }
 
-  void createUserDocument(User? user) async {
+  void createUserDocument(User? user, AccountData account) async {
     if (user != null) {
-      DocumentReference userDocRef = FirebaseFirestore.instance.collection('drivers').doc(
+      DocumentReference userDocRef = FirebaseFirestore.instance.collection('accounts').doc(
           user.uid);
 
       // Check if the document already exists
       if (!(await userDocRef.get()).exists) {
         // If the document doesn't exist, create it
         await userDocRef.set({
-          'name': "",
-          'email': user.email,
-          'isOperating': false,
-          'jeepDriving': "",
-          'isVerified': false
+          'account_name': account.account_name,
+          'account_email': user.email,
+          'is_operating': account.is_operating,
+          'is_verified': account.is_verified,
+          'account_type': account.account_type // 0 - commuter acc, 1 - driver acc, 2 - operator acc
         });
       }
     }

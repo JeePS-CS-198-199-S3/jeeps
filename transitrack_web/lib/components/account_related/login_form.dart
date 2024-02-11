@@ -2,10 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:transitrack_web/style/style.dart';
 
-import '../../services/auth_service.dart';
 import '../../style/constants.dart';
 import '../button.dart';
-import '../square_tile.dart';
 import '../text_field.dart';
 
 class LoginForm extends StatefulWidget {
@@ -112,42 +110,6 @@ class _LoginFormState extends State<LoginForm> {
           Button(onTap: signUserIn, text: "Login",),
 
           const SizedBox(height: Constants.defaultPadding*2.5),
-
-          const Row(
-            children: [
-              Expanded(
-                child: Divider(
-                  thickness: 0.5,
-                  color: Colors.white,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                child: Text(
-                  "Or continue with",
-                  style: TextStyle(
-                      color: Colors.white
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Divider(
-                  thickness: 0.5,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: Constants.defaultPadding*2.5),
-
-          SquareTile(imagePath: 'assets/google.png', onTap: () async {
-            UserCredential? userCredential = await AuthService().signInWithGoogle();
-            AuthService().createUserDocument(userCredential?.user);
-            }
-          ),
-
-          const SizedBox(height: Constants.defaultPadding*2),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

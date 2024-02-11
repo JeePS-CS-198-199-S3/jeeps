@@ -1,5 +1,3 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:mapbox_gl/mapbox_gl.dart';
@@ -7,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../MenuController.dart';
 
 import '../components/account_related/account_stream.dart';
-import '../components/account_related/login_signup_form.dart';
 import '../components/header.dart';
 import '../components/logo.dart';
 import '../config/keys.dart';
@@ -73,7 +70,7 @@ class _DashboardState extends State<Dashboard> {
                 child: const Divider()
               ),
               const SizedBox(height: Constants.defaultPadding),
-              const AccountStream()
+              const AccountStream(),
             ],
           ),
         )

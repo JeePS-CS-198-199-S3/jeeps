@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../models/account_model.dart';
 import '../../services/auth_service.dart';
 import '../../style/constants.dart';
 import '../../style/style.dart';
 import '../button.dart';
-import '../square_tile.dart';
+import '../dropdown_account_type.dart';
 import '../text_field.dart';
 
 class SignupForm extends StatefulWidget {
@@ -21,9 +22,18 @@ class SignupForm extends StatefulWidget {
 
 class _SignupFormState extends State<SignupForm> {
   // text editing controllers
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  String accountType = "Commuter";
+
+  Map<String, int> accountTypeMap = {
+    'Commuter': 0,
+    'Driver': 1,
+    'Route Manager': 2,
+  };
 
   // sign user in method
   void signUserUp() async {
@@ -46,7 +56,15 @@ class _SignupFormState extends State<SignupForm> {
             password: passwordController.text
         );
 
-        AuthService().createUserDocument(userCredential.user);
+        AccountData newAccount = AccountData(
+          account_email: emailController.text,
+          account_name: "${firstNameController.text} ${lastNameController.text}",
+          account_type: accountTypeMap[accountType]!,
+          is_operating: false,
+          is_verified: false,
+        );
+
+        AuthService().createUserDocument(userCredential.user, newAccount);
         // pop loading circle
         Navigator.pop(context);
         Navigator.pop(context);
@@ -103,11 +121,53 @@ class _SignupFormState extends State<SignupForm> {
 
           const SizedBox(height: Constants.defaultPadding),
 
+          InputTextField(controller: firstNameController, hintText: "First Name", obscureText: false),
+
+          const SizedBox(height: Constants.defaultPadding),
+
+          InputTextField(controller: lastNameController, hintText: "Last Name", obscureText: false),
+
+          const SizedBox(height: Constants.defaultPadding),
+
           InputTextField(controller: passwordController, hintText: "Password", obscureText: true),
 
           const SizedBox(height: Constants.defaultPadding),
 
           InputTextField(controller: confirmPasswordController, hintText: "Confirm Password", obscureText: true),
+
+          const SizedBox(height: Constants.defaultPadding),
+
+          Container(
+            width: double.maxFinite,
+            padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding/2, vertical: 4),
+            decoration: BoxDecoration(
+              color: Constants.secondaryColor,
+              borderRadius: BorderRadius.circular(3),
+              border: Border.all(
+                color: Colors.white, // Set border color here
+                width: 1, // Set border width here
+              ),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: accountType, // Initial value
+                onChanged: (String? newValue) {
+                  // Handle dropdown value change
+                  if (newValue != null) {
+                    setState(() {
+                      accountType = newValue;
+                    });
+                  }
+                },
+                items: accountTypeMap.keys.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
 
           const SizedBox(height: Constants.defaultPadding/2),
 
@@ -116,42 +176,6 @@ class _SignupFormState extends State<SignupForm> {
           Button(onTap: signUserUp, text: "Sign Up",),
 
           const SizedBox(height: Constants.defaultPadding*2.5),
-
-          const Row(
-            children: [
-              Expanded(
-                child: Divider(
-                  thickness: 0.5,
-                  color: Colors.white,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                child: Text(
-                  "Or register with",
-                  style: TextStyle(
-                      color: Colors.white
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Divider(
-                  thickness: 0.5,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: Constants.defaultPadding*2.5),
-
-          SquareTile(imagePath: 'assets/google.png', onTap: () async {
-            UserCredential? userCredential = await AuthService().signInWithGoogle();
-            AuthService().createUserDocument(userCredential?.user);
-          }
-          ),
-
-          const SizedBox(height: Constants.defaultPadding*2),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
