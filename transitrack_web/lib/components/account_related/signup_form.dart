@@ -21,8 +21,7 @@ class SignupForm extends StatefulWidget {
 
 class _SignupFormState extends State<SignupForm> {
   // text editing controllers
-  final firstNameController = TextEditingController();
-  final lastNameController = TextEditingController();
+  final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -52,10 +51,11 @@ class _SignupFormState extends State<SignupForm> {
 
         AccountData newAccount = AccountData(
           account_email: emailController.text,
-          account_name: "${firstNameController.text} ${lastNameController.text}",
+          account_name: nameController.text,
           account_type: AccountData.accountTypeMap[accountType]!,
           is_operating: false,
           is_verified: false,
+          route_id: -1
         );
 
         AuthService().createUserDocument(userCredential.user, newAccount);
@@ -98,7 +98,7 @@ class _SignupFormState extends State<SignupForm> {
 
   @override
   Widget build(BuildContext context) {
-    return  Padding(
+    return Padding(
       padding: const EdgeInsets.only(left: Constants.defaultPadding, right: Constants.defaultPadding, bottom: Constants.defaultPadding),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -115,11 +115,7 @@ class _SignupFormState extends State<SignupForm> {
 
           const SizedBox(height: Constants.defaultPadding),
 
-          InputTextField(controller: firstNameController, hintText: "First Name", obscureText: false),
-
-          const SizedBox(height: Constants.defaultPadding),
-
-          InputTextField(controller: lastNameController, hintText: "Last Name", obscureText: false),
+          InputTextField(controller: nameController, hintText: "Name", obscureText: false),
 
           const SizedBox(height: Constants.defaultPadding),
 

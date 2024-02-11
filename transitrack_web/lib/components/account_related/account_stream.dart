@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:transitrack_web/components/account_related/account_settings.dart';
 import 'package:transitrack_web/style/style.dart';
 
 import '../../models/account_model.dart';
@@ -71,12 +72,27 @@ class _AccountStreamState extends State<AccountStream> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      PrimaryText(text: accountData.account_name, color: Colors.white, fontWeight: FontWeight.w700),
-                      const SizedBox(width: Constants.defaultPadding/2),
+                      Row(
+                        children: [
+                          PrimaryText(text: accountData.account_name, color: Colors.white, fontWeight: FontWeight.w700),
+                          const SizedBox(width: Constants.defaultPadding/2),
 
-                      if (accountData.is_verified)
-                        const Icon(Icons.verified_user, color: Colors.blue, size: 15,)
+                          if (accountData.is_verified)
+                            const Icon(Icons.verified_user, color: Colors.blue, size: 15,)
+                        ],
+                      ),
+                      GestureDetector(
+                        onTap: () async {
+                          AwesomeDialog(
+                            context: context,
+                            dialogType: DialogType.noHeader,
+                            body: AccountSettings(user: currentUser!, account: accountData)
+                          ).show();
+                        },
+                        child: const Icon(Icons.settings, color: Colors.white)
+                      )
                     ],
                   ),
                   Text(AccountData.accountType[accountData.account_type]),
