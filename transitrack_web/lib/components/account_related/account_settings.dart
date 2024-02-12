@@ -61,7 +61,7 @@ class AccountSettings extends StatelessWidget {
           AccountData.updateAccountFirestore(user.email!, newAccountSettings);
         }
 
-        if (emailController.text != user.email! || passwordController.text == confirmPasswordController.text) {
+        if (emailController.text != user.email! || (passwordController.text != "" &&  passwordController.text == confirmPasswordController.text)) {
           Map<String, dynamic> newAccountSettings = {
             'account_email': emailController.text,
           };
@@ -113,6 +113,8 @@ class AccountSettings extends StatelessWidget {
           const SizedBox(height: Constants.defaultPadding),
 
           const SizedBox(height: Constants.defaultPadding/2),
+
+          const PrimaryText(text: "Email or Password changes will log you out.", color: Colors.white),
 
           const SizedBox(height: Constants.defaultPadding*2),
 

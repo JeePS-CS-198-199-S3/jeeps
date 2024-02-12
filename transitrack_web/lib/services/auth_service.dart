@@ -38,7 +38,8 @@ class AuthService {
           'account_email': user.email,
           'is_operating': account.is_operating,
           'is_verified': account.is_verified,
-          'account_type': account.account_type // 0 - commuter acc, 1 - driver acc, 2 - operator acc
+          'account_type': account.account_type, // 0 - commuter acc, 1 - driver acc, 2 - operator acc
+          'route_id': account.route_id
         });
       }
     }

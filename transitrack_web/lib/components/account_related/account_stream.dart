@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:transitrack_web/components/account_related/account_settings.dart';
@@ -59,15 +60,17 @@ class _AccountStreamState extends State<AccountStream> {
           ),
           borderRadius: const BorderRadius.all(Radius.circular(Constants.defaultPadding)),
         ),
-        child:  FutureBuilder<AccountData?>(
-          future: AccountData.getAccountByEmail(currentUser!.email!),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('accounts')
+              .where('account_email', isEqualTo: currentUser!.email!)
+              .snapshots(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
+            if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
-            } else if (snapshot.hasData) {
-              AccountData accountData = snapshot.data!;
+            } else if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+              final accountDoc = snapshot.data!.docs.first;
+              AccountData accountData = AccountData.fromSnapshot(accountDoc);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -76,29 +79,35 @@ class _AccountStreamState extends State<AccountStream> {
                     children: [
                       Row(
                         children: [
-                          PrimaryText(text: accountData.account_name, color: Colors.white, fontWeight: FontWeight.w700),
-                          const SizedBox(width: Constants.defaultPadding/2),
+                          PrimaryText(text: accountData.account_name,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700),
+                          const SizedBox(width: Constants.defaultPadding / 2),
 
                           if (accountData.is_verified)
-                            const Icon(Icons.verified_user, color: Colors.blue, size: 15,)
+                            const Icon(Icons.verified_user, color: Colors.blue,
+                              size: 15,)
                         ],
                       ),
                       GestureDetector(
-                        onTap: () async {
-                          AwesomeDialog(
-                            context: context,
-                            dialogType: DialogType.noHeader,
-                            body: AccountSettings(user: currentUser!, account: accountData)
-                          ).show();
-                        },
-                        child: const Icon(Icons.settings, color: Colors.white)
+                          onTap: () async {
+                            AwesomeDialog(
+                                context: context,
+                                dialogType: DialogType.noHeader,
+                                body: AccountSettings(
+                                    user: currentUser!, account: accountData)
+                            ).show();
+                          },
+                          child: const Icon(Icons.settings, color: Colors.white)
                       )
                     ],
                   ),
                   Text(AccountData.accountType[accountData.account_type]),
 
                   if (accountData.account_type == 1)
-                    Text(accountData.is_operating?'Operating':'Not Operating'),
+                    Text(accountData.is_operating
+                        ? 'Operating'
+                        : 'Not Operating'),
 
                   const SizedBox(height: Constants.defaultPadding),
 
@@ -117,7 +126,10 @@ class _AccountStreamState extends State<AccountStream> {
                                 children: [
                                   Icon(Icons.logout, color: Colors.white),
                                   SizedBox(width: Constants.defaultPadding),
-                                  Text('Logout', style: TextStyle(color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis,)
+                                  Text('Logout',
+                                    style: TextStyle(color: Colors.white),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,)
                                 ]
                             ),
                           )
@@ -128,11 +140,10 @@ class _AccountStreamState extends State<AccountStream> {
               );
             } else {
               // If no data is available, display a message indicating that no account was found
-              return Text('No account found with email: ${currentUser?.email}');
+              return const Center(child: CircularProgressIndicator());
             }
-          },
-        ),
-      );
+          })
+        );
     }
 
     // NOT logged in
