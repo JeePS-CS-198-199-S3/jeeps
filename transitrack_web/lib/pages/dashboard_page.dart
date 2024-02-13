@@ -70,7 +70,7 @@ class _DashboardState extends State<Dashboard> {
                 child: const Divider()
               ),
               const SizedBox(height: Constants.defaultPadding),
-              const AccountStream(),
+              const AccountStream()
             ],
           ),
         )
