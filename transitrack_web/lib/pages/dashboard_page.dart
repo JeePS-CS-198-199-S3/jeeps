@@ -29,10 +29,6 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  void notHovering() {
-    print("not");
-  }
-
   void _onMapCreated(MapboxMapController controller) {
     _mapController = controller;
   }

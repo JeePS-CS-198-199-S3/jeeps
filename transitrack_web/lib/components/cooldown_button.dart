@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class CooldownButton extends StatefulWidget {
   final Widget child;
   final VoidCallback onPressed;
+  final bool verified;
 
   const CooldownButton({
     Key? key,
     required this.child,
     required this.onPressed,
+    required this.verified
   }) : super(key: key);
 
   @override
@@ -40,7 +42,7 @@ class _CooldownButtonState extends State<CooldownButton> {
   }
 
   void _handleTap() {
-    if (!_isCooldown) {
+    if (!_isCooldown && widget.verified) {
       widget.onPressed();
       setState(() {
         _isCooldown = true;
@@ -54,7 +56,7 @@ class _CooldownButtonState extends State<CooldownButton> {
     if (_isCooldown) {
       return Text('$_cooldownSeconds s');
     } else {
-      return const Icon(Icons.location_on, color: Colors.white, size: 25);
+      return widget.child;
     }
   }
 
@@ -68,7 +70,7 @@ class _CooldownButtonState extends State<CooldownButton> {
         width: 50,
         height: 50,
         decoration: BoxDecoration(
-          color: _isCooldown ? Colors.grey : Colors.blue,
+          color: (_isCooldown || !widget.verified) ? Colors.grey : Colors.blue,
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Center(

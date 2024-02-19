@@ -119,7 +119,7 @@ class _AccountStreamState extends State<AccountStream> {
                   const SizedBox(height: Constants.defaultPadding),
 
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GestureDetector(
                         onTap: () async {
@@ -139,7 +139,7 @@ class _AccountStreamState extends State<AccountStream> {
                             ]
                         ),
                       ),
-                      CooldownButton(child: Icon(Icons.location_on), onPressed: () {print("pressed");})
+                      CooldownButton(child: Icon(Icons.location_on), onPressed: () {print("pressed");}, verified: accountData.is_verified,)
                     ],
                   ),
                 ],
