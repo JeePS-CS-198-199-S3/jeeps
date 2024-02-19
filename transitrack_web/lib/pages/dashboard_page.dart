@@ -87,23 +87,22 @@ class _DashboardState extends State<Dashboard> {
       body:  SafeArea(
         child: Stack(
           children: [
-            if(!Responsive.isMobile(context))
-              MapboxMap(
-                accessToken: Keys.MapBoxKey,
-                styleString: Keys.MapBoxNight,
-                doubleClickZoomEnabled: false,
-                minMaxZoomPreference: const MinMaxZoomPreference(14, 19),
-                scrollGesturesEnabled: !isHover,
-                tiltGesturesEnabled: false,
-                compassEnabled: false,
-                onMapCreated: (controller) {
-                  _onMapCreated(controller);
-                },
-                initialCameraPosition: CameraPosition(
-                  target: Keys.MapCenter,
-                  zoom: 15,
-                ),
+            MapboxMap(
+              accessToken: Keys.MapBoxKey,
+              styleString: Keys.MapBoxNight,
+              doubleClickZoomEnabled: false,
+              minMaxZoomPreference: const MinMaxZoomPreference(14, 19),
+              scrollGesturesEnabled: !isHover,
+              tiltGesturesEnabled: false,
+              compassEnabled: false,
+              onMapCreated: (controller) {
+                _onMapCreated(controller);
+              },
+              initialCameraPosition: CameraPosition(
+                target: Keys.MapCenter,
+                zoom: 15,
               ),
+            ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -149,76 +148,59 @@ class _DashboardState extends State<Dashboard> {
                                     : Stack(
                                     children: [
                                       Column(
-                                          children: [
-                                            Expanded(child: MapboxMap(
-                                              accessToken: Keys.MapBoxKey,
-                                              styleString: Keys.MapBoxNight,
-                                              zoomGesturesEnabled: true,
-                                              scrollGesturesEnabled: !isHover,
-                                              doubleClickZoomEnabled: false,
-                                              dragEnabled: true,
-                                              minMaxZoomPreference: const MinMaxZoomPreference(12, 19),
-                                              rotateGesturesEnabled: false,
-                                              tiltGesturesEnabled: false,
-                                              compassEnabled: false,
-                                              onMapCreated: (controller) {
-                                                _onMapCreated(controller);
-                                              },
-                                              initialCameraPosition: CameraPosition(
-                                                target: Keys.MapCenter,
-                                                zoom: 15.0,
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                              height: 220,
+                                              decoration: const BoxDecoration(
+                                                color: Constants.secondaryColor,
                                               ),
-                                            )),
-                                            Container(
-                                                height: 220,
-                                                decoration: const BoxDecoration(
-                                                  color: Constants.secondaryColor,
-                                                ),
-                                                child: Stack(
-                                                  children: [
-                                                    Column(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Row(
-                                                            children: [
-                                                              Container(
-                                                                padding: const EdgeInsets.all(Constants.defaultPadding),
-                                                                child: const Column(
-                                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                    children: [
-                                                                      Text(
-                                                                        "Select a route",
-                                                                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                                                                        maxLines: 1,
-                                                                        overflow: TextOverflow.ellipsis,
-                                                                      ),
-                                                                      Text(
-                                                                        "press the menu icon at the top left\npart of the screen!",
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70),
-                                                                        maxLines: 2,
-                                                                        overflow: TextOverflow.ellipsis,
-                                                                      ),
-                                                                    ]
-                                                                ),
-                                                              )
-                                                            ],
-                                                          ),
+                                              child: Stack(
+                                                children: [
+                                                  Column(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Row(
+                                                          children: [
+                                                            Container(
+                                                              padding: const EdgeInsets.all(Constants.defaultPadding),
+                                                              child: const Column(
+                                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    Text(
+                                                                      "Select a route",
+                                                                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                                                                      maxLines: 1,
+                                                                      overflow: TextOverflow.ellipsis,
+                                                                    ),
+                                                                    Text(
+                                                                      "press the menu icon at the top left\npart of the screen!",
+                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70),
+                                                                      maxLines: 2,
+                                                                      overflow: TextOverflow.ellipsis,
+                                                                    ),
+                                                                  ]
+                                                              ),
+                                                            )
+                                                          ],
                                                         ),
-                                                      ],
-                                                    ),
-                                                    Positioned(
-                                                      bottom: -50,
-                                                      right: -40,
-                                                      child: Transform.rotate(
-                                                          angle: -15 * 3.1415926535 / 180, // Rotate 45 degrees counter-clockwise (NW direction)
-                                                          child: const Icon(Icons.touch_app_rounded, color: Colors.white12, size: 270)
                                                       ),
+                                                    ],
+                                                  ),
+                                                  Positioned(
+                                                    bottom: -50,
+                                                    right: -40,
+                                                    child: Transform.rotate(
+                                                        angle: -15 * 3.1415926535 / 180, // Rotate 45 degrees counter-clockwise (NW direction)
+                                                        child: const Icon(Icons.touch_app_rounded, color: Colors.white12, size: 270)
                                                     ),
-                                                  ],
-                                                )
-                                            )
-                                          ]),
+                                                  ),
+                                                ],
+                                              )
+                                          )
+                                        ]
+                                      ),
                                       const Header(),
                                     ]
                                 ),
