@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-
-import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:provider/provider.dart';
 import '../MenuController.dart';
 
 import '../components/account_related/account_stream.dart';
 import '../components/header.dart';
 import '../components/logo.dart';
-import '../config/keys.dart';
+import '../components/map_related/map.dart';
 import '../config/responsive.dart';
 import '../config/size_config.dart';
 import '../style/constants.dart';
@@ -20,28 +18,12 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  late MapboxMapController _mapController;
   bool isHover = false;
 
   void hovering() {
     setState(() {
       isHover = !isHover;
     });
-  }
-
-  void _onMapCreated(MapboxMapController controller) {
-    _mapController = controller;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _mapController.dispose();
-    super.dispose();
   }
 
   @override
@@ -87,22 +69,7 @@ class _DashboardState extends State<Dashboard> {
       body:  SafeArea(
         child: Stack(
           children: [
-            MapboxMap(
-              accessToken: Keys.MapBoxKey,
-              styleString: Keys.MapBoxNight,
-              doubleClickZoomEnabled: false,
-              minMaxZoomPreference: const MinMaxZoomPreference(14, 19),
-              scrollGesturesEnabled: !isHover,
-              tiltGesturesEnabled: false,
-              compassEnabled: false,
-              onMapCreated: (controller) {
-                _onMapCreated(controller);
-              },
-              initialCameraPosition: CameraPosition(
-                target: Keys.MapCenter,
-                zoom: 15,
-              ),
-            ),
+            MapWidget(isHover: isHover),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

@@ -1,14 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 
-class Map extends StatefulWidget {
-  const Map({super.key});
+import '../../config/keys.dart';
+
+class MapWidget extends StatefulWidget {
+  final bool isHover;
+  const MapWidget({super.key, required this.isHover});
 
   @override
-  State<Map> createState() => _MapState();
+  State<MapWidget> createState() => _MapWidgetState();
 }
 
-class _MapState extends State<Map> {
+class _MapWidgetState extends State<MapWidget> {
   late MapboxMapController _mapController;
 
   void _onMapCreated(MapboxMapController controller) {
@@ -28,6 +31,21 @@ class _MapState extends State<Map> {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return  MapboxMap(
+      accessToken: Keys.MapBoxKey,
+      styleString: Keys.MapBoxNight,
+      doubleClickZoomEnabled: false,
+      minMaxZoomPreference: const MinMaxZoomPreference(14, 19),
+      scrollGesturesEnabled: !widget.isHover,
+      tiltGesturesEnabled: false,
+      compassEnabled: false,
+      onMapCreated: (controller) {
+        _onMapCreated(controller);
+      },
+      initialCameraPosition: CameraPosition(
+        target: Keys.MapCenter,
+        zoom: 15,
+      ),
+    );
   }
 }
