@@ -21,6 +21,17 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   late MapboxMapController _mapController;
+  bool isHover = false;
+
+  void hovering() {
+    setState(() {
+      isHover = !isHover;
+    });
+  }
+
+  void notHovering() {
+    print("not");
+  }
 
   void _onMapCreated(MapboxMapController controller) {
     _mapController = controller;
@@ -70,7 +81,9 @@ class _DashboardState extends State<Dashboard> {
                 child: const Divider()
               ),
               const SizedBox(height: Constants.defaultPadding),
-              const AccountStream()
+              AccountStream(
+                  hoverToggle: hovering
+              )
             ],
           ),
         )
@@ -84,6 +97,7 @@ class _DashboardState extends State<Dashboard> {
                 styleString: Keys.MapBoxNight,
                 doubleClickZoomEnabled: false,
                 minMaxZoomPreference: const MinMaxZoomPreference(14, 19),
+                scrollGesturesEnabled: !isHover,
                 tiltGesturesEnabled: false,
                 compassEnabled: false,
                 onMapCreated: (controller) {
@@ -114,7 +128,9 @@ class _DashboardState extends State<Dashboard> {
                               child: const Divider()
                             ),
                             const SizedBox(height: Constants.defaultPadding),
-                            const AccountStream()
+                            AccountStream(
+                                hoverToggle: hovering
+                            )
                           ],
                         ),
                       ),
@@ -142,7 +158,7 @@ class _DashboardState extends State<Dashboard> {
                                               accessToken: Keys.MapBoxKey,
                                               styleString: Keys.MapBoxNight,
                                               zoomGesturesEnabled: true,
-                                              scrollGesturesEnabled: true,
+                                              scrollGesturesEnabled: !isHover,
                                               doubleClickZoomEnabled: false,
                                               dragEnabled: true,
                                               minMaxZoomPreference: const MinMaxZoomPreference(12, 19),
@@ -170,7 +186,7 @@ class _DashboardState extends State<Dashboard> {
                                                           child: Row(
                                                             children: [
                                                               Container(
-                                                                padding: EdgeInsets.all(Constants.defaultPadding),
+                                                                padding: const EdgeInsets.all(Constants.defaultPadding),
                                                                 child: const Column(
                                                                     mainAxisAlignment: MainAxisAlignment.center,
                                                                     crossAxisAlignment: CrossAxisAlignment.start,

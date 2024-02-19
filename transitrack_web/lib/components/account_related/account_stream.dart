@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:transitrack_web/components/account_related/account_settings.dart';
+import 'package:transitrack_web/components/cooldown_button.dart';
 import 'package:transitrack_web/style/style.dart';
 
 import '../../models/account_model.dart';
@@ -12,7 +13,8 @@ import '../../style/constants.dart';
 import 'login_signup_form.dart';
 
 class AccountStream extends StatefulWidget {
-  const AccountStream({super.key});
+  final Function() hoverToggle;
+  const AccountStream({super.key, required this.hoverToggle});
 
   @override
   State<AccountStream> createState() => _AccountStreamState();
@@ -94,8 +96,13 @@ class _AccountStreamState extends State<AccountStream> {
                             AwesomeDialog(
                                 context: context,
                                 dialogType: DialogType.noHeader,
-                                body: AccountSettings(
-                                    user: currentUser!, account: accountData)
+                                body: MouseRegion(
+                                  onEnter: (_) => widget.hoverToggle(),
+                                  onExit: (_) => widget.hoverToggle(),
+                                  child: AccountSettings(
+                                      user: currentUser!, account: accountData
+                                  ),
+                                )
                             ).show();
                           },
                           child: const Icon(Icons.settings, color: Colors.white)
@@ -114,26 +121,25 @@ class _AccountStreamState extends State<AccountStream> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Expanded(
-                          child: GestureDetector(
-                            onTap: () async {
-                              setState(() {
-                                FirebaseAuth.instance.signOut();
-                              });
-                            },
-                            child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.logout, color: Colors.white),
-                                  SizedBox(width: Constants.defaultPadding),
-                                  Text('Logout',
-                                    style: TextStyle(color: Colors.white),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,)
-                                ]
-                            ),
-                          )
-                      )
+                      GestureDetector(
+                        onTap: () async {
+                          setState(() {
+                            FirebaseAuth.instance.signOut();
+                          });
+                        },
+                        child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(Icons.logout, color: Colors.white),
+                              SizedBox(width: Constants.defaultPadding),
+                              Text('Logout',
+                                style: TextStyle(color: Colors.white),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,)
+                            ]
+                        ),
+                      ),
+                      CooldownButton(child: Icon(Icons.location_on), onPressed: () {print("pressed");})
                     ],
                   ),
                 ],
@@ -158,7 +164,11 @@ class _AccountStreamState extends State<AccountStream> {
                   AwesomeDialog(
                       context: context,
                       dialogType: DialogType.noHeader,
-                      body: const LoginSignupForm()
+                      body: MouseRegion(
+                        onEnter: (_) => widget.hoverToggle(),
+                        onExit: (_) => widget.hoverToggle(),
+                        child: const LoginSignupForm()
+                      )
                   ).show();
                 });
               },
