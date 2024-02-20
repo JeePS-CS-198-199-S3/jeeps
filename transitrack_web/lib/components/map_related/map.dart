@@ -27,7 +27,7 @@ class LatLngTween extends Tween<LatLng> {
 }
 
 
-class _MapWidgetState extends State<MapWidget> with SingleTickerProviderStateMixin {
+class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   late MapboxMapController _mapController;
   late StreamSubscription<Position> _positionStream;
 
@@ -47,7 +47,7 @@ class _MapWidgetState extends State<MapWidget> with SingleTickerProviderStateMix
   void _listenToDeviceLocation() {
     _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.bestForNavigation,
+        accuracy: LocationAccuracy.best,
       ),
     ).listen((Position position) {
       _updateDeviceCircle(LatLng(position.latitude, position.longitude));
@@ -57,7 +57,7 @@ class _MapWidgetState extends State<MapWidget> with SingleTickerProviderStateMix
   void _updateDeviceCircle(LatLng latLng) {
     if (deviceInMap) {
       LatLng previousLatLng = deviceCircle.options.geometry as LatLng;
-      _animateCircleMovement(previousLatLng, latLng);
+      _animateCircleMovement(previousLatLng, latLng, deviceCircle);
     } else {
       _mapController.addCircle(
           CircleOptions(
@@ -68,13 +68,16 @@ class _MapWidgetState extends State<MapWidget> with SingleTickerProviderStateMix
               circleStrokeColor: '#FFFFFF'
           )
       ).then((circle) {
+        _mapController.animateCamera(
+          CameraUpdate.newLatLngZoom(latLng, mapStartZoom)
+        );
         deviceCircle = circle;
         deviceInMap = true;
       });
     }
   }
 
-  void _animateCircleMovement(LatLng from, LatLng to) {
+  void _animateCircleMovement(LatLng from, LatLng to, Circle circle) {
     final animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -85,7 +88,7 @@ class _MapWidgetState extends State<MapWidget> with SingleTickerProviderStateMix
     ));
 
     animation.addListener(() {
-      _mapController.updateCircle(deviceCircle, CircleOptions(geometry: animation.value));
+      _mapController.updateCircle(circle, CircleOptions(geometry: animation.value));
     });
 
     animation.addStatusListener((status) {

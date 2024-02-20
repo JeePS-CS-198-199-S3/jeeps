@@ -2,52 +2,52 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
-import '../config/route_coordinates.dart';
+import '../models/route_model.dart';
 import '../style/constants.dart';
 
 class DrawerListTile extends StatelessWidget {
   const DrawerListTile({
-    super.key, required this.Route, required this.icon, required this.press, required this.isSelected,
+    super.key, required this.Route
   });
 
-  final JeepRoute Route;
-  final Image icon;
-  final ui.VoidCallback? press;
-  final bool isSelected;
+  final RouteData Route;
 
-  String formatTime(List<int> timeList) {
-    int startHour = timeList[0];
-    int endHour = timeList[1];
+  String formatTime(List<int> times) {
+    // Convert minutes to hours and minutes
+    int startHours = times[0] ~/ 60;
+    int startMinutes = times[0] % 60;
+    int endHours = times[1] ~/ 60;
+    int endMinutes = times[1] % 60;
 
-    String startSuffix = (startHour >= 12) ? 'PM' : 'AM';
-    String endSuffix = (endHour >= 12) ? 'PM' : 'AM';
+    // Determine AM or PM for start and end times
+    String startPeriod = startHours >= 12 ? 'PM' : 'AM';
+    String endPeriod = endHours >= 12 ? 'PM' : 'AM';
 
-    if (startHour > 12) {
-      startHour -= 12;
-    } else if (startHour == 0) {
-      startHour = 12;
+    // Convert hours to 12-hour format
+    if (startHours > 12) {
+      startHours -= 12;
+    }
+    if (endHours > 12) {
+      endHours -= 12;
     }
 
-    if (endHour > 12) {
-      endHour -= 12;
-    } else if (endHour == 0) {
-      endHour = 12;
-    }
+    // Format the time strings
+    String startTime = '$startHours:${startMinutes.toString().padLeft(2, '0')} $startPeriod';
+    String endTime = '$endHours:${endMinutes.toString().padLeft(2, '0')} $endPeriod';
 
-    return '$startHour $startSuffix - $endHour $endSuffix';
+    return '$startTime - $endTime';
   }
+
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: press,
       horizontalTitleGap: 0.0,
-      contentPadding: EdgeInsets.only(left: Constants.defaultPadding),
-      trailing: icon,
-      title: Text(Route.routeName, style: const TextStyle(color: Colors.white54), overflow: TextOverflow.ellipsis, maxLines: 1,),
-      subtitle: Text(formatTime(Route.routeTime), style: const TextStyle(color: Colors.white30), overflow: TextOverflow.ellipsis, maxLines: 1,),
-      selected: isSelected,
-      selectedTileColor: Colors.white10
+      contentPadding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
+      title: Text(Route.routeName, style: const TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis, maxLines: 1,),
+      subtitle: Text(formatTime(Route.routeTime), style: const TextStyle(color: Colors.white54), overflow: TextOverflow.ellipsis, maxLines: 1,),
+      selectedTileColor: Colors.white10,
+      trailing: Icon(Icons.circle, color: Color(Route.routeColor)),
       // selectedTileColor: Colors.blue,
     );
   }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../MenuController.dart';
@@ -6,8 +7,10 @@ import '../components/account_related/account_stream.dart';
 import '../components/header.dart';
 import '../components/logo.dart';
 import '../components/map_related/map.dart';
+import '../components/route_list.dart';
 import '../config/responsive.dart';
 import '../config/size_config.dart';
+import '../models/route_model.dart';
 import '../style/constants.dart';
 
 class Dashboard extends StatefulWidget {
@@ -19,10 +22,31 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   bool isHover = false;
+  List<RouteData> _routes = [];
 
   void hovering() {
     setState(() {
       isHover = !isHover;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  void fetchData() async {
+    // Fetch data from Firestore
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('routes')
+        .where('enabled', isEqualTo: true)
+        .orderBy('route_id')
+        .get();
+    setState(() {
+      _routes = snapshot.docs
+          .map((doc) => RouteData.fromFirestore(doc))
+          .toList();
     });
   }
 
@@ -54,14 +78,19 @@ class _DashboardState extends State<Dashboard> {
               //     }),
 
               const SizedBox(height: Constants.defaultPadding),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
-                child: const Divider()
-              ),
-              const SizedBox(height: Constants.defaultPadding),
+
               AccountStream(
                   hoverToggle: hovering
-              )
+              ),
+
+              const SizedBox(height: Constants.defaultPadding),
+
+              Container(
+                  padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
+                  child: const Divider()
+              ),
+
+              RouteListWidget(routes: _routes,),
             ],
           ),
         )
@@ -85,14 +114,19 @@ class _DashboardState extends State<Dashboard> {
                               child: Logo(),
                             ),
                             const SizedBox(height: Constants.defaultPadding),
+
+                            AccountStream(
+                                hoverToggle: hovering
+                            ),
+
+                            const SizedBox(height: Constants.defaultPadding),
+
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
                               child: const Divider()
                             ),
-                            const SizedBox(height: Constants.defaultPadding),
-                            AccountStream(
-                                hoverToggle: hovering
-                            )
+
+                            RouteListWidget(routes: _routes,),
                           ],
                         ),
                       ),
@@ -103,126 +137,126 @@ class _DashboardState extends State<Dashboard> {
                   child: Stack(
                     children: [
                       SizedBox(
-                          width: double.infinity,
-                          height: SizeConfig.screenHeight,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                flex: 6,
-                                child: !Responsive.isMobile(context)
-                                    ? const Header()
-                                    : Stack(
-                                    children: [
-                                      Column(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
-                                          Container(
-                                              height: 220,
-                                              decoration: const BoxDecoration(
-                                                color: Constants.secondaryColor,
-                                              ),
-                                              child: Stack(
-                                                children: [
-                                                  Column(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Row(
-                                                          children: [
-                                                            Container(
-                                                              padding: const EdgeInsets.all(Constants.defaultPadding),
-                                                              child: const Column(
-                                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                                  children: [
-                                                                    Text(
-                                                                      "Select a route",
-                                                                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                                                                      maxLines: 1,
-                                                                      overflow: TextOverflow.ellipsis,
-                                                                    ),
-                                                                    Text(
-                                                                      "press the menu icon at the top left\npart of the screen!",
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70),
-                                                                      maxLines: 2,
-                                                                      overflow: TextOverflow.ellipsis,
-                                                                    ),
-                                                                  ]
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Positioned(
-                                                    bottom: -50,
-                                                    right: -40,
-                                                    child: Transform.rotate(
-                                                        angle: -15 * 3.1415926535 / 180, // Rotate 45 degrees counter-clockwise (NW direction)
-                                                        child: const Icon(Icons.touch_app_rounded, color: Colors.white12, size: 270)
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                          )
-                                        ]
-                                      ),
-                                      const Header(),
-                                    ]
-                                ),
-                              ),
-                              if(!Responsive.isMobile(context))
-                                const SizedBox(width: Constants.defaultPadding),
-                              if(!Responsive.isMobile(context))
-                                SingleChildScrollView(
-                                    physics: const NeverScrollableScrollPhysics(),
-                                    child: Column(
+                        width: double.infinity,
+                        height: SizeConfig.screenHeight,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 6,
+                              child: !Responsive.isMobile(context)
+                                  ? const Header()
+                                  : Stack(
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Container(
-                                            margin: const EdgeInsets.all(Constants.defaultPadding),
+                                            height: 220,
+                                            decoration: const BoxDecoration(
+                                              color: Constants.secondaryColor,
+                                            ),
+                                            child: Stack(
+                                              children: [
+                                                Column(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Row(
+                                                        children: [
+                                                          Container(
+                                                            padding: const EdgeInsets.all(Constants.defaultPadding),
+                                                            child: const Column(
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  Text(
+                                                                    "Select a route",
+                                                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                                                                    maxLines: 1,
+                                                                    overflow: TextOverflow.ellipsis,
+                                                                  ),
+                                                                  Text(
+                                                                    "press the menu icon at the top left\npart of the screen!",
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70),
+                                                                    maxLines: 2,
+                                                                    overflow: TextOverflow.ellipsis,
+                                                                  ),
+                                                                ]
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Positioned(
+                                                  bottom: -50,
+                                                  right: -40,
+                                                  child: Transform.rotate(
+                                                      angle: -15 * 3.1415926535 / 180, // Rotate 45 degrees counter-clockwise (NW direction)
+                                                      child: const Icon(Icons.touch_app_rounded, color: Colors.white12, size: 270)
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                        )
+                                      ]
+                                    ),
+                                    const Header(),
+                                  ]
+                              ),
+                            ),
+                            if(!Responsive.isMobile(context))
+                              const SizedBox(width: Constants.defaultPadding),
+                            if(!Responsive.isMobile(context))
+                              SingleChildScrollView(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                          margin: const EdgeInsets.all(Constants.defaultPadding),
+                                          decoration: const BoxDecoration(
+                                            color: Constants.secondaryColor,
+                                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                                          ),
+                                          child: Container(
+                                            padding: const EdgeInsets.all(Constants.defaultPadding),
                                             decoration: const BoxDecoration(
                                               color: Constants.secondaryColor,
                                               borderRadius: BorderRadius.all(Radius.circular(10)),
                                             ),
-                                            child: Container(
-                                              padding: const EdgeInsets.all(Constants.defaultPadding),
-                                              decoration: const BoxDecoration(
-                                                color: Constants.secondaryColor,
-                                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                                              ),
-                                              child: const Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    "Select a route",
-                                                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                                  SizedBox(height: Constants.defaultPadding),
-                                                  SizedBox(
-                                                    height:200,
-                                                    child: Center(child: CircleAvatar(
-                                                      radius: 90,
-                                                      backgroundColor: Colors.white38,
-                                                      child: CircleAvatar(
-                                                          radius: 70,
-                                                          backgroundColor: Constants.secondaryColor,
-                                                          child: Icon(Icons.touch_app_rounded, color: Colors.white38, size: 50)
-                                                      ),
-                                                    )),
-                                                  ),
-                                                  SizedBox(height: Constants.defaultPadding),
-                                                ],
-                                              ),
-                                            )
-                                        ),
-                                      ],
-                                    )
-                                )
-                            ],
-                          )
+                                            child: const Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "Select a route",
+                                                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                                SizedBox(height: Constants.defaultPadding),
+                                                SizedBox(
+                                                  height:200,
+                                                  child: Center(child: CircleAvatar(
+                                                    radius: 90,
+                                                    backgroundColor: Colors.white38,
+                                                    child: CircleAvatar(
+                                                        radius: 70,
+                                                        backgroundColor: Constants.secondaryColor,
+                                                        child: Icon(Icons.touch_app_rounded, color: Colors.white38, size: 50)
+                                                    ),
+                                                  )),
+                                                ),
+                                                SizedBox(height: Constants.defaultPadding),
+                                              ],
+                                            ),
+                                          )
+                                      ),
+                                    ],
+                                  )
+                              )
+                          ],
+                        )
                       ),
                     ],
                   ),
