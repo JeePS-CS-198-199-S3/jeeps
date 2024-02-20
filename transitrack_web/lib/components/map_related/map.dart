@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -15,30 +16,48 @@ class MapWidget extends StatefulWidget {
   State<MapWidget> createState() => _MapWidgetState();
 }
 
-class _MapWidgetState extends State<MapWidget> {
+class LatLngTween extends Tween<LatLng> {
+  LatLngTween({required LatLng begin, required LatLng end}) : super(begin: begin, end: end);
+
+  @override
+  LatLng lerp(double t) => LatLng(
+    lerpDouble(begin!.latitude, end!.latitude, t)!,
+    lerpDouble(begin!.longitude, end!.longitude, t)!,
+  );
+}
+
+
+class _MapWidgetState extends State<MapWidget> with SingleTickerProviderStateMixin {
   late MapboxMapController _mapController;
-  late StreamSubscription  _positionStream;
-  List<Circle> circles = [];
-  bool exists = false;
+  late StreamSubscription<Position> _positionStream;
+
+  late Circle deviceCircle;
+  bool deviceInMap = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _listenToDeviceLocation();
+  }
 
   void _onMapCreated(MapboxMapController controller) {
     _mapController = controller;
   }
 
-  void _listenToLocation() {
+  void _listenToDeviceLocation() {
     _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.bestForNavigation,
       ),
     ).listen((Position position) {
-      _updateCircle(LatLng(position.latitude, position.longitude));
+      _updateDeviceCircle(LatLng(position.latitude, position.longitude));
     });
   }
 
-  void _updateCircle(LatLng latLng) {
-    if (exists) {
-      Circle deviceCircle = circles.where((circle) => circle.options.circleColor == deviceCircleColor).first;
-      _mapController.updateCircle(deviceCircle, CircleOptions(geometry: latLng));
+  void _updateDeviceCircle(LatLng latLng) {
+    if (deviceInMap) {
+      LatLng previousLatLng = deviceCircle.options.geometry as LatLng;
+      _animateCircleMovement(previousLatLng, latLng);
     } else {
       _mapController.addCircle(
           CircleOptions(
@@ -48,14 +67,34 @@ class _MapWidgetState extends State<MapWidget> {
               circleStrokeWidth: 2,
               circleStrokeColor: '#FFFFFF'
           )
-      ).then((circle) => circles.add(circle));
-      exists = true;
+      ).then((circle) {
+        deviceCircle = circle;
+        deviceInMap = true;
+      });
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
+  void _animateCircleMovement(LatLng from, LatLng to) {
+    final animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    final animation = LatLngTween(begin: from, end: to).animate(CurvedAnimation(
+      parent: animationController,
+      curve: Curves.easeInOut,
+    ));
+
+    animation.addListener(() {
+      _mapController.updateCircle(deviceCircle, CircleOptions(geometry: animation.value));
+    });
+
+    animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        animationController.dispose();
+      }
+    });
+
+    animationController.forward();
   }
 
   @override
@@ -78,9 +117,6 @@ class _MapWidgetState extends State<MapWidget> {
       rotateGesturesEnabled: false,
       onMapCreated: (controller) {
         _onMapCreated(controller);
-      },
-      onStyleLoadedCallback: () {
-        _listenToLocation();
       },
       initialCameraPosition: CameraPosition(
         target: Keys.MapCenter,
