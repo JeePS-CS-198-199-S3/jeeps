@@ -91,7 +91,6 @@ class _DashboardState extends State<Dashboard> {
     // Fetch data from Firestore
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('routes')
-        .where('enabled', isEqualTo: true)
         .orderBy('route_id')
         .get();
     setState(() {
@@ -153,7 +152,7 @@ class _DashboardState extends State<Dashboard> {
                         }
                       },
                       child: DrawerListTile(
-                        Route: _routes[index],
+                        route: _routes[index],
                         isSelected: routeChoice == index,
                       ),
                     );
@@ -232,7 +231,7 @@ class _DashboardState extends State<Dashboard> {
                                         }
                                       },
                                       child: DrawerListTile(
-                                          Route: _routes[index],
+                                          route: _routes[index],
                                           isSelected: routeChoice == index,
                                       ),
                                     );

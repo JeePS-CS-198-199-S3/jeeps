@@ -6,11 +6,11 @@ import '../style/constants.dart';
 class DrawerListTile extends StatelessWidget {
   const DrawerListTile({
     super.key,
-    required this.Route,
+    required this.route,
     required this.isSelected,
   });
 
-  final RouteData Route;
+  final RouteData route;
   final bool isSelected;
 
   String formatTime(List<int> times) {
@@ -43,13 +43,14 @@ class DrawerListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      isThreeLine: true,
       horizontalTitleGap: 0.0,
       contentPadding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
-      title: Text(Route.routeName, style: const TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis, maxLines: 1,),
-      subtitle: Text(formatTime(Route.routeTime), style: const TextStyle(color: Colors.white54), overflow: TextOverflow.ellipsis, maxLines: 1,),
+      title: Text(route.routeName, style: const TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis, maxLines: 1,),
+      subtitle: Text("${formatTime(route.routeTime)}\n${route.routeFare == route.routeFareDiscounted?"${route.routeFare} pesos":"${route.routeFareDiscounted} - ${route.routeFare} pesos"}", style: const TextStyle(color: Colors.white54), overflow: TextOverflow.ellipsis),
       selectedTileColor: Colors.white10,
       selected: isSelected,
-      trailing: Icon(Icons.circle, color: Color(Route.routeColor)),
+      trailing: Icon(Icons.circle, color: Color(route.routeColor)),
     );
   }
 }
