@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 
 class RouteData {
   bool enabled;
   int routeColor;
-  List<GeoPoint> routeCoordinates;
+  List<LatLng> routeCoordinates;
   double routeFare;
   double routeFareDiscounted;
   int routeId;
@@ -27,7 +28,7 @@ class RouteData {
       enabled: data['enabled'] ?? false,
       routeColor: data['route_color'] ?? 0,
       routeCoordinates: (data['route_coordinates'] as List<dynamic>)
-          .map((coord) => coord as GeoPoint)
+          .map((coord) => _parseGeoPointToLatLng(coord as GeoPoint))
           .toList(),
       routeFare: data['route_fare'] ?? 0.0,
       routeFareDiscounted: data['route_fare_discounted'] ?? 0.0,
@@ -44,5 +45,9 @@ class RouteData {
       map['latitude'],
       map['longitude']
     );
+  }
+
+  static LatLng _parseGeoPointToLatLng(GeoPoint geoPoint) {
+    return LatLng(geoPoint.latitude, geoPoint.longitude);
   }
 }

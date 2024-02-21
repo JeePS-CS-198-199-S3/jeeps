@@ -118,13 +118,9 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   void addLine() {
     _mapController.clearLines();
     if (widget.route != null) {
-      List<LatLng> lineCoordinates = [];
-      for (int i = 0; i < widget.route!.routeCoordinates.length; i++) {
-        lineCoordinates.add(LatLng(widget.route!.routeCoordinates[i].latitude, widget.route!.routeCoordinates[i].longitude));
-      }
       _mapController.addLine(
         LineOptions(
-          geometry: lineCoordinates,
+          geometry: widget.route!.routeCoordinates,
           lineColor: intToHexColor(widget.route!.routeColor), // Line color
           lineWidth: 4.0, // Line width
         ),
