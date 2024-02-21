@@ -17,9 +17,10 @@ class _RouteListState extends State<RouteList> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        height: 500,
-        child: ListView.builder(
+    return Column(
+      children: [
+        ListView.builder(
+          shrinkWrap: true,
           itemCount: widget.routes.length,
           itemBuilder: (context, index) {
             return GestureDetector(
@@ -33,6 +34,7 @@ class _RouteListState extends State<RouteList> {
             );
           },
         )
+      ],
     );
   }
 }

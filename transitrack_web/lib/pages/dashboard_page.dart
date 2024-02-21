@@ -199,11 +199,20 @@ class _DashboardState extends State<Dashboard> {
                             ),
                             const SizedBox(height: Constants.defaultPadding),
 
-                            AccountStream(
-                              hoverToggle: hovering,
-                              currentUser: currentUserAuth,
-                              user: currentUserFirestore,
-                              isDesktop: true
+                            if (_routes.isEmpty)
+                              const Center(
+                                child: CircularProgressIndicator()
+                              ),
+                            RouteList(
+                                routeChoice: routeChoice,
+                                routes: _routes,
+                                newRouteChoice: (int choice) {
+                                  if (routeChoice == choice) {
+                                    switchRoute(-1);
+                                  } else {
+                                    switchRoute(choice);
+                                  }
+                                }
                             ),
 
                             const SizedBox(height: Constants.defaultPadding),
@@ -213,17 +222,14 @@ class _DashboardState extends State<Dashboard> {
                               child: const Divider()
                             ),
 
-                            RouteList(
-                              routeChoice: routeChoice,
-                              routes: _routes,
-                              newRouteChoice: (int choice) {
-                                if (routeChoice == choice) {
-                                  switchRoute(-1);
-                                } else {
-                                  switchRoute(choice);
-                                }
-                              }
-                            )
+                            const SizedBox(height: Constants.defaultPadding),
+
+                            AccountStream(
+                                hoverToggle: hovering,
+                                currentUser: currentUserAuth,
+                                user: currentUserFirestore,
+                                isDesktop: true
+                            ),
                           ],
                         ),
                       ),
