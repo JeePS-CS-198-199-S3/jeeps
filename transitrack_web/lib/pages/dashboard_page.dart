@@ -113,20 +113,6 @@ class _DashboardState extends State<Dashboard> {
               const DrawerHeader(
                 child: Logo()
               ),
-              // DrawerListTile(
-              //     Route: JeepRoutes[0],
-              //     icon: Image.asset(JeepSide[0]),
-              //     isSelected: route_choice == 0,
-              //     press: (){
-              //       if(route_choice == 0){
-              //         switchRoute(-1);
-              //       } else {
-              //         setState(() {
-              //           _isLoaded = false;
-              //         });
-              //         switchRoute(0);
-              //       }
-              //     }),
 
               const SizedBox(height: Constants.defaultPadding),
 
@@ -134,6 +120,7 @@ class _DashboardState extends State<Dashboard> {
                 hoverToggle: hovering,
                 currentUser: currentUserAuth,
                 user: currentUserFirestore,
+                isDesktop: false
               ),
 
               const SizedBox(height: Constants.defaultPadding),
@@ -172,6 +159,7 @@ class _DashboardState extends State<Dashboard> {
                               hoverToggle: hovering,
                               currentUser: currentUserAuth,
                               user: currentUserFirestore,
+                              isDesktop: true
                             ),
 
                             const SizedBox(height: Constants.defaultPadding),

@@ -13,7 +13,8 @@ class AccountStream extends StatefulWidget {
   final Function() hoverToggle;
   User? currentUser;
   AccountData? user;
-  AccountStream({super.key, required this.hoverToggle, required this.currentUser, required this.user});
+  bool isDesktop;
+  AccountStream({super.key, required this.hoverToggle, required this.currentUser, required this.user, required this.isDesktop});
 
   @override
   State<AccountStream> createState() => _AccountStreamState();
@@ -102,7 +103,9 @@ class _AccountStreamState extends State<AccountStream> {
                           ]
                       ),
                     ),
-                    CooldownButton(onPressed: () {print("pressed");}, verified: widget.user!.is_verified, child: const Icon(Icons.location_on),)
+
+                    if (widget.isDesktop)
+                      CooldownButton(onPressed: () {print("pressed");}, verified: widget.user!.is_verified, child: const Icon(Icons.location_on),)
                   ],
                 ),
               ],
