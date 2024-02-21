@@ -1,6 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:transitrack_web/components/account_related/account_settings.dart';
 import 'package:transitrack_web/components/cooldown_button.dart';
 import 'package:transitrack_web/style/style.dart';
@@ -14,7 +15,8 @@ class AccountStream extends StatefulWidget {
   User? currentUser;
   AccountData? user;
   bool isDesktop;
-  AccountStream({super.key, required this.hoverToggle, required this.currentUser, required this.user, required this.isDesktop});
+  LatLng? deviceLoc;
+  AccountStream({super.key, required this.hoverToggle, required this.currentUser, required this.user, required this.isDesktop, required this.deviceLoc});
 
   @override
   State<AccountStream> createState() => _AccountStreamState();
@@ -105,7 +107,21 @@ class _AccountStreamState extends State<AccountStream> {
                     ),
 
                     if (widget.isDesktop)
-                      CooldownButton(onPressed: () {print("pressed");}, verified: widget.user!.is_verified, child: const Icon(Icons.location_on))
+                      CooldownButton(
+                        onPressed: () {
+
+                        },
+                        verified: widget.user!.is_verified && widget.deviceLoc != null,
+                        child: widget.deviceLoc != null
+                          ? const Icon(Icons.location_on)
+                          : const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Constants.bgColor,
+                              )
+                          )
+                      )
                   ],
                 ),
               ],

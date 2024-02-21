@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:provider/provider.dart';
 import '../MenuController.dart';
 
@@ -38,6 +39,9 @@ class _DashboardState extends State<Dashboard> {
 
   // Route Selection
   int routeChoice = -1;
+
+  // Device Location Found
+  LatLng? deviceLoc;
 
   @override
   void initState() {
@@ -129,7 +133,8 @@ class _DashboardState extends State<Dashboard> {
                 hoverToggle: hovering,
                 currentUser: currentUserAuth,
                 user: currentUserFirestore,
-                isDesktop: false
+                isDesktop: false,
+                deviceLoc: deviceLoc,
               ),
 
               const SizedBox(height: Constants.defaultPadding),
@@ -172,6 +177,12 @@ class _DashboardState extends State<Dashboard> {
                           route: routeChoice == -1
                               ? null
                               : _routes[routeChoice],
+                          foundDeviceLocation: (LatLng deviceLocation) {
+                            setState(() {
+                              deviceLoc = deviceLocation;
+                            });
+                          },
+
                         )
                       ),
 
@@ -225,10 +236,11 @@ class _DashboardState extends State<Dashboard> {
                             const SizedBox(height: Constants.defaultPadding),
 
                             AccountStream(
-                                hoverToggle: hovering,
-                                currentUser: currentUserAuth,
-                                user: currentUserFirestore,
-                                isDesktop: true
+                              hoverToggle: hovering,
+                              currentUser: currentUserAuth,
+                              user: currentUserFirestore,
+                              isDesktop: true,
+                              deviceLoc: deviceLoc,
                             ),
                           ],
                         ),
@@ -371,7 +383,21 @@ class _DashboardState extends State<Dashboard> {
               Positioned(
                 bottom: Constants.defaultPadding/2,
                 right: Constants.defaultPadding/2,
-                child: CooldownButton(onPressed: () {print("pressed");}, verified: currentUserFirestore!.is_verified, child: const Icon(Icons.location_on))
+                child: CooldownButton(
+                    onPressed: () {
+
+                    },
+                    verified: currentUserFirestore!.is_verified && deviceLoc != null,
+                    child: deviceLoc != null
+                        ? const Icon(Icons.location_on)
+                        : const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Constants.bgColor,
+                        )
+                    )
+                )
               )
           ],
         ),
