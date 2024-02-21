@@ -105,7 +105,7 @@ class _AccountStreamState extends State<AccountStream> {
                     ),
 
                     if (widget.isDesktop)
-                      CooldownButton(onPressed: () {print("pressed");}, verified: widget.user!.is_verified, child: const Icon(Icons.location_on),)
+                      CooldownButton(onPressed: () {print("pressed");}, verified: widget.user!.is_verified, child: const Icon(Icons.location_on))
                   ],
                 ),
               ],

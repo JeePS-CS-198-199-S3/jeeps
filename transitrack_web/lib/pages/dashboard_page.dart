@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../MenuController.dart';
 
 import '../components/account_related/account_stream.dart';
+import '../components/cooldown_button.dart';
 import '../components/header.dart';
 import '../components/logo.dart';
 import '../components/map_related/map.dart';
@@ -30,6 +31,7 @@ class _DashboardState extends State<Dashboard> {
 
   // Account Detection
   User? currentUserAuth;
+  String currentUserFirestoreId = "";
   AccountData? currentUserFirestore;
   late StreamSubscription<User?> userAuthStream;                // Firebase Auth
   late StreamSubscription userFirestoreStream;   // Firebase Firestore Account
@@ -47,17 +49,17 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     currentUserAuth = FirebaseAuth.instance.currentUser;
     listenToUserAuth();
-    listenToUserFirestore();
     fetchRoutes();
   }
 
-  void listenToUserAuth() {
+  void listenToUserAuth() async {
     userAuthStream = FirebaseAuth.instance
       .authStateChanges()
       .listen((user) {
         setState(() {
           currentUserAuth = user;
         });
+        listenToUserFirestore();
       },
       onError: (e) {
         print('Error listening to authentication state changes: $e');
@@ -67,15 +69,15 @@ class _DashboardState extends State<Dashboard> {
 
   void listenToUserFirestore() {
     userFirestoreStream = FirebaseFirestore.instance
-      .collection('accounts')
-      .where('account_email', isEqualTo: currentUserAuth?.email!)
-      .snapshots()
-      .listen((QuerySnapshot snapshot) {
-        if (snapshot.docs.isNotEmpty) {
-          setState(() {
-            currentUserFirestore = AccountData.fromSnapshot(snapshot.docs.first);
-          });
-        }
+        .collection('accounts')
+        .where('account_email', isEqualTo: currentUserAuth?.email!)
+        .snapshots()
+        .listen((QuerySnapshot snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        setState(() {
+          currentUserFirestore = AccountData.fromSnapshot(snapshot.docs.first);
+        });
+      }
     });
   }
 
@@ -151,7 +153,7 @@ class _DashboardState extends State<Dashboard> {
                       Expanded(
                         child: MapWidget(isHover: isHover)
                       ),
-                      
+
                       if (Responsive.isMobile(context))
                         const SizedBox(height: 220)
                     ],
@@ -327,6 +329,13 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ],
             ),
+            
+            if (Responsive.isMobile(context) && currentUserAuth != null && currentUserFirestore != null)
+              Positioned(
+                  bottom: Constants.defaultPadding/2,
+                  right: Constants.defaultPadding/2,
+                  child: CooldownButton(onPressed: () {print("pressed");}, verified: currentUserFirestore!.is_verified, child: const Icon(Icons.location_on))
+              )
           ],
         ),
       ),

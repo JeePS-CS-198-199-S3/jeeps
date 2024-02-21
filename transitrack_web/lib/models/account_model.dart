@@ -18,7 +18,7 @@ class AccountData{
     required this.route_id,
   });
 
-  factory AccountData.fromSnapshot(QueryDocumentSnapshot<Object?> snapshot) {
+  factory AccountData.fromSnapshot(DocumentSnapshot<Object?> snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
 
     String account_email = data['account_email'];

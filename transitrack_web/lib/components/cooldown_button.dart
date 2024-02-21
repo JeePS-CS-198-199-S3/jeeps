@@ -29,7 +29,7 @@ class _CooldownButtonState extends State<CooldownButton> {
   }
 
   void _startCooldownTimer() {
-    _cooldownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_cooldownSeconds > 0) {
           _cooldownSeconds--;
@@ -65,13 +65,13 @@ class _CooldownButtonState extends State<CooldownButton> {
     return GestureDetector(
       onTap: _handleTap,
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        width: 50,
-        height: 50,
+        width: 40,
+        height: 40,
         decoration: BoxDecoration(
           color: (_isCooldown || !widget.verified) ? Colors.grey : Colors.blue,
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(50),
         ),
         child: Center(
           child: _buttonText
