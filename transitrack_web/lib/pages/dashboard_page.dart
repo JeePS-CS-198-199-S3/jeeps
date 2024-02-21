@@ -138,7 +138,26 @@ class _DashboardState extends State<Dashboard> {
       body:  SafeArea(
         child: Stack(
           children: [
-            MapWidget(isHover: isHover),
+            Row(
+              children: [
+                if (Responsive.isDesktop(context))
+                  const Spacer(flex: 1),
+
+                Expanded(
+                  flex: 5,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: MapWidget(isHover: isHover)
+                      ),
+                      
+                      if (Responsive.isMobile(context))
+                        const SizedBox(height: 220)
+                    ],
+                  )
+                )
+              ],
+            ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
