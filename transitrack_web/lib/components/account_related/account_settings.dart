@@ -114,7 +114,7 @@ class AccountSettings extends StatelessWidget {
 
           const SizedBox(height: Constants.defaultPadding/2),
 
-          const PrimaryText(text: "Email or Password changes will log you out.", color: Colors.white),
+          const PrimaryText(text: "Email and password changes will log you out.", color: Colors.white),
 
           const SizedBox(height: Constants.defaultPadding*2),
 

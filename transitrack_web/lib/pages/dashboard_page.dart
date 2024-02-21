@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../MenuController.dart';
@@ -10,6 +13,7 @@ import '../components/map_related/map.dart';
 import '../components/route_list.dart';
 import '../config/responsive.dart';
 import '../config/size_config.dart';
+import '../models/account_model.dart';
 import '../models/route_model.dart';
 import '../style/constants.dart';
 
@@ -24,6 +28,14 @@ class _DashboardState extends State<Dashboard> {
   bool isHover = false;
   List<RouteData> _routes = [];
 
+  // Account Detection
+  User? currentUserAuth;
+  AccountData? currentUserFirestore;
+  late StreamSubscription<User?> userAuthStream;                // Firebase Auth
+  late StreamSubscription userFirestoreStream;   // Firebase Firestore Account
+
+
+
   void hovering() {
     setState(() {
       isHover = !isHover;
@@ -33,10 +45,41 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    fetchData();
+    currentUserAuth = FirebaseAuth.instance.currentUser;
+    listenToUserAuth();
+    listenToUserFirestore();
+    fetchRoutes();
   }
 
-  void fetchData() async {
+  void listenToUserAuth() {
+    userAuthStream = FirebaseAuth.instance
+      .authStateChanges()
+      .listen((user) {
+        setState(() {
+          currentUserAuth = user;
+        });
+      },
+      onError: (e) {
+        print('Error listening to authentication state changes: $e');
+      }
+    );
+  }
+
+  void listenToUserFirestore() {
+    userFirestoreStream = FirebaseFirestore.instance
+      .collection('accounts')
+      .where('account_email', isEqualTo: currentUserAuth?.email!)
+      .snapshots()
+      .listen((QuerySnapshot snapshot) {
+        if (snapshot.docs.isNotEmpty) {
+          setState(() {
+            currentUserFirestore = AccountData.fromSnapshot(snapshot.docs.first);
+          });
+        }
+    });
+  }
+
+  void fetchRoutes() async {
     // Fetch data from Firestore
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('routes')
@@ -49,6 +92,14 @@ class _DashboardState extends State<Dashboard> {
           .toList();
     });
   }
+
+  @override
+  void dispose() {
+    userAuthStream.cancel();
+    userFirestoreStream.cancel();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +131,9 @@ class _DashboardState extends State<Dashboard> {
               const SizedBox(height: Constants.defaultPadding),
 
               AccountStream(
-                  hoverToggle: hovering
+                hoverToggle: hovering,
+                currentUser: currentUserAuth,
+                user: currentUserFirestore,
               ),
 
               const SizedBox(height: Constants.defaultPadding),
@@ -90,7 +143,7 @@ class _DashboardState extends State<Dashboard> {
                   child: const Divider()
               ),
 
-              RouteListWidget(routes: _routes,),
+              RouteListWidget(routes: _routes),
             ],
           ),
         )
@@ -116,7 +169,9 @@ class _DashboardState extends State<Dashboard> {
                             const SizedBox(height: Constants.defaultPadding),
 
                             AccountStream(
-                                hoverToggle: hovering
+                              hoverToggle: hovering,
+                              currentUser: currentUserAuth,
+                              user: currentUserFirestore,
                             ),
 
                             const SizedBox(height: Constants.defaultPadding),
@@ -126,7 +181,7 @@ class _DashboardState extends State<Dashboard> {
                               child: const Divider()
                             ),
 
-                            RouteListWidget(routes: _routes,),
+                            RouteListWidget(routes: _routes),
                           ],
                         ),
                       ),
