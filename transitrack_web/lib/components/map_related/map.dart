@@ -4,13 +4,16 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:transitrack_web/services/int_to_hex.dart';
 
 import '../../config/keys.dart';
 import '../../config/map_settings.dart';
+import '../../models/route_model.dart';
 
 class MapWidget extends StatefulWidget {
   final bool isHover;
-  const MapWidget({Key? key, required this.isHover}) : super(key: key);
+  final RouteData? route;
+  const MapWidget({Key? key, required this.isHover, required this.route}) : super(key: key);
 
   @override
   State<MapWidget> createState() => _MapWidgetState();
@@ -28,6 +31,8 @@ class LatLngTween extends Tween<LatLng> {
 
 
 class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
+  late RouteData? _value;
+
   late MapboxMapController _mapController;
   late StreamSubscription<Position> _positionStream;
 
@@ -37,7 +42,17 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _value = widget.route;
     _listenToDeviceLocation();
+  }
+
+  @override
+  void didUpdateWidget(covariant MapWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.route != _value) {
+      _value = widget.route;
+      addLine();
+    }
   }
 
   void _onMapCreated(MapboxMapController controller) {
@@ -98,6 +113,23 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     });
 
     animationController.forward();
+  }
+
+  void addLine() {
+    _mapController.clearLines();
+    if (widget.route != null) {
+      List<LatLng> lineCoordinates = [];
+      for (int i = 0; i < widget.route!.routeCoordinates.length; i++) {
+        lineCoordinates.add(LatLng(widget.route!.routeCoordinates[i].latitude, widget.route!.routeCoordinates[i].longitude));
+      }
+      _mapController.addLine(
+        LineOptions(
+          geometry: lineCoordinates,
+          lineColor: intToHexColor(widget.route!.routeColor), // Line color
+          lineWidth: 4.0, // Line width
+        ),
+      );
+    }
   }
 
   @override

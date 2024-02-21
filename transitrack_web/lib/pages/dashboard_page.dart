@@ -176,7 +176,12 @@ class _DashboardState extends State<Dashboard> {
                   child: Column(
                     children: [
                       Expanded(
-                        child: MapWidget(isHover: isHover)
+                        child: MapWidget(
+                          isHover: isHover,
+                          route: routeChoice == -1
+                              ? null
+                              : _routes[routeChoice],
+                        )
                       ),
 
                       if (Responsive.isMobile(context))
@@ -238,8 +243,6 @@ class _DashboardState extends State<Dashboard> {
                                   },
                                 )
                             ),
-
-                            Text("Selected route: $routeChoice")
                           ],
                         ),
                       ),
