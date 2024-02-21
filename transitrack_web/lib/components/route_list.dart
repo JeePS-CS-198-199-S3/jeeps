@@ -20,6 +20,7 @@ class _RouteListState extends State<RouteList> {
     return Column(
       children: [
         ListView.builder(
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: widget.routes.length,
           itemBuilder: (context, index) {

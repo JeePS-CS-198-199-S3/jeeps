@@ -128,6 +128,28 @@ class _DashboardState extends State<Dashboard> {
                 child: Logo()
               ),
 
+              if (_routes.isEmpty)
+                const Center(
+                    child: CircularProgressIndicator()
+                ),
+
+              RouteList(
+                  routeChoice: routeChoice,
+                  routes: _routes,
+                  newRouteChoice: (int choice) {
+                    if (routeChoice == choice) {
+                      switchRoute(-1);
+                    } else {
+                      switchRoute(choice);
+                    }
+                  }
+              ),
+
+              Container(
+                  padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
+                  child: const Divider()
+              ),
+
               const SizedBox(height: Constants.defaultPadding),
 
               AccountStream(
@@ -137,25 +159,6 @@ class _DashboardState extends State<Dashboard> {
                 isDesktop: false,
                 deviceLoc: deviceLoc,
               ),
-
-              const SizedBox(height: Constants.defaultPadding),
-
-              Container(
-                  padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
-                  child: const Divider()
-              ),
-
-              RouteList(
-                routeChoice: routeChoice,
-                routes: _routes,
-                newRouteChoice: (int choice) {
-                  if (routeChoice == choice) {
-                    switchRoute(-1);
-                  } else {
-                    switchRoute(choice);
-                  }
-                }
-              )
             ],
           ),
         )
@@ -209,12 +212,12 @@ class _DashboardState extends State<Dashboard> {
                             const DrawerHeader(
                               child: Logo(),
                             ),
-                            const SizedBox(height: Constants.defaultPadding),
 
                             if (_routes.isEmpty)
                               const Center(
                                 child: CircularProgressIndicator()
                               ),
+
                             RouteList(
                                 routeChoice: routeChoice,
                                 routes: _routes,
@@ -226,8 +229,6 @@ class _DashboardState extends State<Dashboard> {
                                   }
                                 }
                             ),
-
-                            const SizedBox(height: Constants.defaultPadding),
 
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
@@ -272,49 +273,7 @@ class _DashboardState extends State<Dashboard> {
                                             decoration: const BoxDecoration(
                                               color: Constants.secondaryColor,
                                             ),
-                                            child: Stack(
-                                              children: [
-                                                Column(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Row(
-                                                        children: [
-                                                          Container(
-                                                            padding: const EdgeInsets.all(Constants.defaultPadding),
-                                                            child: const Column(
-                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Text(
-                                                                    "Select a route",
-                                                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                                                                    maxLines: 1,
-                                                                    overflow: TextOverflow.ellipsis,
-                                                                  ),
-                                                                  Text(
-                                                                    "press the menu icon at the top left\npart of the screen!",
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70),
-                                                                    maxLines: 2,
-                                                                    overflow: TextOverflow.ellipsis,
-                                                                  ),
-                                                                ]
-                                                            ),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Positioned(
-                                                  bottom: -50,
-                                                  right: -40,
-                                                  child: Transform.rotate(
-                                                      angle: -15 * 3.1415926535 / 180, // Rotate 45 degrees counter-clockwise (NW direction)
-                                                      child: const Icon(Icons.touch_app_rounded, color: Colors.white12, size: 270)
-                                                  ),
-                                                ),
-                                              ],
-                                            )
+                                            child: MobileDashboardUnselected()
                                         )
                                       ]
                                     ),
