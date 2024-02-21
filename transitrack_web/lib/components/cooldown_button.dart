@@ -5,12 +5,14 @@ class CooldownButton extends StatefulWidget {
   final Widget child;
   final VoidCallback onPressed;
   final bool verified;
+  final String alert;
 
   const CooldownButton({
     Key? key,
     required this.child,
     required this.onPressed,
-    required this.verified
+    required this.verified,
+    required this.alert
   }) : super(key: key);
 
   @override
@@ -49,6 +51,12 @@ class _CooldownButtonState extends State<CooldownButton> {
         _cooldownSeconds = 60; // Reset cooldown time to 60 seconds
       });
       _startCooldownTimer();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(widget.alert),
+          duration: const Duration(seconds: 2), // Adjust duration as needed
+        ),
+      );
     }
   }
 

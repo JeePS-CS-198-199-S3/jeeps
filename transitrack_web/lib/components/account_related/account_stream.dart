@@ -61,17 +61,20 @@ class _AccountStreamState extends State<AccountStream> {
                     ),
                     GestureDetector(
                         onTap: () async {
+                          if (widget.isDesktop) {widget.hoverToggle();}
                           AwesomeDialog(
                               context: context,
                               dialogType: DialogType.noHeader,
-                              body: MouseRegion(
-                                onEnter: (_) => widget.hoverToggle(),
-                                onExit: (_) => widget.hoverToggle(),
-                                child: AccountSettings(
-                                    user: widget.currentUser!, account: widget.user!
-                                ),
-                              )
-                          ).show();
+                              dismissOnTouchOutside: false,
+                              dismissOnBackKeyPress: false,
+                              showCloseIcon: true,
+                              body: AccountSettings(
+                                  user: widget.currentUser!, account: widget.user!
+                              ),
+                          ).show().then((value) {
+                            if (widget.isDesktop) {widget.hoverToggle();}
+                          }
+                          );
                         },
                         child: const Icon(Icons.settings, color: Colors.white)
                     )
@@ -118,6 +121,7 @@ class _AccountStreamState extends State<AccountStream> {
                             )
                           );
                         },
+                        alert: "We have broadcasted your location.",
                         verified: widget.user!.is_verified && widget.deviceLoc != null,
                         child: widget.deviceLoc != null
                           ? const Icon(Icons.location_on)
@@ -150,11 +154,7 @@ class _AccountStreamState extends State<AccountStream> {
                   AwesomeDialog(
                       context: context,
                       dialogType: DialogType.noHeader,
-                      body: MouseRegion(
-                        onEnter: (_) => widget.hoverToggle(),
-                        onExit: (_) => widget.hoverToggle(),
-                        child: const LoginSignupForm()
-                      )
+                      body: const LoginSignupForm()
                   ).show();
                 });
               },

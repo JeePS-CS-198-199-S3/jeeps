@@ -12,6 +12,7 @@ import '../components/cooldown_button.dart';
 import '../components/header.dart';
 import '../components/logo.dart';
 import '../components/map_related/map.dart';
+import '../components/mobile_dashboard_unselected.dart';
 import '../components/route_list.dart';
 import '../config/responsive.dart';
 import '../config/size_config.dart';
@@ -29,7 +30,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  bool isHover = false;
+  bool drawerOpen = false;
   List<RouteData> _routes = [];
 
   // Account Detection
@@ -54,7 +55,7 @@ class _DashboardState extends State<Dashboard> {
 
   void hovering() {
     setState(() {
-      isHover = !isHover;
+      drawerOpen = !drawerOpen;
     });
   }
 
@@ -117,6 +118,11 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      onDrawerChanged: (isOpened) {
+        setState((){
+          drawerOpen = isOpened;
+        });
+      },
       key: context.read<MenuControllers>().scaffoldKey,
       drawer: Drawer(
         shape: const Border(),
@@ -177,7 +183,7 @@ class _DashboardState extends State<Dashboard> {
                     children: [
                       Expanded(
                         child: MapWidget(
-                          isHover: isHover,
+                          isDrawer: drawerOpen,
                           route: routeChoice == -1
                               ? null
                               : _routes[routeChoice],
@@ -273,11 +279,11 @@ class _DashboardState extends State<Dashboard> {
                                             decoration: const BoxDecoration(
                                               color: Constants.secondaryColor,
                                             ),
-                                            child: MobileDashboardUnselected()
+                                            child: const MobileDashboardUnselected()
                                         )
                                       ]
                                     ),
-                                    const Header(),
+                                    const Header()
                                   ]
                               ),
                             ),
@@ -352,6 +358,7 @@ class _DashboardState extends State<Dashboard> {
                         )
                       );
                     },
+                    alert: "We have broadcasted your location.",
                     verified: currentUserFirestore!.is_verified && deviceLoc != null,
                     child: deviceLoc != null
                         ? const Icon(Icons.location_on)

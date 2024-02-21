@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
             create: (context) => MenuControllers(),
           ),
         ],
-        child: Dashboard(),
+        child: const Dashboard(),
       ),
     );
   }
