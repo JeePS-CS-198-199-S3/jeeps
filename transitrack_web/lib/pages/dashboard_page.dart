@@ -12,6 +12,7 @@ import '../components/header.dart';
 import '../components/logo.dart';
 import '../components/map_related/map.dart';
 import '../components/drawer_list_tile.dart';
+import '../components/route_list.dart';
 import '../config/responsive.dart';
 import '../config/size_config.dart';
 import '../models/account_model.dart';
@@ -138,26 +139,16 @@ class _DashboardState extends State<Dashboard> {
                   child: const Divider()
               ),
 
-              SizedBox(
-                height: 500,
-                child: ListView.builder(
-                  itemCount: _routes.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        if (routeChoice == index) {
-                          switchRoute(-1);
-                        } else {
-                          switchRoute(index);
-                        }
-                      },
-                      child: DrawerListTile(
-                        route: _routes[index],
-                        isSelected: routeChoice == index,
-                      ),
-                    );
-                  },
-                )
+              RouteList(
+                routeChoice: routeChoice,
+                routes: _routes,
+                newRouteChoice: (int choice) {
+                  if (routeChoice == choice) {
+                    switchRoute(-1);
+                  } else {
+                    switchRoute(choice);
+                  }
+                }
               )
             ],
           ),
@@ -222,27 +213,17 @@ class _DashboardState extends State<Dashboard> {
                               child: const Divider()
                             ),
 
-                            SizedBox(
-                                height: 500,
-                                child: ListView.builder(
-                                  itemCount: _routes.length,
-                                  itemBuilder: (context, index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        if (routeChoice == index) {
-                                          switchRoute(-1);
-                                        } else {
-                                          switchRoute(index);
-                                        }
-                                      },
-                                      child: DrawerListTile(
-                                          route: _routes[index],
-                                          isSelected: routeChoice == index,
-                                      ),
-                                    );
-                                  },
-                                )
-                            ),
+                            RouteList(
+                              routeChoice: routeChoice,
+                              routes: _routes,
+                              newRouteChoice: (int choice) {
+                                if (routeChoice == choice) {
+                                  switchRoute(-1);
+                                } else {
+                                  switchRoute(choice);
+                                }
+                              }
+                            )
                           ],
                         ),
                       ),
