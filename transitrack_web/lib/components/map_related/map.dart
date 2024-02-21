@@ -89,8 +89,8 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
         );
         deviceCircle = circle;
         deviceInMap = true;
-        widget.foundDeviceLocation(latLng);
       });
+      widget.foundDeviceLocation(latLng);
     }
   }
 

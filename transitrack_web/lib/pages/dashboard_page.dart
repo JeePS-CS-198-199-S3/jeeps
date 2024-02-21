@@ -12,12 +12,13 @@ import '../components/cooldown_button.dart';
 import '../components/header.dart';
 import '../components/logo.dart';
 import '../components/map_related/map.dart';
-import '../components/drawer_list_tile.dart';
 import '../components/route_list.dart';
 import '../config/responsive.dart';
 import '../config/size_config.dart';
 import '../models/account_model.dart';
+import '../models/ping_model.dart';
 import '../models/route_model.dart';
+import '../services/send_ping.dart';
 import '../style/constants.dart';
 
 class Dashboard extends StatefulWidget {
@@ -177,9 +178,9 @@ class _DashboardState extends State<Dashboard> {
                           route: routeChoice == -1
                               ? null
                               : _routes[routeChoice],
-                          foundDeviceLocation: (LatLng deviceLocation) {
+                          foundDeviceLocation: (LatLng newDeviceLocation) {
                             setState(() {
-                              deviceLoc = deviceLocation;
+                              deviceLoc = newDeviceLocation;
                             });
                           },
 
@@ -385,7 +386,12 @@ class _DashboardState extends State<Dashboard> {
                 right: Constants.defaultPadding/2,
                 child: CooldownButton(
                     onPressed: () {
-
+                      sendPing(
+                        PingData(
+                            ping_email: currentUserAuth!.email!,
+                            ping_location: deviceLoc!
+                        )
+                      );
                     },
                     verified: currentUserFirestore!.is_verified && deviceLoc != null,
                     child: deviceLoc != null

@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:transitrack_web/components/account_related/account_settings.dart';
 import 'package:transitrack_web/components/cooldown_button.dart';
+import 'package:transitrack_web/services/send_ping.dart';
 import 'package:transitrack_web/style/style.dart';
 
 import '../../models/account_model.dart';
+import '../../models/ping_model.dart';
 import '../../style/constants.dart';
 import 'login_signup_form.dart';
 
@@ -109,7 +111,12 @@ class _AccountStreamState extends State<AccountStream> {
                     if (widget.isDesktop)
                       CooldownButton(
                         onPressed: () {
-
+                          sendPing(
+                            PingData(
+                              ping_email: widget.currentUser!.email!,
+                              ping_location: widget.deviceLoc!
+                            )
+                          );
                         },
                         verified: widget.user!.is_verified && widget.deviceLoc != null,
                         child: widget.deviceLoc != null
