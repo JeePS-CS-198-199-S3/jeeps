@@ -11,7 +11,7 @@ import '../components/cooldown_button.dart';
 import '../components/header.dart';
 import '../components/logo.dart';
 import '../components/map_related/map.dart';
-import '../components/route_list.dart';
+import '../components/drawer_list_tile.dart';
 import '../config/responsive.dart';
 import '../config/size_config.dart';
 import '../models/account_model.dart';
@@ -31,18 +31,12 @@ class _DashboardState extends State<Dashboard> {
 
   // Account Detection
   User? currentUserAuth;
-  String currentUserFirestoreId = "";
   AccountData? currentUserFirestore;
   late StreamSubscription<User?> userAuthStream;                // Firebase Auth
   late StreamSubscription userFirestoreStream;   // Firebase Firestore Account
 
-
-
-  void hovering() {
-    setState(() {
-      isHover = !isHover;
-    });
-  }
+  // Route Selection
+  int routeChoice = -1;
 
   @override
   void initState() {
@@ -50,6 +44,18 @@ class _DashboardState extends State<Dashboard> {
     currentUserAuth = FirebaseAuth.instance.currentUser;
     listenToUserAuth();
     fetchRoutes();
+  }
+
+  void hovering() {
+    setState(() {
+      isHover = !isHover;
+    });
+  }
+
+  void switchRoute(int choice) {
+    setState(() {
+      routeChoice = choice;
+    });
   }
 
   void listenToUserAuth() async {
@@ -133,7 +139,27 @@ class _DashboardState extends State<Dashboard> {
                   child: const Divider()
               ),
 
-              RouteListWidget(routes: _routes),
+              SizedBox(
+                height: 500,
+                child: ListView.builder(
+                  itemCount: _routes.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        if (routeChoice == index) {
+                          switchRoute(-1);
+                        } else {
+                          switchRoute(index);
+                        }
+                      },
+                      child: DrawerListTile(
+                        Route: _routes[index],
+                        isSelected: routeChoice == index,
+                      ),
+                    );
+                  },
+                )
+              )
             ],
           ),
         )
@@ -192,7 +218,29 @@ class _DashboardState extends State<Dashboard> {
                               child: const Divider()
                             ),
 
-                            RouteListWidget(routes: _routes),
+                            SizedBox(
+                                height: 500,
+                                child: ListView.builder(
+                                  itemCount: _routes.length,
+                                  itemBuilder: (context, index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        if (routeChoice == index) {
+                                          switchRoute(-1);
+                                        } else {
+                                          switchRoute(index);
+                                        }
+                                      },
+                                      child: DrawerListTile(
+                                          Route: _routes[index],
+                                          isSelected: routeChoice == index,
+                                      ),
+                                    );
+                                  },
+                                )
+                            ),
+
+                            Text("Selected route: $routeChoice")
                           ],
                         ),
                       ),
@@ -332,9 +380,9 @@ class _DashboardState extends State<Dashboard> {
             
             if (Responsive.isMobile(context) && currentUserAuth != null && currentUserFirestore != null)
               Positioned(
-                  bottom: Constants.defaultPadding/2,
-                  right: Constants.defaultPadding/2,
-                  child: CooldownButton(onPressed: () {print("pressed");}, verified: currentUserFirestore!.is_verified, child: const Icon(Icons.location_on))
+                bottom: Constants.defaultPadding/2,
+                right: Constants.defaultPadding/2,
+                child: CooldownButton(onPressed: () {print("pressed");}, verified: currentUserFirestore!.is_verified, child: const Icon(Icons.location_on))
               )
           ],
         ),

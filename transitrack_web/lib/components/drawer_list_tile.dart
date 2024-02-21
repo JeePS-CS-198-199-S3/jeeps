@@ -1,16 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
-
 import '../models/route_model.dart';
 import '../style/constants.dart';
 
 class DrawerListTile extends StatelessWidget {
   const DrawerListTile({
-    super.key, required this.Route
+    super.key,
+    required this.Route,
+    required this.isSelected,
   });
 
   final RouteData Route;
+  final bool isSelected;
 
   String formatTime(List<int> times) {
     // Convert minutes to hours and minutes
@@ -47,8 +48,8 @@ class DrawerListTile extends StatelessWidget {
       title: Text(Route.routeName, style: const TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis, maxLines: 1,),
       subtitle: Text(formatTime(Route.routeTime), style: const TextStyle(color: Colors.white54), overflow: TextOverflow.ellipsis, maxLines: 1,),
       selectedTileColor: Colors.white10,
+      selected: isSelected,
       trailing: Icon(Icons.circle, color: Color(Route.routeColor)),
-      // selectedTileColor: Colors.blue,
     );
   }
 }
