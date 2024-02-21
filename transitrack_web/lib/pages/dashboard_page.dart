@@ -106,6 +106,7 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       key: context.read<MenuControllers>().scaffoldKey,
       drawer: Drawer(
+        shape: const Border(),
         elevation: 0.0,
         child: SingleChildScrollView(
           child: Column(
@@ -165,6 +166,7 @@ class _DashboardState extends State<Dashboard> {
                   Expanded(
                     flex: 1,
                     child: Drawer(
+                      shape: const Border(),
                       elevation: 0.0,
                       child: SingleChildScrollView(
                         child: Column(
