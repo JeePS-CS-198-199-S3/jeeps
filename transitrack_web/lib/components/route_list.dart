@@ -6,7 +6,8 @@ class RouteList extends StatefulWidget {
   final List<RouteData> routes;
   final int routeChoice;
   final ValueChanged<int> newRouteChoice;
-  const RouteList({super.key, required this.routeChoice, required this.routes, required this.newRouteChoice});
+  final int isAdmin;
+  const RouteList({super.key, required this.routeChoice, required this.routes, required this.newRouteChoice, required this.isAdmin});
 
   @override
   State<RouteList> createState() => _RouteListState();
@@ -30,6 +31,7 @@ class _RouteListState extends State<RouteList> {
               child: DrawerListTile(
                 route: widget.routes[index],
                 isSelected: widget.routeChoice == index,
+                isAdmin: widget.isAdmin == index,
               ),
             );
           },

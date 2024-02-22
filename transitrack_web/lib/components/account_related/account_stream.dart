@@ -87,7 +87,7 @@ class _AccountStreamState extends State<AccountStream> {
                     )
                   ],
                 ),
-                Text("${widget.admin}${AccountData.accountType[widget.user!.account_type]}"),
+                Text("${widget.admin}${AccountData.accountType[widget.user!.account_type]}", maxLines: 1, overflow: TextOverflow.ellipsis),
 
                 if (widget.user!.account_type == 1)
                   Text(widget.user!.is_operating

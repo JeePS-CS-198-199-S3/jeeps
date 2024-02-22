@@ -145,7 +145,11 @@ class _DashboardState extends State<Dashboard> {
                   } else {
                     switchRoute(choice);
                   }
-                }
+                },
+                isAdmin: currentUserFirestore != null
+                  && currentUserFirestore!.account_type == 2
+                    ? currentUserFirestore!.route_id
+                    : -1,
               ),
 
               Container(
@@ -161,7 +165,11 @@ class _DashboardState extends State<Dashboard> {
                 user: currentUserFirestore,
                 isDesktop: false,
                 deviceLoc: deviceLoc,
-                admin: currentUserFirestore != null && currentUserFirestore!.is_verified && currentUserFirestore!.route_id >= 0? "${_routes[currentUserFirestore!.route_id].routeName} ":"",
+                admin: currentUserFirestore != null
+                    && currentUserFirestore!.is_verified
+                    && currentUserFirestore!.route_id >= 0
+                      ? "${_routes[currentUserFirestore!.route_id].routeName} "
+                      : "",
               ),
 
               const SizedBox(height: Constants.defaultPadding)
@@ -225,15 +233,19 @@ class _DashboardState extends State<Dashboard> {
                               ),
 
                             RouteList(
-                                routeChoice: routeChoice,
-                                routes: _routes,
-                                newRouteChoice: (int choice) {
-                                  if (routeChoice == choice) {
-                                    switchRoute(-1);
-                                  } else {
-                                    switchRoute(choice);
-                                  }
+                              routeChoice: routeChoice,
+                              routes: _routes,
+                              newRouteChoice: (int choice) {
+                                if (routeChoice == choice) {
+                                  switchRoute(-1);
+                                } else {
+                                  switchRoute(choice);
                                 }
+                              },
+                              isAdmin: currentUserFirestore != null
+                                && currentUserFirestore!.account_type == 2
+                                  ? currentUserFirestore!.route_id
+                                  : -1,
                             ),
 
                             Container(
@@ -249,7 +261,11 @@ class _DashboardState extends State<Dashboard> {
                               user: currentUserFirestore,
                               isDesktop: true,
                               deviceLoc: deviceLoc,
-                              admin: currentUserFirestore != null && currentUserFirestore!.is_verified && currentUserFirestore!.route_id >= 0? "${_routes[currentUserFirestore!.route_id].routeName} ":"",
+                              admin: currentUserFirestore != null
+                                  && currentUserFirestore!.is_verified
+                                  && currentUserFirestore!.route_id >= 0
+                                    ? "${_routes[currentUserFirestore!.route_id].routeName} "
+                                    : "",
                             ),
                           ],
                         ),
