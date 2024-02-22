@@ -74,9 +74,6 @@ class _DashboardState extends State<Dashboard> {
         });
         listenToUserFirestore();
       },
-      onError: (e) {
-        print('Error listening to authentication state changes: $e');
-      }
     );
   }
 
@@ -140,15 +137,15 @@ class _DashboardState extends State<Dashboard> {
                 ),
 
               RouteList(
-                  routeChoice: routeChoice,
-                  routes: _routes,
-                  newRouteChoice: (int choice) {
-                    if (routeChoice == choice) {
-                      switchRoute(-1);
-                    } else {
-                      switchRoute(choice);
-                    }
+                routeChoice: routeChoice,
+                routes: _routes,
+                newRouteChoice: (int choice) {
+                  if (routeChoice == choice) {
+                    switchRoute(-1);
+                  } else {
+                    switchRoute(choice);
                   }
+                }
               ),
 
               Container(
@@ -164,7 +161,10 @@ class _DashboardState extends State<Dashboard> {
                 user: currentUserFirestore,
                 isDesktop: false,
                 deviceLoc: deviceLoc,
+                admin: currentUserFirestore != null && currentUserFirestore!.is_verified && currentUserFirestore!.route_id >= 0? "${_routes[currentUserFirestore!.route_id].routeName} ":"",
               ),
+
+              const SizedBox(height: Constants.defaultPadding)
             ],
           ),
         )
@@ -249,6 +249,7 @@ class _DashboardState extends State<Dashboard> {
                               user: currentUserFirestore,
                               isDesktop: true,
                               deviceLoc: deviceLoc,
+                              admin: currentUserFirestore != null && currentUserFirestore!.is_verified && currentUserFirestore!.route_id >= 0? "${_routes[currentUserFirestore!.route_id].routeName} ":"",
                             ),
                           ],
                         ),

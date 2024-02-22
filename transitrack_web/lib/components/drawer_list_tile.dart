@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../models/route_model.dart';
 import '../style/constants.dart';
@@ -46,7 +45,7 @@ class DrawerListTile extends StatelessWidget {
       isThreeLine: true,
       horizontalTitleGap: 0.0,
       contentPadding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
-      title: Text(route.routeName, style: const TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis, maxLines: 1,),
+      title: Text(route.routeName, style: const TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis, maxLines: 1),
       subtitle: Text("${formatTime(route.routeTime)}\n${route.routeFare == route.routeFareDiscounted?"${route.routeFare} pesos":"${route.routeFareDiscounted} - ${route.routeFare} pesos"}", style: const TextStyle(color: Colors.white54), overflow: TextOverflow.ellipsis),
       selectedTileColor: Colors.white10,
       selected: isSelected,

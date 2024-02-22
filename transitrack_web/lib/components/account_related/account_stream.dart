@@ -18,7 +18,8 @@ class AccountStream extends StatefulWidget {
   AccountData? user;
   bool isDesktop;
   LatLng? deviceLoc;
-  AccountStream({super.key, required this.hoverToggle, required this.currentUser, required this.user, required this.isDesktop, required this.deviceLoc});
+  String? admin;
+  AccountStream({super.key, required this.hoverToggle, required this.currentUser, required this.user, required this.isDesktop, required this.deviceLoc, this.admin});
 
   @override
   State<AccountStream> createState() => _AccountStreamState();
@@ -54,9 +55,15 @@ class _AccountStreamState extends State<AccountStream> {
                             fontWeight: FontWeight.w700),
                         const SizedBox(width: Constants.defaultPadding / 2),
 
-                        if (widget.user!.is_verified)
-                          const Icon(Icons.verified_user, color: Colors.blue,
-                            size: 15,)
+                        Icon(
+                          widget.user!.is_verified
+                            ? Icons.verified_user
+                            : Icons.remove_moderator,
+                          color: widget.user!.is_verified
+                            ? Colors.blue
+                            : Colors.grey,
+                            size: 15
+                        )
                       ],
                     ),
                     GestureDetector(
@@ -80,7 +87,7 @@ class _AccountStreamState extends State<AccountStream> {
                     )
                   ],
                 ),
-                Text(AccountData.accountType[widget.user!.account_type]),
+                Text("${widget.admin}${AccountData.accountType[widget.user!.account_type]}"),
 
                 if (widget.user!.account_type == 1)
                   Text(widget.user!.is_operating

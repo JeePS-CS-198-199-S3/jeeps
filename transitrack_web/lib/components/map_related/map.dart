@@ -44,7 +44,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _value = widget.route;
-    _listenToDeviceLocation();
+
   }
 
   @override
@@ -58,6 +58,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
   void _onMapCreated(MapboxMapController controller) {
     _mapController = controller;
+    _listenToDeviceLocation();
   }
 
   void _listenToDeviceLocation() {

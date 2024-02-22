@@ -10,7 +10,6 @@ Future<void> sendPing(PingData pingData) async {
       'ping_location': GeoPoint(pingData.ping_location.latitude, pingData.ping_location.longitude),
       'ping_timestamp': FieldValue.serverTimestamp(),
     });
-    print('Ping data added successfully');
   } catch (e) {
     print('Error adding ping data: $e');
   }
