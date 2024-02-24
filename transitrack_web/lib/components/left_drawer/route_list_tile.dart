@@ -8,12 +8,14 @@ class RouteListTile extends StatefulWidget {
     super.key,
     required this.route,
     required this.isSelected,
-    required this.isAdmin
+    required this.isAdmin,
+    required this.hoverToggle
   });
 
   final RouteData route;
   final bool isSelected;
   final bool? isAdmin;
+  final Function() hoverToggle;
 
   @override
   State<RouteListTile> createState() => _RouteListTileState();
@@ -102,7 +104,7 @@ class _RouteListTileState extends State<RouteListTile> {
         ),
 
         if (routeManageOpen)
-          const RouteManagerOptions()
+          RouteManagerOptions(hoverToggle: widget.hoverToggle)
       ],
     );
   }

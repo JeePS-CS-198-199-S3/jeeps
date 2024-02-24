@@ -19,7 +19,13 @@ class AccountStream extends StatefulWidget {
   bool isDesktop;
   LatLng? deviceLoc;
   String? admin;
-  AccountStream({super.key, required this.hoverToggle, required this.currentUser, required this.user, required this.isDesktop, required this.deviceLoc, this.admin});
+  AccountStream({super.key,
+    required this.hoverToggle,
+    required this.currentUser,
+    required this.user,
+    required this.isDesktop,
+    required this.deviceLoc,
+    this.admin});
 
   @override
   State<AccountStream> createState() => _AccountStreamState();

@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import '../../../style/constants.dart';
 
 class RouteManagerOptions extends StatefulWidget {
-  const RouteManagerOptions({super.key});
+  final Function() hoverToggle;
+  const RouteManagerOptions({super.key, required this.hoverToggle});
 
   @override
   State<RouteManagerOptions> createState() => _RouteManagerOptionsState();
@@ -19,16 +20,19 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
       padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
       child: Row(
         children: [
+          // Route Manager Properties
           Expanded(
             child: GestureDetector(
               onTap: () async {
+                widget.hoverToggle();
                 setState(() {
                   selected = 0;
                   AwesomeDialog(
                       context: context,
                       dialogType: DialogType.noHeader,
-                      body: Center(child: Text("Properties"))
+                      body: const Center(child: Text("Properties"))
                   ).show().then((value) {
+                    widget.hoverToggle();
                     setState(() {
                       selected = -1;
                     });
@@ -40,7 +44,7 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
                   decoration: BoxDecoration(
                     color: selected==0?Colors.blue:Colors.blue.withOpacity(0.6),
                   ),
-                  child: Column(
+                  child: const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
@@ -59,16 +63,21 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
               ),
             ),
           ),
+
+
+          // Route Manager Coordinates
           Expanded(
             child: GestureDetector(
               onTap: () async {
+                widget.hoverToggle();
                 setState(() {
-                  selected = 1;
+                  selected = 0;
                   AwesomeDialog(
                       context: context,
                       dialogType: DialogType.noHeader,
-                      body: Center(child: Text("Coordinates"))
+                      body: const Center(child: Text("Properties"))
                   ).show().then((value) {
+                    widget.hoverToggle();
                     setState(() {
                       selected = -1;
                     });
@@ -80,7 +89,7 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
                   decoration: BoxDecoration(
                     color: selected==1?Colors.blue:Colors.blue.withOpacity(0.5),
                   ),
-                  child: Column(
+                  child: const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
@@ -99,16 +108,21 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
               ),
             ),
           ),
+
+
+          // Route Manager Vehicles
           Expanded(
             child: GestureDetector(
               onTap: () async {
+                widget.hoverToggle();
                 setState(() {
-                  selected = 2;
+                  selected = 0;
                   AwesomeDialog(
                       context: context,
                       dialogType: DialogType.noHeader,
-                      body: Center(child: Text("Vehicles"))
+                      body: const Center(child: Text("Properties"))
                   ).show().then((value) {
+                    widget.hoverToggle();
                     setState(() {
                       selected = -1;
                     });
@@ -120,7 +134,7 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
                   decoration: BoxDecoration(
                     color: selected==2?Colors.blue:Colors.blue.withOpacity(0.4),
                   ),
-                  child: Column(
+                  child: const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(

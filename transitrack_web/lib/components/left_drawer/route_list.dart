@@ -7,7 +7,14 @@ class RouteList extends StatefulWidget {
   final int routeChoice;
   final ValueChanged<int> newRouteChoice;
   final int isAdmin;
-  const RouteList({super.key, required this.routeChoice, required this.routes, required this.newRouteChoice, required this.isAdmin});
+  final Function() hoverToggle;
+  const RouteList({super.key,
+    required this.routeChoice,
+    required this.routes,
+    required this.newRouteChoice,
+    required this.isAdmin,
+    required this.hoverToggle}
+  );
 
   @override
   State<RouteList> createState() => _RouteListState();
@@ -32,6 +39,7 @@ class _RouteListState extends State<RouteList> {
                 route: widget.routes[index],
                 isSelected: widget.routeChoice == index,
                 isAdmin: widget.isAdmin == index,
+                hoverToggle: widget.hoverToggle,
               ),
             );
           },

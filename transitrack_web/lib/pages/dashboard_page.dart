@@ -157,6 +157,7 @@ class _DashboardState extends State<Dashboard> {
                   && currentUserFirestore!.account_type == 2
                     ? currentUserFirestore!.route_id
                     : -1,
+                hoverToggle: hovering
               ),
 
               Container(
@@ -253,6 +254,7 @@ class _DashboardState extends State<Dashboard> {
                                 && currentUserFirestore!.account_type == 2
                                   ? currentUserFirestore!.route_id
                                   : -1,
+                              hoverToggle: hovering
                             ),
 
                             Container(
