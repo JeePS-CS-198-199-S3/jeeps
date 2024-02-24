@@ -8,6 +8,7 @@ import 'package:transitrack_web/services/int_to_hex.dart';
 
 import '../../config/keys.dart';
 import '../../config/map_settings.dart';
+import '../../config/responsive.dart';
 import '../../models/route_model.dart';
 
 class MapWidget extends StatefulWidget {
@@ -146,9 +147,12 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       minMaxZoomPreference: MinMaxZoomPreference(mapMinZoom, mapMaxZoom),
       scrollGesturesEnabled: !widget.isDrawer,
       zoomGesturesEnabled: !widget.isDrawer,
-      tiltGesturesEnabled: false,
-      compassEnabled: false,
-      rotateGesturesEnabled: false,
+      rotateGesturesEnabled: !widget.isDrawer,
+      tiltGesturesEnabled: !widget.isDrawer,
+      compassEnabled: true,
+      compassViewPosition: Responsive.isDesktop(context)
+          ? CompassViewPosition.BottomLeft
+          : CompassViewPosition.TopRight,
       onMapCreated: (controller) {
         _onMapCreated(controller);
       },

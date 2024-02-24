@@ -46,7 +46,7 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
               child: Container(
                   height: 50,
                   decoration: BoxDecoration(
-                    color: selected==0?Colors.blue:Colors.blue.withOpacity(0.6),
+                    color: selected==0?Color(widget.route.routeColor):Color(widget.route.routeColor).withOpacity(0.6),
                   ),
                   child: const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -91,7 +91,7 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
               child: Container(
                   height: 50,
                   decoration: BoxDecoration(
-                    color: selected==1?Colors.blue:Colors.blue.withOpacity(0.5),
+                    color: selected==1?Color(widget.route.routeColor):Color(widget.route.routeColor).withOpacity(0.5),
                   ),
                   child: const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -136,7 +136,7 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
               child: Container(
                   height: 50,
                   decoration: BoxDecoration(
-                    color: selected==2?Colors.blue:Colors.blue.withOpacity(0.4),
+                    color: selected==2?Color(widget.route.routeColor):Color(widget.route.routeColor).withOpacity(0.4),
                   ),
                   child: const Column(
                     mainAxisAlignment: MainAxisAlignment.center,

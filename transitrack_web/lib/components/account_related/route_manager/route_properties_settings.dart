@@ -24,6 +24,7 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
   late List<int> route_time;
   late RangeValues selectedRange;
   late Color selectedColor;
+  late Color chosenColor;
 
   @override
   void initState() {
@@ -103,14 +104,20 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
     }
   }
 
-  Widget buildColorPicker() => ColorPicker(
-    pickerColor: selectedColor,
-    enableAlpha: false,
-    labelTypes: [],
-    onColorChanged: (color) => setState(() {
-      selectedColor = color;
-    }),
-  );
+  Widget buildColorPicker() {
+    chosenColor = selectedColor;
+
+    return ColorPicker(
+      pickerColor: chosenColor,
+      enableAlpha: false,
+      labelTypes: [],
+      onColorChanged: (color) {
+        setState(() {
+          chosenColor = color;
+        });
+      }
+    );
+  }
 
   void pickColor(BuildContext context) => showDialog(
       context: context,
@@ -128,7 +135,12 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
                   'SELECT',
                   style: TextStyle(fontSize: 20),
                 ),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  setState(() {
+                    selectedColor = chosenColor;
+                  });
+                  Navigator.of(context).pop();
+                }
               ),
             ],
           )

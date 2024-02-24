@@ -6,4 +6,5 @@
 # flutter run -d chrome
 
 # TO DEPLOY TO FIREBASE WEB HOSTING
+# flutter build web --release
 # firebase deploy
