@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../models/route_model.dart';
+import '../../services/format_time.dart';
 import '../../style/constants.dart';
 import '../account_related/route_manager/route_manager_options.dart';
 
 class RouteListTile extends StatefulWidget {
+  final RouteData route;
+  final bool isSelected;
+  final bool? isAdmin;
+  final Function() hoverToggle;
+
   RouteListTile({
     super.key,
     required this.route,
@@ -12,43 +18,12 @@ class RouteListTile extends StatefulWidget {
     required this.hoverToggle
   });
 
-  final RouteData route;
-  final bool isSelected;
-  final bool? isAdmin;
-  final Function() hoverToggle;
-
   @override
   State<RouteListTile> createState() => _RouteListTileState();
 }
 
 class _RouteListTileState extends State<RouteListTile> {
   bool routeManageOpen = false;
-
-  String formatTime(List<int> times) {
-    // Convert minutes to hours and minutes
-    int startHours = times[0] ~/ 60;
-    int startMinutes = times[0] % 60;
-    int endHours = times[1] ~/ 60;
-    int endMinutes = times[1] % 60;
-
-    // Determine AM or PM for start and end times
-    String startPeriod = startHours >= 12 ? 'PM' : 'AM';
-    String endPeriod = endHours >= 12 ? 'PM' : 'AM';
-
-    // Convert hours to 12-hour format
-    if (startHours > 12) {
-      startHours -= 12;
-    }
-    if (endHours > 12) {
-      endHours -= 12;
-    }
-
-    // Format the time strings
-    String startTime = '$startHours:${startMinutes.toString().padLeft(2, '0')} $startPeriod';
-    String endTime = '$endHours:${endMinutes.toString().padLeft(2, '0')} $endPeriod';
-
-    return '$startTime - $endTime';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +79,7 @@ class _RouteListTileState extends State<RouteListTile> {
         ),
 
         if (routeManageOpen)
-          RouteManagerOptions(hoverToggle: widget.hoverToggle)
+          RouteManagerOptions(hoverToggle: widget.hoverToggle, route: widget.route)
       ],
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../style/constants.dart';
 
@@ -6,12 +7,14 @@ class InputTextField extends StatelessWidget {
   final controller;
   final String hintText;
   final bool obscureText;
+  final TextInputType? type;
 
-  const InputTextField({
+  InputTextField({
     super.key,
     required this.controller,
     required this.hintText,
-    required this.obscureText
+    required this.obscureText,
+    this.type
   });
 
   @override
@@ -19,6 +22,10 @@ class InputTextField extends StatelessWidget {
     return TextField(
       controller: controller,
       obscureText: obscureText,
+      keyboardType: type ?? TextInputType.text,
+      inputFormatters: type != null && type == TextInputType.number?<TextInputFormatter>[
+        FilteringTextInputFormatter.digitsOnly
+      ]:[],
       decoration: InputDecoration(
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(

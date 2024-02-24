@@ -50,4 +50,20 @@ class RouteData {
   static LatLng _parseGeoPointToLatLng(GeoPoint geoPoint) {
     return LatLng(geoPoint.latitude, geoPoint.longitude);
   }
+
+  static Future<void> updateRouteFirestore(int route_id, Map<String, dynamic> dataToUpdate) async {
+    try {
+      CollectionReference accountsCollection = FirebaseFirestore.instance.collection('routes');
+      QuerySnapshot querySnapshot = await accountsCollection.where('route_id', isEqualTo: route_id).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        String docId = querySnapshot.docs.first.id;
+        await accountsCollection.doc(docId).update(dataToUpdate);
+      } else {
+        print('No document found');
+      }
+    } catch (e) {
+      print('Error updating account data: $e');
+    }
+  }
 }

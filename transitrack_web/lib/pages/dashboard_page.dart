@@ -171,7 +171,6 @@ class _DashboardState extends State<Dashboard> {
                 hoverToggle: hovering,
                 currentUser: currentUserAuth,
                 user: currentUserFirestore,
-                isDesktop: false,
                 deviceLoc: deviceLoc,
                 admin: currentUserFirestore != null
                     && currentUserFirestore!.is_verified
@@ -268,7 +267,6 @@ class _DashboardState extends State<Dashboard> {
                               hoverToggle: hovering,
                               currentUser: currentUserAuth,
                               user: currentUserFirestore,
-                              isDesktop: true,
                               deviceLoc: deviceLoc,
                               admin: currentUserFirestore != null
                                   && currentUserFirestore!.is_verified

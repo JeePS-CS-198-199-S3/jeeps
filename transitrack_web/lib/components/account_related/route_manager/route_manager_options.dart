@@ -1,11 +1,15 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:transitrack_web/components/account_related/route_manager/route_properties_settings.dart';
 
+import '../../../config/responsive.dart';
+import '../../../models/route_model.dart';
 import '../../../style/constants.dart';
 
 class RouteManagerOptions extends StatefulWidget {
+  final RouteData route;
   final Function() hoverToggle;
-  const RouteManagerOptions({super.key, required this.hoverToggle});
+  const RouteManagerOptions({super.key, required this.hoverToggle, required this.route});
 
   @override
   State<RouteManagerOptions> createState() => _RouteManagerOptionsState();
@@ -24,18 +28,18 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
           Expanded(
             child: GestureDetector(
               onTap: () async {
-                widget.hoverToggle();
+                if (Responsive.isDesktop(context)) {widget.hoverToggle();}
                 setState(() {
                   selected = 0;
-                  AwesomeDialog(
-                      context: context,
-                      dialogType: DialogType.noHeader,
-                      body: const Center(child: Text("Properties"))
-                  ).show().then((value) {
-                    widget.hoverToggle();
-                    setState(() {
-                      selected = -1;
-                    });
+                });
+                AwesomeDialog(
+                    context: context,
+                    dialogType: DialogType.noHeader,
+                    body: PropertiesSettings(route: widget.route)
+                ).show().then((value) {
+                  if (Responsive.isDesktop(context)) {widget.hoverToggle();}
+                  setState(() {
+                    selected = -1;
                   });
                 });
               },
@@ -69,15 +73,15 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
           Expanded(
             child: GestureDetector(
               onTap: () async {
-                widget.hoverToggle();
+                if (Responsive.isDesktop(context)) {widget.hoverToggle();}
                 setState(() {
                   selected = 0;
                   AwesomeDialog(
                       context: context,
                       dialogType: DialogType.noHeader,
-                      body: const Center(child: Text("Properties"))
+                      body: const Center(child: Text("Coordinates"))
                   ).show().then((value) {
-                    widget.hoverToggle();
+                    if (Responsive.isDesktop(context)) {widget.hoverToggle();}
                     setState(() {
                       selected = -1;
                     });
@@ -114,18 +118,18 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
           Expanded(
             child: GestureDetector(
               onTap: () async {
-                widget.hoverToggle();
+                if (Responsive.isDesktop(context)) {widget.hoverToggle();}
                 setState(() {
                   selected = 0;
-                  AwesomeDialog(
-                      context: context,
-                      dialogType: DialogType.noHeader,
-                      body: const Center(child: Text("Properties"))
-                  ).show().then((value) {
-                    widget.hoverToggle();
-                    setState(() {
-                      selected = -1;
-                    });
+                });
+                AwesomeDialog(
+                    context: context,
+                    dialogType: DialogType.noHeader,
+                    body: const Center(child: Text("Vehicles"))
+                ).show().then((value) {
+                  if (Responsive.isDesktop(context)) {widget.hoverToggle();}
+                  setState(() {
+                    selected = -1;
                   });
                 });
               },

@@ -7,6 +7,7 @@ import 'package:transitrack_web/components/cooldown_button.dart';
 import 'package:transitrack_web/services/send_ping.dart';
 import 'package:transitrack_web/style/style.dart';
 
+import '../../config/responsive.dart';
 import '../../models/account_model.dart';
 import '../../models/ping_model.dart';
 import '../../style/constants.dart';
@@ -16,14 +17,12 @@ class AccountStream extends StatefulWidget {
   final Function() hoverToggle;
   User? currentUser;
   AccountData? user;
-  bool isDesktop;
   LatLng? deviceLoc;
   String? admin;
   AccountStream({super.key,
     required this.hoverToggle,
     required this.currentUser,
     required this.user,
-    required this.isDesktop,
     required this.deviceLoc,
     this.admin});
 
@@ -74,18 +73,15 @@ class _AccountStreamState extends State<AccountStream> {
                     ),
                     GestureDetector(
                         onTap: () async {
-                          if (widget.isDesktop) {widget.hoverToggle();}
+                          if (Responsive.isDesktop(context)) {widget.hoverToggle();}
                           AwesomeDialog(
                               context: context,
                               dialogType: DialogType.noHeader,
-                              dismissOnTouchOutside: false,
-                              dismissOnBackKeyPress: false,
-                              showCloseIcon: true,
                               body: AccountSettings(
                                   user: widget.currentUser!, account: widget.user!
                               ),
                           ).show().then((value) {
-                            if (widget.isDesktop) {widget.hoverToggle();}
+                            if (Responsive.isDesktop(context)) {widget.hoverToggle();}
                           }
                           );
                         },
@@ -124,7 +120,7 @@ class _AccountStreamState extends State<AccountStream> {
                       ),
                     ),
 
-                    if (widget.isDesktop)
+                    if (Responsive.isDesktop(context))
                       CooldownButton(
                         onPressed: () {
                           sendPing(
