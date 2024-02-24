@@ -177,6 +177,7 @@ class _DashboardState extends State<Dashboard> {
                     && currentUserFirestore!.route_id >= 0
                       ? "${_routes[currentUserFirestore!.route_id].routeName} "
                       : "",
+                route: routeChoice,
               ),
 
               const SizedBox(height: Constants.defaultPadding)
@@ -273,6 +274,7 @@ class _DashboardState extends State<Dashboard> {
                                   && currentUserFirestore!.route_id >= 0
                                     ? "${_routes[currentUserFirestore!.route_id].routeName} "
                                     : "",
+                              route: routeChoice,
                             ),
                           ],
                         ),
@@ -383,9 +385,12 @@ class _DashboardState extends State<Dashboard> {
                       );
                     },
                     alert: "We have broadcasted your location.",
-                    verified: currentUserFirestore!.is_verified && deviceLoc != null,
+                    verified: currentUserFirestore!.is_verified && deviceLoc != null && routeChoice != -1,
                     child: deviceLoc != null
-                        ? const Icon(Icons.location_on)
+                        ? (routeChoice != -1
+                            ? const Icon(Icons.location_on)
+                            : const Icon(Icons.touch_app)
+                          )
                         : const SizedBox(
                         width: 20,
                         height: 20,

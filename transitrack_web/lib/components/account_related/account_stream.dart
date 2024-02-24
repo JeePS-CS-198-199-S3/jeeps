@@ -10,6 +10,7 @@ import 'package:transitrack_web/style/style.dart';
 import '../../config/responsive.dart';
 import '../../models/account_model.dart';
 import '../../models/ping_model.dart';
+import '../../models/route_model.dart';
 import '../../style/constants.dart';
 import 'login_signup_form.dart';
 
@@ -19,12 +20,15 @@ class AccountStream extends StatefulWidget {
   AccountData? user;
   LatLng? deviceLoc;
   String? admin;
+  int route;
   AccountStream({super.key,
     required this.hoverToggle,
     required this.currentUser,
     required this.user,
     required this.deviceLoc,
-    this.admin});
+    this.admin,
+    required this.route
+  });
 
   @override
   State<AccountStream> createState() => _AccountStreamState();
@@ -131,9 +135,12 @@ class _AccountStreamState extends State<AccountStream> {
                           );
                         },
                         alert: "We have broadcasted your location.",
-                        verified: widget.user!.is_verified && widget.deviceLoc != null,
+                        verified: widget.user!.is_verified && widget.deviceLoc != null && widget.route != -1,
                         child: widget.deviceLoc != null
-                          ? const Icon(Icons.location_on)
+                          ? (widget.route != -1
+                            ? const Icon(Icons.location_on)
+                            : const Icon(Icons.touch_app)
+                            )
                           : const SizedBox(
                               width: 20,
                               height: 20,
