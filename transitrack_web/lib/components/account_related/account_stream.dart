@@ -130,7 +130,8 @@ class _AccountStreamState extends State<AccountStream> {
                           sendPing(
                             PingData(
                               ping_email: widget.currentUser!.email!,
-                              ping_location: widget.deviceLoc!
+                              ping_location: widget.deviceLoc!,
+                              ping_route: widget.route
                             )
                           );
                         },

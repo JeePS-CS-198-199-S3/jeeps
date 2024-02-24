@@ -68,7 +68,7 @@ class _RouteListTileState extends State<RouteListTile> {
                     });
                   },
                   child: Icon(routeManageOpen
-                    ? Icons.horizontal_rule
+                    ? Icons.arrow_drop_up
                     : Icons.arrow_drop_down,
                     color: Colors.white,
                     size: 16

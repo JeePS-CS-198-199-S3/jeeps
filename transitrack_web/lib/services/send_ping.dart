@@ -8,6 +8,7 @@ Future<void> sendPing(PingData pingData) async {
     await pingCollection.add({
       'ping_email': pingData.ping_email,
       'ping_location': GeoPoint(pingData.ping_location.latitude, pingData.ping_location.longitude),
+      'ping_route': pingData.ping_route,
       'ping_timestamp': FieldValue.serverTimestamp(),
     });
   } catch (e) {

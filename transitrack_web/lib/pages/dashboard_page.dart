@@ -153,10 +153,9 @@ class _DashboardState extends State<Dashboard> {
                     switchRoute(choice);
                   }
                 },
-                isAdmin: currentUserFirestore != null
-                  && currentUserFirestore!.account_type == 2
-                    ? currentUserFirestore!.route_id
-                    : -1,
+                account: currentUserAuth != null
+                    ? currentUserFirestore!
+                    : null,
                 hoverToggle: hovering
               ),
 
@@ -250,10 +249,9 @@ class _DashboardState extends State<Dashboard> {
                                   switchRoute(choice);
                                 }
                               },
-                              isAdmin: currentUserFirestore != null
-                                && currentUserFirestore!.account_type == 2
-                                  ? currentUserFirestore!.route_id
-                                  : -1,
+                              account: currentUserAuth != null
+                                  ? currentUserFirestore!
+                                  : null,
                               hoverToggle: hovering
                             ),
 
@@ -380,7 +378,8 @@ class _DashboardState extends State<Dashboard> {
                       sendPing(
                         PingData(
                             ping_email: currentUserAuth!.email!,
-                            ping_location: deviceLoc!
+                            ping_location: deviceLoc!,
+                            ping_route: routeChoice
                         )
                       );
                     },
