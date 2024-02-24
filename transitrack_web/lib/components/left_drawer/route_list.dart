@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import '../models/route_model.dart';
-import 'drawer_list_tile.dart';
+import 'package:transitrack_web/components/left_drawer/route_list_tile.dart';
+import '../../models/route_model.dart';
 
 class RouteList extends StatefulWidget {
   final List<RouteData> routes;
@@ -28,7 +28,7 @@ class _RouteListState extends State<RouteList> {
               onTap: () {
                 widget.newRouteChoice(index);
               },
-              child: DrawerListTile(
+              child: RouteListTile(
                 route: widget.routes[index],
                 isSelected: widget.routeChoice == index,
                 isAdmin: widget.isAdmin == index,

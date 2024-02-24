@@ -10,10 +10,10 @@ import '../MenuController.dart';
 import '../components/account_related/account_stream.dart';
 import '../components/cooldown_button.dart';
 import '../components/header.dart';
-import '../components/logo.dart';
+import '../components/left_drawer/logo.dart';
 import '../components/map_related/map.dart';
 import '../components/mobile_dashboard_unselected.dart';
-import '../components/route_list.dart';
+import '../components/left_drawer/route_list.dart';
 import '../config/responsive.dart';
 import '../config/size_config.dart';
 import '../models/account_model.dart';
@@ -31,13 +31,14 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   bool drawerOpen = false;
-  List<RouteData> _routes = [];
 
   // Account Detection
   User? currentUserAuth;
   AccountData? currentUserFirestore;
+  List<RouteData> _routes = [];
   late StreamSubscription<User?> userAuthStream;                // Firebase Auth
-  late StreamSubscription userFirestoreStream;   // Firebase Firestore Account
+  late StreamSubscription userFirestoreStream;                  // Firebase Firestore Accounts
+  late StreamSubscription routesFirestoreStream;                // Firebase Firestore Routes
 
   // Route Selection
   int routeChoice = -1;
@@ -50,7 +51,7 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     currentUserAuth = FirebaseAuth.instance.currentUser;
     listenToUserAuth();
-    fetchRoutes();
+    listenToRoutesFirestore();
   }
 
   void hovering() {
@@ -79,35 +80,41 @@ class _DashboardState extends State<Dashboard> {
 
   void listenToUserFirestore() {
     userFirestoreStream = FirebaseFirestore.instance
-        .collection('accounts')
-        .where('account_email', isEqualTo: currentUserAuth?.email!)
-        .snapshots()
-        .listen((QuerySnapshot snapshot) {
-      if (snapshot.docs.isNotEmpty) {
-        setState(() {
-          currentUserFirestore = AccountData.fromSnapshot(snapshot.docs.first);
-        });
-      }
-    });
+      .collection('accounts')
+      .where('account_email', isEqualTo: currentUserAuth?.email!)
+      .snapshots()
+      .listen((QuerySnapshot snapshot) {
+        if (snapshot.docs.isNotEmpty) {
+          setState(() {
+            currentUserFirestore = AccountData.fromSnapshot(snapshot.docs.first);
+          });
+        }
+     }
+    );
   }
 
-  void fetchRoutes() async {
-    // Fetch data from Firestore
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('routes')
-        .orderBy('route_id')
-        .get();
-    setState(() {
-      _routes = snapshot.docs
-          .map((doc) => RouteData.fromFirestore(doc))
-          .toList();
-    });
+  void listenToRoutesFirestore() {
+    routesFirestoreStream = FirebaseFirestore.instance
+      .collection('routes')
+      .orderBy('route_id')
+      .snapshots()
+      .listen((QuerySnapshot snapshot) {
+        if (snapshot.docs.isNotEmpty) {
+          setState(() {
+            _routes = snapshot.docs
+                .map((doc) => RouteData.fromFirestore(doc))
+                .toList();
+          });
+        }
+      }
+    );
   }
 
   @override
   void dispose() {
     userAuthStream.cancel();
     userFirestoreStream.cancel();
+    routesFirestoreStream.cancel();
     super.dispose();
   }
 
