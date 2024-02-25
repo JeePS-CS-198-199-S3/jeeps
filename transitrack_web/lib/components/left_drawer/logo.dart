@@ -11,18 +11,12 @@ class Logo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Image.asset(
-            'assets/logo.png',
-            scale: 0.9
-        ),
+        Image.asset('assets/logo.png', scale: 1),
         Shimmer.fromColors(
           baseColor: Colors.transparent,
           highlightColor: Colors.white.withOpacity(0.5),
           period: const Duration(seconds: 5),
-          child: Image.asset(
-              'assets/logo.png',
-              scale: 0.9
-          ),
+          child: Image.asset('assets/logo.png', scale: 1),
         ),
       ],
     );
