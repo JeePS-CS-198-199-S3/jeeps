@@ -12,10 +12,11 @@ import '../../config/responsive.dart';
 import '../../models/route_model.dart';
 
 class MapWidget extends StatefulWidget {
+  String? apiKey;
   final bool isDrawer;
   final RouteData? route;
   final ValueChanged<LatLng> foundDeviceLocation;
-  const MapWidget({Key? key, required this.isDrawer, required this.route, required this.foundDeviceLocation}) : super(key: key);
+  MapWidget({Key? key, required this.apiKey, required this.isDrawer, required this.route, required this.foundDeviceLocation}) : super(key: key);
 
   @override
   State<MapWidget> createState() => _MapWidgetState();
@@ -141,7 +142,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return MapboxMap(
-      accessToken: Keys.MapBoxKey,
+      accessToken: widget.apiKey,
       styleString: Keys.MapBoxNight,
       doubleClickZoomEnabled: false,
       minMaxZoomPreference: MinMaxZoomPreference(mapMinZoom, mapMaxZoom),

@@ -5,6 +5,7 @@ import '../../style/constants.dart';
 import '../account_related/route_manager/route_manager_options.dart';
 
 class RouteListTile extends StatefulWidget {
+  String? apiKey;
   final RouteData route;
   final bool isSelected;
   final bool? isAdmin;
@@ -12,6 +13,7 @@ class RouteListTile extends StatefulWidget {
 
   RouteListTile({
     super.key,
+    required this.apiKey,
     required this.route,
     required this.isSelected,
     required this.isAdmin,
@@ -78,8 +80,8 @@ class _RouteListTileState extends State<RouteListTile> {
           ),
         ),
 
-        if (routeManageOpen)
-          RouteManagerOptions(hoverToggle: widget.hoverToggle, route: widget.route)
+        if (routeManageOpen && widget.isAdmin!)
+          RouteManagerOptions(hoverToggle: widget.hoverToggle, route: widget.route, apiKey: widget.apiKey)
       ],
     );
   }

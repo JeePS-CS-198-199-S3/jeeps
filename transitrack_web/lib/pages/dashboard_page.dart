@@ -23,7 +23,8 @@ import '../services/send_ping.dart';
 import '../style/constants.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  String? apiKey;
+  Dashboard({super.key, required this.apiKey});
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -144,6 +145,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
 
               RouteList(
+                apiKey: widget.apiKey,
                 routeChoice: routeChoice,
                 routes: _routes,
                 newRouteChoice: (int choice) {
@@ -198,6 +200,7 @@ class _DashboardState extends State<Dashboard> {
                     children: [
                       Expanded(
                         child: MapWidget(
+                          apiKey: widget.apiKey,
                           isDrawer: drawerOpen,
                           route: routeChoice == -1
                               ? null
@@ -240,6 +243,7 @@ class _DashboardState extends State<Dashboard> {
                               ),
 
                             RouteList(
+                              apiKey: widget.apiKey,
                               routeChoice: routeChoice,
                               routes: _routes,
                               newRouteChoice: (int choice) {

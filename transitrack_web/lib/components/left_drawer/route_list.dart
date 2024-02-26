@@ -4,12 +4,14 @@ import '../../models/account_model.dart';
 import '../../models/route_model.dart';
 
 class RouteList extends StatefulWidget {
+  String? apiKey;
   final List<RouteData> routes;
   final int routeChoice;
   final ValueChanged<int> newRouteChoice;
   final AccountData? account;
   final Function() hoverToggle;
-  const RouteList({super.key,
+  RouteList({super.key,
+    required this.apiKey,
     required this.routeChoice,
     required this.routes,
     required this.newRouteChoice,
@@ -37,6 +39,7 @@ class _RouteListState extends State<RouteList> {
                 widget.newRouteChoice(index);
               },
               child: RouteListTile(
+                apiKey: widget.apiKey,
                 route: widget.routes[index],
                 isSelected: widget.routeChoice == index,
                 isAdmin: widget.account != null
