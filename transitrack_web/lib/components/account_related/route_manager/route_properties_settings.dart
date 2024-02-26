@@ -217,7 +217,13 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Operating Hours: ${formatTime([selectedRange.start.round(), selectedRange.end.round()])}'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Operating Hours:'),
+                  Text(formatTime([selectedRange.start.round(), selectedRange.end.round()]))
+                ],
+              ),
               RangeSlider(
                 activeColor: selectedColor,
                 values: selectedRange,

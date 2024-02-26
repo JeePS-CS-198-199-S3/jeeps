@@ -1,4 +1,7 @@
 String formatTime(List<int> times) {
+  if (times[1] - times[0] == 1440) {
+    return '24 hours';
+  }
   // Convert minutes to hours and minutes
   int startHours = times[0] ~/ 60;
   int startMinutes = times[0] % 60;
@@ -6,8 +9,12 @@ String formatTime(List<int> times) {
   int endMinutes = times[1] % 60;
 
   // Determine AM or PM for start and end times
-  String startPeriod = startHours >= 12 ? 'PM' : 'AM';
-  String endPeriod = endHours >= 12 ? 'PM' : 'AM';
+  String startPeriod = (startHours >= 12 && startHours != 24
+      ? 'PM'
+      : 'AM');
+  String endPeriod = endHours >= 12 && endHours != 24
+      ? 'PM'
+      : 'AM';
 
   // Convert hours to 12-hour format
   if (startHours > 12) {
@@ -15,6 +22,14 @@ String formatTime(List<int> times) {
   }
   if (endHours > 12) {
     endHours -= 12;
+  }
+
+  if (startHours == 0) {
+    startHours = 12;
+  }
+
+  if (endHours == 0) {
+    endHours = 12;
   }
 
   // Format the time strings

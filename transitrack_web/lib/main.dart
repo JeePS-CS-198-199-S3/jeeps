@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
             create: (context) => MenuControllers(),
           ),
         ],
-        child: Dashboard(apiKey: apiKey,),
+        child: Dashboard(apiKey: apiKey),
       ),
     );
   }
