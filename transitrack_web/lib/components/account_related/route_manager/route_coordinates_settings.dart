@@ -5,7 +5,6 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 
 import '../../../config/keys.dart';
 import '../../../config/map_settings.dart';
-import '../../../config/responsive.dart';
 import '../../../models/route_model.dart';
 import '../../../services/int_to_hex.dart';
 import '../../../style/constants.dart';
@@ -24,7 +23,7 @@ class CoordinatesSettings extends StatefulWidget {
 class _CoordinatesSettingsState extends State<CoordinatesSettings> {
   late MapboxMapController _mapController;
   late List<LatLng> setRoute;
-  bool edit = false;
+  int selected = -1;
   List<Circle> circles = [];
   List<Line> lines = [];
 
@@ -36,14 +35,35 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
     });
   }
 
-  // void onCircleTapped(Circle circle) {
-  //   setRoute[circle.options.circleStrokeOpacity!.toInt()] = LatLng(circle.options.geometry!.latitude, circle.options.geometry!.longitude);
-  //   addLine();
-  // }
+  void onLineTapped(Line pressedLine) {
+    if (selected == 1) {
+      int index = lines.indexWhere((line) => pressedLine == line);
+
+      double x = (pressedLine.options.geometry![0].latitude + pressedLine.options.geometry![1].latitude)/2;
+      double y = (pressedLine.options.geometry![0].longitude + pressedLine.options.geometry![1].longitude)/2;
+
+      setRoute.insert(index + 1, LatLng(x, y));
+
+      _mapController.clearCircles().then((value) => circles.clear()).then((value) => addPoints());
+      _mapController.clearLines().then((value) => lines.clear()).then((value) => addLine());
+    }
+  }
+
+  void onCircleTapped(Circle pressedCircle) {
+    if (selected == 2) {
+      int index = circles.indexWhere((circle) => pressedCircle == circle);
+
+      setRoute.removeAt(index);
+
+      addPoints();
+      addLine();
+    }
+  }
 
   void _onMapCreated(MapboxMapController controller) {
     _mapController = controller;
-    // _mapController.onCircleTapped.add(onCircleTapped);
+    _mapController.onLineTapped.add(onLineTapped);
+    _mapController.onCircleTapped.add(onCircleTapped);
   }
 
   void _onMapStyleLoaded() {
@@ -52,7 +72,7 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
   }
 
   void addLine() {
-    _mapController.clearLines();
+    _mapController.clearLines().then((value) => lines.clear());
     for (int i = 0; i < setRoute.length; i++) {
       _mapController.addLine(
           LineOptions(
@@ -68,6 +88,7 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
   }
 
   void addPoints() {
+    _mapController.clearCircles().then((value) => circles.clear());
     for (int i = 0; i < setRoute.length; i++) {
       _mapController.addCircle(
         CircleOptions(
@@ -75,28 +96,51 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
           circleColor: intToHexColor(widget.route.routeColor),
           geometry: setRoute[i],
           circleStrokeColor: '#FFFFFF'
-          // circleStrokeOpacity: i.toDouble(),
         )
       ).then((circle) => circles.add(circle));
     }
   }
 
   void update() async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return const Center(
+              child: CircularProgressIndicator()
+          );
+        }
+    );
+
     try {
       Map<String, dynamic> newAccountSettings = {
         'route_coordinates': setRoute.map((latLng) => GeoPoint(latLng.latitude, latLng.longitude)).toList()
       };
 
-      RouteData.updateRouteFirestore(widget.route.routeId, newAccountSettings).then((value) => errorMessage("Route coordinates updated!"));
+      RouteData.updateRouteFirestore(widget.route.routeId, newAccountSettings).then((value) {
+        Navigator.pop(context);
+        errorMessage("Route coordinates updated!");
+      });
     } catch (e) {
-      // pop loading circle
+
       Navigator.pop(context);
       errorMessage(e.toString());
     }
   }
 
+  void addCoordinates() {
+    if (selected != 1) {
+      setRoute.clear();
+      for (var circle in circles) {
+        setRoute.add(circle.options.geometry!);
+      }
+      circles.clear();
+      addPoints();
+      addLine();
+    }
+  }
+
   void editCoordinates() {
-    if (edit) {
+    if (selected == 0) {
       _mapController.clearLines();
       for (var circle in circles) {
         _mapController.updateCircle(
@@ -108,16 +152,14 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
         );
       }
     } else {
+      setRoute.clear();
       for (var circle in circles) {
-        setRoute.clear();
-        for (var circle in circles) {
-          setRoute.add(circle.options.geometry!);
-        }
+        setRoute.add(circle.options.geometry!);
         _mapController.updateCircle(
             circle,
             const CircleOptions(
-              circleStrokeWidth: 0.0,
-              draggable: false
+                circleStrokeWidth: 0.0,
+                draggable: false
             )
         );
       }
@@ -166,10 +208,7 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
           const SizedBox(height: Constants.defaultPadding),
 
           SizedBox(
-            height: Responsive.isDesktop(context)
-              ? 500
-              : 250
-            ,
+            height: 450,
             width: double.maxFinite,
             child: MapboxMap(
               accessToken: widget.apiKey,
@@ -177,13 +216,7 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
               doubleClickZoomEnabled: false,
               minMaxZoomPreference: MinMaxZoomPreference(mapMinZoom, mapMaxZoom),
               compassEnabled: true,
-              scrollGesturesEnabled: Responsive.isDesktop(context)
-                ? true
-                : !edit
-              ,
-              compassViewPosition: Responsive.isDesktop(context)
-                  ? CompassViewPosition.BottomLeft
-                  : CompassViewPosition.TopRight,
+              compassViewPosition: CompassViewPosition.BottomLeft,
               onMapCreated: (controller) {
                 _onMapCreated(controller);
               },
@@ -201,26 +234,95 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
               Expanded(
                 child: GestureDetector(
                   onTap: () {
-                    setState(() {
-                      edit = !edit;
-                    });
-                    editCoordinates();
+                    if (selected == -1) {
+                      setState(() {
+                        selected = 0;
+                      });
+                      editCoordinates();
+                    } else if (selected == 0) {
+                      setState(() {
+                        selected = -1;
+                      });
+                      editCoordinates();
+                    }
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: Constants.defaultPadding),
-                    color: edit
-                      ? Colors.blue
-                      : Colors.blue.withOpacity(0.5)
+                    color: selected == 0
+                      ? Color(widget.route.routeColor)
+                      : Color(widget.route.routeColor).withOpacity(0.6)
                     ,
                     child: Center(
                       child: Icon(
-                        edit
+                        selected == 0
                         ? Icons.check
                         : Icons.edit
                       ),
                     ),
                   ),
                 )
+              ),
+              Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      if (selected == -1) {
+                        setState(() {
+                          selected = 1;
+                        });
+                        addCoordinates();
+                      } else if (selected == 1){
+                        setState(() {
+                          selected = -1;
+                        });
+                        addCoordinates();
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: Constants.defaultPadding),
+                      color: selected == 1
+                          ? Color(widget.route.routeColor)
+                          : Color(widget.route.routeColor).withOpacity(0.5)
+                      ,
+                      child: Center(
+                        child: Icon(
+                          selected == 1
+                            ? Icons.check
+                            : Icons.add
+                        ),
+                      ),
+                    ),
+                  )
+              ),
+              Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      if (selected == -1) {
+                        setState(() {
+                          selected = 2;
+                        });
+                        addCoordinates();
+                      } else if (selected == 2){
+                        setState(() {
+                          selected = -1;
+                        });
+                        addCoordinates();
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: Constants.defaultPadding),
+                      color: selected == 2
+                          ? Color(widget.route.routeColor)
+                          : Color(widget.route.routeColor).withOpacity(0.4)
+                      ,
+                      child: Center(
+                        child: Icon(
+                            selected == 2
+                                ? Icons.check
+                                : Icons.remove
+                        ),
+                      ),
+                    ),
+                  )
               )
             ],
           ),

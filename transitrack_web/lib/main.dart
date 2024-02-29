@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:transitrack_web/MenuController.dart';
 import 'package:transitrack_web/style/constants.dart';
 import 'package:transitrack_web/pages/dashboard_page.dart';
+import 'config/keys.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -13,9 +14,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await dotenv.load(fileName: "config/.env");
+  // await dotenv.load(fileName: "config/.env");
+  //
+  // final apiKey = dotenv.env['MAPBOX_API_KEY'];
 
-  final apiKey = dotenv.env['MAPBOX_API_KEY'];
+  final apiKey = Keys.MapBoxKey;
 
   runApp(MyApp(apiKey: apiKey,));
 }

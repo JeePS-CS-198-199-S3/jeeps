@@ -72,7 +72,8 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
 
 
           // Route Manager Coordinates
-          Expanded(
+          if (Responsive.isDesktop(context))
+            Expanded(
             child: GestureDetector(
               onTap: () async {
                 if (Responsive.isDesktop(context)) {widget.hoverToggle();}
@@ -117,6 +118,7 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
 
 
           // Route Manager Vehicles
+          if (Responsive.isDesktop(context))
           Expanded(
             child: GestureDetector(
               onTap: () async {
