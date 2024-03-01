@@ -119,7 +119,7 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
       RouteData.updateRouteFirestore(widget.route.routeId, newAccountSettings).then((value) {
         Navigator.pop(context);
         errorMessage("Route coordinates updated!");
-      });
+      }).then((value) => Navigator.pop(context));
     } catch (e) {
 
       Navigator.pop(context);
@@ -201,7 +201,7 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
         children: [
           const Row(
             children: [
-              PrimaryText(text: "Coordinates", color: Colors.white, size: 40, fontWeight: FontWeight.w700,)
+              PrimaryText(text: "Coordinates", color: Colors.white, size: 40, fontWeight: FontWeight.w700)
             ],
           ),
 

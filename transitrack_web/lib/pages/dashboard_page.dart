@@ -8,12 +8,15 @@ import 'package:provider/provider.dart';
 import '../MenuController.dart';
 
 import '../components/account_related/account_stream.dart';
+import '../components/account_related/route_manager/route_manager_options.dart';
+import '../components/account_related/route_manager/route_properties_settings.dart';
 import '../components/cooldown_button.dart';
 import '../components/header.dart';
 import '../components/left_drawer/logo.dart';
 import '../components/map_related/map.dart';
 import '../components/mobile_dashboard_unselected.dart';
 import '../components/left_drawer/route_list.dart';
+import '../components/unselected_desktop_route_info.dart';
 import '../config/responsive.dart';
 import '../config/size_config.dart';
 import '../models/account_model.dart';
@@ -322,45 +325,24 @@ class _DashboardState extends State<Dashboard> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   child: Column(
                                     children: [
-                                      Container(
-                                          margin: const EdgeInsets.all(Constants.defaultPadding),
+                                      UnselectedDesktopRouteInfo(),
+
+                                      if (currentUserAuth != null && currentUserFirestore!.account_type == 2)
+                                      MouseRegion(
+                                        onEnter: (_) => hovering(),
+                                        onExit: (_) => hovering(),
+                                        cursor: SystemMouseCursors.basic,
+                                        child: Container(
+                                          width: 300,
+                                          padding: const EdgeInsets.all(Constants.defaultPadding),
+                                          margin: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
                                           decoration: const BoxDecoration(
                                             color: Constants.secondaryColor,
                                             borderRadius: BorderRadius.all(Radius.circular(10)),
                                           ),
-                                          child: Container(
-                                            padding: const EdgeInsets.all(Constants.defaultPadding),
-                                            decoration: const BoxDecoration(
-                                              color: Constants.secondaryColor,
-                                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                                            ),
-                                            child: const Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  "Select a route",
-                                                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                                SizedBox(height: Constants.defaultPadding),
-                                                SizedBox(
-                                                  height:200,
-                                                  child: Center(child: CircleAvatar(
-                                                    radius: 90,
-                                                    backgroundColor: Colors.white38,
-                                                    child: CircleAvatar(
-                                                        radius: 70,
-                                                        backgroundColor: Constants.secondaryColor,
-                                                        child: Icon(Icons.touch_app_rounded, color: Colors.white38, size: 50)
-                                                    ),
-                                                  )),
-                                                ),
-                                                SizedBox(height: Constants.defaultPadding),
-                                              ],
-                                            ),
-                                          )
-                                      ),
+                                          child: RouteManagerOptions(route: _routes[currentUserFirestore!.route_id], apiKey: widget.apiKey)
+                                        ),
+                                      )
                                     ],
                                   )
                               )

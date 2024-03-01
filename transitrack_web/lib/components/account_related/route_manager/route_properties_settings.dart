@@ -149,108 +149,97 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: Constants.defaultPadding, right: Constants.defaultPadding, bottom: Constants.defaultPadding),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Row(
-            children: [
-              PrimaryText(text: "Properties", color: Colors.white, size: 40, fontWeight: FontWeight.w700,)
-            ],
-          ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        InputTextField(controller: nameController, hintText: "Route Name", obscureText: false),
 
-          const SizedBox(height: Constants.defaultPadding),
+        const SizedBox(height: Constants.defaultPadding),
 
-          InputTextField(controller: nameController, hintText: "Route Name", obscureText: false),
+        InputTextField(controller: fareController, hintText: "Regular Fare", obscureText: false, type: TextInputType.number,),
 
-          const SizedBox(height: Constants.defaultPadding),
+        const SizedBox(height: Constants.defaultPadding),
 
-          InputTextField(controller: fareController, hintText: "Regular Fare", obscureText: false, type: TextInputType.number,),
+        InputTextField(controller: fareDiscountedController, hintText: "Discounted Fare (Students/Senior Citizen)", obscureText: false, type: TextInputType.number),
 
-          const SizedBox(height: Constants.defaultPadding),
+        const SizedBox(height: Constants.defaultPadding),
 
-          InputTextField(controller: fareDiscountedController, hintText: "Discounted Fare (Students/Senior Citizen)", obscureText: false, type: TextInputType.number),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text("Enable Route"),
+            Switch(
+              activeColor: selectedColor,
+              activeTrackColor: selectedColor.withOpacity(0.5),
+              inactiveThumbColor: selectedColor,
+              value: enabled,
+              onChanged: (value) {
+                setState(() {
+                  enabled = value;
+                });
+              },
+            ),
+          ],
+        ),
 
-          const SizedBox(height: Constants.defaultPadding),
+        const SizedBox(height: Constants.defaultPadding),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text("Enable Route"),
-              Switch(
-                activeColor: selectedColor,
-                activeTrackColor: selectedColor.withOpacity(0.5),
-                inactiveThumbColor: selectedColor,
-                value: enabled,
-                onChanged: (value) {
-                  setState(() {
-                    enabled = value;
-                  });
-                },
-              ),
-            ],
-          ),
-
-          const SizedBox(height: Constants.defaultPadding),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text("Route Color"),
-              GestureDetector(
-                onTap: () => pickColor(context),
-                child: Container(
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: selectedColor
-                  ),
-                  width: 40,
-                  height: 40,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text("Route Color"),
+            GestureDetector(
+              onTap: () => pickColor(context),
+              child: Container(
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: selectedColor
                 ),
+                width: 40,
+                height: 40,
               ),
-            ],
-          ),
+            ),
+          ],
+        ),
 
-          const SizedBox(height: Constants.defaultPadding),
+        const SizedBox(height: Constants.defaultPadding),
 
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Operating Hours:'),
-                  Text(formatTime([selectedRange.start.round(), selectedRange.end.round()]))
-                ],
-              ),
-              RangeSlider(
-                activeColor: selectedColor,
-                values: selectedRange,
-                min: 0,
-                max: 1440,
-                divisions: 48,
-                onChanged: (RangeValues values) {
-                  if (values.start <= values.end) {
-                    setState(() {
-                      selectedRange = values;
-                    });
-                  } else {
-                    setState(() {
-                      selectedRange = RangeValues(values.start, values.start);
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Operating Hours:'),
+                Text(formatTime([selectedRange.start.round(), selectedRange.end.round()]))
+              ],
+            ),
+            RangeSlider(
+              activeColor: selectedColor,
+              values: selectedRange,
+              min: 0,
+              max: 1440,
+              divisions: 48,
+              onChanged: (RangeValues values) {
+                if (values.start <= values.end) {
+                  setState(() {
+                    selectedRange = values;
+                  });
+                } else {
+                  setState(() {
+                    selectedRange = RangeValues(values.start, values.start);
+                  });
+                }
+              },
+            ),
+          ],
+        ),
 
-          const SizedBox(height: Constants.defaultPadding),
+        const SizedBox(height: Constants.defaultPadding),
 
-          Button(onTap: update, text: "Save",),
+        Button(onTap: update, text: "Save",),
 
-        ],
-      ),
+      ],
     );
   }
 }

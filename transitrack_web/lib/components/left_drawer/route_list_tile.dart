@@ -81,7 +81,7 @@ class _RouteListTileState extends State<RouteListTile> {
         ),
 
         if (routeManageOpen && widget.isAdmin!)
-          RouteManagerOptions(hoverToggle: widget.hoverToggle, route: widget.route, apiKey: widget.apiKey)
+          RouteManagerOptions(route: widget.route, apiKey: widget.apiKey)
       ],
     );
   }
