@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:transitrack_web/components/account_related/route_manager/route_properties_settings.dart';
-import '../../../config/responsive.dart';
 import '../../../models/route_model.dart';
 import '../../../style/constants.dart';
 
 class RouteManagerOptions extends StatefulWidget {
   String? apiKey;
   final RouteData route;
-  RouteManagerOptions({super.key, required this.apiKey, required this.route});
+  final Function() hoverToggle;
+  RouteManagerOptions({super.key, required this.apiKey, required this.route, required this.hoverToggle});
 
   @override
   State<RouteManagerOptions> createState() => _RouteManagerOptionsState();
@@ -158,7 +158,7 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
           ),
 
         if (selected == 0)
-          PropertiesSettings(route: widget.route)
+          PropertiesSettings(route: widget.route, hoverToggle: widget.hoverToggle,)
       ],
     );
   }

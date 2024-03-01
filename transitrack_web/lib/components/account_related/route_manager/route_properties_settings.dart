@@ -10,7 +10,8 @@ import '../../text_field.dart';
 
 class PropertiesSettings extends StatefulWidget {
   RouteData route;
-  PropertiesSettings({super.key, required this.route});
+  final Function() hoverToggle;
+  PropertiesSettings({super.key, required this.route, required this.hoverToggle});
 
   @override
   State<PropertiesSettings> createState() => _PropertiesSettingsState();
@@ -121,29 +122,42 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
 
   void pickColor(BuildContext context) => showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-          title: const Text('Set Route Color'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              buildColorPicker(),
+      builder: (context) => MouseRegion(
+        onEnter: (_) => widget.hoverToggle(),
+        onExit: (_) => widget.hoverToggle(),
+        child: AlertDialog(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Set Route Color'),
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: const Icon(Icons.arrow_back_outlined)
+                )
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                buildColorPicker(),
 
-              const SizedBox(height: Constants.defaultPadding),
+                const SizedBox(height: Constants.defaultPadding),
 
-              TextButton(
-                child: const Text(
-                  'SELECT',
-                  style: TextStyle(fontSize: 20),
+                TextButton(
+                  child: const Text(
+                    'SELECT',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      selectedColor = chosenColor;
+                    });
+                    Navigator.of(context).pop();
+                  }
                 ),
-                onPressed: () {
-                  setState(() {
-                    selectedColor = chosenColor;
-                  });
-                  Navigator.of(context).pop();
-                }
-              ),
-            ],
-          )
+              ],
+            )
+        ),
       )
   );
 
@@ -189,7 +203,9 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
           children: [
             const Text("Route Color"),
             GestureDetector(
-              onTap: () => pickColor(context),
+              onTap: () {
+                pickColor(context);
+              },
               child: Container(
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,

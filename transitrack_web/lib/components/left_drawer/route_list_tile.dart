@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../models/route_model.dart';
 import '../../services/format_time.dart';
 import '../../style/constants.dart';
-import '../account_related/route_manager/route_manager_options.dart';
 
 class RouteListTile extends StatefulWidget {
   String? apiKey;
@@ -79,9 +78,6 @@ class _RouteListTileState extends State<RouteListTile> {
             ],
           ),
         ),
-
-        if (routeManageOpen && widget.isAdmin!)
-          RouteManagerOptions(route: widget.route, apiKey: widget.apiKey)
       ],
     );
   }

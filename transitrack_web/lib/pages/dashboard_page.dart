@@ -340,7 +340,7 @@ class _DashboardState extends State<Dashboard> {
                                             color: Constants.secondaryColor,
                                             borderRadius: BorderRadius.all(Radius.circular(10)),
                                           ),
-                                          child: RouteManagerOptions(route: _routes[currentUserFirestore!.route_id], apiKey: widget.apiKey)
+                                          child: RouteManagerOptions(route: _routes[currentUserFirestore!.route_id], apiKey: widget.apiKey, hoverToggle: hovering,)
                                         ),
                                       )
                                     ],

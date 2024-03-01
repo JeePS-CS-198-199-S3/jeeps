@@ -10,7 +10,6 @@ import 'package:transitrack_web/style/style.dart';
 import '../../config/responsive.dart';
 import '../../models/account_model.dart';
 import '../../models/ping_model.dart';
-import '../../models/route_model.dart';
 import '../../style/constants.dart';
 import 'login_signup_form.dart';
 

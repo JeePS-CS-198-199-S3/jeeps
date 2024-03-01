@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:mapbox_gl/mapbox_gl.dart';
 
-import '../../../config/keys.dart';
-import '../../../config/map_settings.dart';
 import '../../../models/route_model.dart';
 import '../../../services/int_to_hex.dart';
 import '../../../style/constants.dart';
@@ -187,12 +185,6 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
   }
 
   @override
-  void dispose() {
-    _mapController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: Constants.defaultPadding, right: Constants.defaultPadding, bottom: Constants.defaultPadding),
@@ -207,28 +199,6 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
 
           const SizedBox(height: Constants.defaultPadding),
 
-          SizedBox(
-            height: 450,
-            width: double.maxFinite,
-            child: MapboxMap(
-              accessToken: widget.apiKey,
-              styleString: Keys.MapBoxNight,
-              doubleClickZoomEnabled: false,
-              minMaxZoomPreference: MinMaxZoomPreference(mapMinZoom, mapMaxZoom),
-              compassEnabled: true,
-              compassViewPosition: CompassViewPosition.BottomLeft,
-              onMapCreated: (controller) {
-                _onMapCreated(controller);
-              },
-              onStyleLoadedCallback: _onMapStyleLoaded,
-              initialCameraPosition: CameraPosition(
-                target: Keys.MapCenter,
-                zoom: mapStartZoom,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: Constants.defaultPadding),
           Row(
             children: [
               Expanded(
