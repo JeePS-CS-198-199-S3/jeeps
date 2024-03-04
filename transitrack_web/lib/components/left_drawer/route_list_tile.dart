@@ -7,7 +7,6 @@ class RouteListTile extends StatefulWidget {
   String? apiKey;
   final RouteData route;
   final bool isSelected;
-  final bool? isAdmin;
   final Function() hoverToggle;
 
   RouteListTile({
@@ -15,7 +14,6 @@ class RouteListTile extends StatefulWidget {
     required this.apiKey,
     required this.route,
     required this.isSelected,
-    required this.isAdmin,
     required this.hoverToggle
   });
 
@@ -54,29 +52,7 @@ class _RouteListTileState extends State<RouteListTile> {
           ),
           selectedTileColor: Colors.white10,
           selected: widget.isSelected,
-          trailing: Column(
-            children: [
-              Icon(Icons.circle, color: Color(widget.route.routeColor),
-              ),
-
-              const SizedBox(height: Constants.defaultPadding/2),
-
-              if (widget.isAdmin != null && widget.isAdmin!)
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      routeManageOpen = !routeManageOpen;
-                    });
-                  },
-                  child: Icon(routeManageOpen
-                    ? Icons.arrow_drop_up
-                    : Icons.arrow_drop_down,
-                    color: Colors.white,
-                    size: 16
-                  )
-                )
-            ],
-          ),
+          trailing: Icon(Icons.circle, color: Color(widget.route.routeColor))
         ),
       ],
     );

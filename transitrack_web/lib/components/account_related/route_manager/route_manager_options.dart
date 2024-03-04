@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:transitrack_web/components/account_related/route_manager/route_coordinates_settings.dart';
 import 'package:transitrack_web/components/account_related/route_manager/route_properties_settings.dart';
 import '../../../models/route_model.dart';
 import '../../../style/constants.dart';
 
 class RouteManagerOptions extends StatefulWidget {
-  String? apiKey;
   final RouteData route;
   final Function() hoverToggle;
-  RouteManagerOptions({super.key, required this.apiKey, required this.route, required this.hoverToggle});
+  final ValueChanged<int> coordConfig;
+  RouteManagerOptions({super.key, required this.route, required this.hoverToggle, required this.coordConfig});
 
   @override
   State<RouteManagerOptions> createState() => _RouteManagerOptionsState();
@@ -33,10 +34,13 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
 
             if (selected != -1)
               GestureDetector(
-                onTap: () => setState(() {
-                  selected = -1;
-                  optionTitle = "Route Management";
-                }),
+                onTap: () {
+                  setState(() {
+                    selected = -1;
+                    optionTitle = "Route Management";
+                  });
+                  widget.coordConfig(-2);
+                },
                 child: const Icon(
                   Icons.keyboard_backspace_outlined,
                 )
@@ -90,8 +94,10 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
               Expanded(
                   child: GestureDetector(
                     onTap: () async {
-                      selected = 1;
-                      optionTitle = "Coordinates";
+                      setState(() {
+                        selected = 1;
+                        optionTitle = "Coordinates";
+                      });
                     },
                     child: Container(
                         height: 50,
@@ -125,8 +131,10 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
               Expanded(
                   child: GestureDetector(
                     onTap: () async {
-                      selected = 2;
-                      optionTitle = "Vehicles";
+                      setState(() {
+                        selected = 2;
+                        optionTitle = "Vehicles";
+                      });
                     },
                     child: Container(
                         height: 50,
@@ -158,7 +166,15 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
           ),
 
         if (selected == 0)
-          PropertiesSettings(route: widget.route, hoverToggle: widget.hoverToggle,)
+          PropertiesSettings(route: widget.route, hoverToggle: widget.hoverToggle),
+
+        if (selected == 1)
+          CoordinatesSettings(
+            route: widget.route,
+            coordConfig: (int coordConfig) {
+              widget.coordConfig(coordConfig);
+            }
+          )
       ],
     );
   }

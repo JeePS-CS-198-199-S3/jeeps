@@ -42,9 +42,6 @@ class _RouteListState extends State<RouteList> {
                 apiKey: widget.apiKey,
                 route: widget.routes[index],
                 isSelected: widget.routeChoice == index,
-                isAdmin: widget.account != null
-                    ? widget.account!.is_verified && widget.account!.account_type == 2 && widget.account!.route_id == index
-                    : false,
                 hoverToggle: widget.hoverToggle,
               ),
             );

@@ -50,6 +50,9 @@ class _DashboardState extends State<Dashboard> {
   // Device Location Found
   LatLng? deviceLoc;
 
+  // Route Manager Coordinates Option
+  int _coordConfig = -1;
+
   @override
   void initState() {
     super.initState();
@@ -208,6 +211,7 @@ class _DashboardState extends State<Dashboard> {
                           route: routeChoice == -1
                               ? null
                               : _routes[routeChoice],
+                          configRoute: _coordConfig,
                           foundDeviceLocation: (LatLng newDeviceLocation) {
                             setState(() {
                               deviceLoc = newDeviceLocation;
@@ -255,6 +259,9 @@ class _DashboardState extends State<Dashboard> {
                                 } else {
                                   switchRoute(choice);
                                 }
+                                setState(() {
+                                  _coordConfig = -2;
+                                });
                               },
                               account: currentUserAuth != null
                                   ? currentUserFirestore!
@@ -327,12 +334,9 @@ class _DashboardState extends State<Dashboard> {
                                     children: [
                                       UnselectedDesktopRouteInfo(),
 
-                                      if (currentUserAuth != null && currentUserFirestore!.account_type == 2)
-                                      MouseRegion(
-                                        onEnter: (_) => hovering(),
-                                        onExit: (_) => hovering(),
-                                        cursor: SystemMouseCursors.basic,
-                                        child: Container(
+                                      // Route Manager Dashboard
+                                      if (currentUserAuth != null && currentUserFirestore!.account_type == 2 && routeChoice == currentUserFirestore!.route_id)
+                                        Container(
                                           width: 300,
                                           padding: const EdgeInsets.all(Constants.defaultPadding),
                                           margin: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
@@ -340,9 +344,16 @@ class _DashboardState extends State<Dashboard> {
                                             color: Constants.secondaryColor,
                                             borderRadius: BorderRadius.all(Radius.circular(10)),
                                           ),
-                                          child: RouteManagerOptions(route: _routes[currentUserFirestore!.route_id], apiKey: widget.apiKey, hoverToggle: hovering,)
-                                        ),
-                                      )
+                                          child: RouteManagerOptions(
+                                            route: _routes[currentUserFirestore!.route_id],
+                                            hoverToggle: hovering,
+                                            coordConfig: (int coordConfig) {
+                                                setState(() {
+                                                  _coordConfig = coordConfig;
+                                                });
+                                              },
+                                            )
+                                        )
                                     ],
                                   )
                               )

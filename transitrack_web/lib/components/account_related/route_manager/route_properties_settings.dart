@@ -94,9 +94,10 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
           'route_time': [selectedRange.start.round(), selectedRange.end.round()],
           'route_color': selectedColor.value
         };
-        RouteData.updateRouteFirestore(widget.route.routeId, newAccountSettings);
+        RouteData.updateRouteFirestore(widget.route.routeId, newAccountSettings).then((value) => errorMessage("Success!"));
+
         Navigator.pop(context);
-        Navigator.pop(context);
+        
       } catch (e) {
         // pop loading circle
         Navigator.pop(context);
