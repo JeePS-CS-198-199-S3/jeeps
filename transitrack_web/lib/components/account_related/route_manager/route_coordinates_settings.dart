@@ -92,32 +92,6 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
   //   }
   // }
 
-  // void update() async {
-  //   showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return const Center(
-  //             child: CircularProgressIndicator()
-  //         );
-  //       }
-  //   );
-  //
-  //   try {
-  //     Map<String, dynamic> newAccountSettings = {
-  //       'route_coordinates': setRoute.map((latLng) => GeoPoint(latLng.latitude, latLng.longitude)).toList()
-  //     };
-  //
-  //     RouteData.updateRouteFirestore(widget.route.routeId, newAccountSettings).then((value) {
-  //       Navigator.pop(context);
-  //       errorMessage("Route coordinates updated!");
-  //     }).then((value) => Navigator.pop(context));
-  //   } catch (e) {
-  //
-  //     Navigator.pop(context);
-  //     errorMessage(e.toString());
-  //   }
-  // }
-
   // void addCoordinates() {
   //   if (selected != 1) {
   //     setRoute.clear();
@@ -128,53 +102,6 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
   //     addPoints();
   //     addLine();
   //   }
-  // }
-
-  // void editCoordinates() {
-  //   if (selected == 0) {
-  //     _mapController.clearLines();
-  //     for (var circle in circles) {
-  //       _mapController.updateCircle(
-  //         circle,
-  //         const CircleOptions(
-  //           circleStrokeWidth: 2.0,
-  //           draggable: true
-  //         )
-  //       );
-  //     }
-  //   } else {
-  //     setRoute.clear();
-  //     for (var circle in circles) {
-  //       setRoute.add(circle.options.geometry!);
-  //       _mapController.updateCircle(
-  //           circle,
-  //           const CircleOptions(
-  //               circleStrokeWidth: 0.0,
-  //               draggable: false
-  //           )
-  //       );
-  //     }
-  //     addLine();
-  //   }
-  // }
-
-  // void errorMessage(String message) {
-  //   showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return AlertDialog(
-  //             backgroundColor: Constants.bgColor,
-  //             title: Center(
-  //                 child: Text(
-  //                   message,
-  //                   style: const TextStyle(
-  //                       color: Colors.white
-  //                   ),
-  //                 )
-  //             )
-  //         );
-  //       }
-  //   );
   // }
 
   @override
@@ -237,42 +164,16 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
                         : Color(widget.route.routeColor).withOpacity(0.5)
                     ,
                     child: Center(
-                      child: Icon(
-                          selected == 1
-                              ? Icons.save
-                              : Icons.add
-                      ),
-                    ),
-                  ),
-                )
-            ),
-            Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    if (selected == -1) {
-                      setState(() {
-                        selected = 2;
-                      });
-                      widget.coordConfig(2);
-                    } else if (selected == 2){
-                      setState(() {
-                        selected = -1;
-                      });
-                      widget.coordConfig(-1);
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: Constants.defaultPadding),
-                    color: selected == 2
-                        ? Color(widget.route.routeColor)
-                        : Color(widget.route.routeColor).withOpacity(0.4)
-                    ,
-                    child: Center(
-                      child: Icon(
-                          selected == 2
-                              ? Icons.save
-                              : Icons.remove
-                      ),
+                      child: selected == 1
+                        ? const Icon(Icons.save)
+                        : const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add),
+                              Text("/"),
+                              Icon(Icons.remove)
+                            ],
+                          )
                     ),
                   ),
                 )

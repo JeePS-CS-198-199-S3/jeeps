@@ -48,6 +48,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
   late List<LatLng> setRoute;
   List<Circle> circles = [];
+  List<Line> lines = [];
 
   @override
   void initState() {
@@ -86,6 +87,19 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
             update();
           }
           addLine();
+        } else if (_configRoute == 1) {
+          _mapController.onCircleTapped.remove(onCircleTapped);
+          _mapController.onLineTapped.remove(onLineTapped);
+
+          for (var circle in circles) {
+            _mapController.removeCircle(circle);
+          }
+          circles.clear();
+
+          if (widget.configRoute == -1) {
+            update();
+          }
+
         }
 
       } else {
@@ -95,9 +109,13 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
         if (widget.configRoute == 0) {
           _mapController.clearLines();
           addPoints();
-        } else if (widget.configRoute == 1) {
-        } else if (widget.configRoute == 2) {
+        }
 
+        // Add or Remove Points
+        else if (widget.configRoute == 1) {
+          _mapController.onLineTapped.add(onLineTapped);
+          _mapController.onCircleTapped.add(onCircleTapped);
+          addPoints();
         }
       }
 
@@ -204,15 +222,25 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   }
 
   void addLine() {
-    _mapController.clearLines();
+    _mapController.clearLines().then((value) => lines.clear());
     if (widget.route != null) {
-      _mapController.addLine(
-        LineOptions(
-          geometry: widget.route!.routeCoordinates,
-          lineColor: intToHexColor(widget.route!.routeColor), // Line color
-          lineWidth: 4.0, // Line width
-        ),
-      );
+      for (int i = 0; i < (_configRoute == -1? widget.route!.routeCoordinates.length:setRoute.length); i++) {
+        _mapController.addLine(
+            LineOptions(
+              lineWidth: 4.0,
+              lineColor: intToHexColor(widget.route!.routeColor),
+              geometry: i != (_configRoute == -1? widget.route!.routeCoordinates.length:setRoute.length) - 1
+                  ? (_configRoute == -1
+                  ? [widget.route!.routeCoordinates[i], widget.route!.routeCoordinates[i+1]]
+                  : [setRoute[i], setRoute[i+1]]
+              )
+                  : (_configRoute == -1
+                  ? [widget.route!.routeCoordinates[i], widget.route!.routeCoordinates[0]]
+                  : [setRoute[i], setRoute[0]]
+              ),
+            )
+        ).then((line) => lines.add(line));
+      }
     }
   }
 
@@ -230,10 +258,33 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
           circleColor: intToHexColor(widget.route!.routeColor),
           geometry: setRoute[i],
           circleStrokeColor: '#FFFFFF',
-          draggable: true
+          draggable: widget.configRoute == 0
+            ? true
+            : false
         )
       ).then((circle) => circles.add(circle));
     }
+  }
+
+  void onLineTapped(Line pressedLine) {
+    int index = lines.indexWhere((line) => pressedLine == line);
+
+    double x = (pressedLine.options.geometry![0].latitude + pressedLine.options.geometry![1].latitude)/2;
+    double y = (pressedLine.options.geometry![0].longitude + pressedLine.options.geometry![1].longitude)/2;
+
+    setRoute.insert(index + 1, LatLng(x, y));
+
+    _mapController.clearCircles().then((value) => circles.clear()).then((value) => addPoints());
+    _mapController.clearLines().then((value) => lines.clear()).then((value) => addLine());
+  }
+
+  void onCircleTapped(Circle pressedCircle) {
+    int index = circles.indexWhere((circle) => pressedCircle == circle);
+
+    setRoute.removeAt(index);
+
+    addPoints();
+    addLine();
   }
 
   @override
@@ -245,36 +296,34 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        MapboxMap(
-            accessToken: widget.apiKey,
-            styleString: Keys.MapBoxNight,
-            doubleClickZoomEnabled: false,
-            minMaxZoomPreference: MinMaxZoomPreference(mapMinZoom, mapMaxZoom),
-            scrollGesturesEnabled: !widget.isDrawer,
-            zoomGesturesEnabled: !widget.isDrawer,
-            rotateGesturesEnabled: !widget.isDrawer,
-            tiltGesturesEnabled: !widget.isDrawer,
-            compassEnabled: true,
-            compassViewPosition: Responsive.isDesktop(context)
-                ? CompassViewPosition.BottomLeft
-                : CompassViewPosition.TopRight,
-            onMapCreated: (controller) {
-              _onMapCreated(controller);
-            },
-            initialCameraPosition: CameraPosition(
-              target: Keys.MapCenter,
-              zoom: mapStartZoom,
-            )
-        ),
+    return MapboxMap(
+      accessToken: widget.apiKey,
+      styleString: Keys.MapBoxNight,
+      doubleClickZoomEnabled: false,
+      minMaxZoomPreference: MinMaxZoomPreference(mapMinZoom, mapMaxZoom),
+      scrollGesturesEnabled: !widget.isDrawer,
+      zoomGesturesEnabled: !widget.isDrawer,
+      rotateGesturesEnabled: !widget.isDrawer,
+      tiltGesturesEnabled: !widget.isDrawer,
+      compassEnabled: true,
+      compassViewPosition: Responsive.isDesktop(context)
+          ? CompassViewPosition.BottomLeft
+          : CompassViewPosition.TopRight,
+      onMapCreated: (controller) {
+        _onMapCreated(controller);
+      },
+      initialCameraPosition: CameraPosition(
+        target: Keys.MapCenter,
+        zoom: mapStartZoom,
+      ),
+      onMapClick: (point, latLng) {
+        if (_configRoute == 1 && !widget.isDrawer) {
+          setRoute.add(latLng);
 
-        Center(
-          child: Text(
-            "$_configRoute"
-          ),
-        )
-      ],
+          addPoints();
+          addLine();
+        }
+      },
     );
   }
 }
