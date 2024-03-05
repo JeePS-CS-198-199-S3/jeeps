@@ -16,93 +16,7 @@ class CoordinatesSettings extends StatefulWidget {
 }
 
 class _CoordinatesSettingsState extends State<CoordinatesSettings> {
-  late List<LatLng> setRoute;
   int selected = -1;
-  List<Circle> circles = [];
-  List<Line> lines = [];
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  // void onLineTapped(Line pressedLine) {
-  //   if (selected == 1) {
-  //     int index = lines.indexWhere((line) => pressedLine == line);
-  //
-  //     double x = (pressedLine.options.geometry![0].latitude + pressedLine.options.geometry![1].latitude)/2;
-  //     double y = (pressedLine.options.geometry![0].longitude + pressedLine.options.geometry![1].longitude)/2;
-  //
-  //     setRoute.insert(index + 1, LatLng(x, y));
-  //
-  //     _mapController.clearCircles().then((value) => circles.clear()).then((value) => addPoints());
-  //     _mapController.clearLines().then((value) => lines.clear()).then((value) => addLine());
-  //   }
-  // }
-
-  // void onCircleTapped(Circle pressedCircle) {
-  //   if (selected == 2) {
-  //     int index = circles.indexWhere((circle) => pressedCircle == circle);
-  //
-  //     setRoute.removeAt(index);
-  //
-  //     addPoints();
-  //     addLine();
-  //   }
-  // }
-
-  // void _onMapCreated(MapboxMapController controller) {
-  //   _mapController = controller;
-  //   _mapController.onLineTapped.add(onLineTapped);
-  //   _mapController.onCircleTapped.add(onCircleTapped);
-  // }
-
-  // void _onMapStyleLoaded() {
-  //   addLine();
-  //   addPoints();
-  // }
-
-  // void addLine() {
-  //   _mapController.clearLines().then((value) => lines.clear());
-  //   for (int i = 0; i < setRoute.length; i++) {
-  //     _mapController.addLine(
-  //         LineOptions(
-  //           lineWidth: 4.0,
-  //           lineColor: intToHexColor(widget.route.routeColor),
-  //           geometry: i != setRoute.length - 1
-  //               ? [setRoute[i], setRoute[i+1]]
-  //               : [setRoute[i], setRoute[0]],
-  //           // circleStrokeOpacity: i.toDouble(),
-  //         )
-  //     ).then((line) => lines.add(line));
-  //   }
-  // }
-
-  // void addPoints() {
-  //   _mapController.clearCircles().then((value) => circles.clear());
-  //   for (int i = 0; i < setRoute.length; i++) {
-  //     _mapController.addCircle(
-  //       CircleOptions(
-  //         circleRadius: 8.0,
-  //         circleColor: intToHexColor(widget.route.routeColor),
-  //         geometry: setRoute[i],
-  //         circleStrokeColor: '#FFFFFF'
-  //       )
-  //     ).then((circle) => circles.add(circle));
-  //   }
-  // }
-
-  // void addCoordinates() {
-  //   if (selected != 1) {
-  //     setRoute.clear();
-  //     for (var circle in circles) {
-  //       setRoute.add(circle.options.geometry!);
-  //     }
-  //     circles.clear();
-  //     addPoints();
-  //     addLine();
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +24,40 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            const Text(
+              "Coordinates",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+
+            GestureDetector(
+                  onTap: () {
+                    if (selected == -1) {
+                      widget.coordConfig(-1);
+                    } else {
+                      setState(() {
+                        selected = -1;
+                      });
+                      widget.coordConfig(-2);
+                    }
+                  },
+                  child: Icon(selected == -1
+                    ? Icons.keyboard_backspace_outlined
+                    : Icons.close
+                  )
+              )
+          ],
+        ),
+
+        const SizedBox(height: Constants.defaultPadding),
+
+        Row(
+          children: [
+
+            if (selected == -1 || selected == 0)
             Expanded(
                 child: GestureDetector(
                   onTap: () {
@@ -142,6 +89,8 @@ class _CoordinatesSettingsState extends State<CoordinatesSettings> {
                   ),
                 )
             ),
+
+            if (selected == -1 || selected == 1)
             Expanded(
                 child: GestureDetector(
                   onTap: () {

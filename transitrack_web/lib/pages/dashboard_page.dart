@@ -8,18 +8,16 @@ import 'package:provider/provider.dart';
 import '../MenuController.dart';
 
 import '../components/account_related/account_stream.dart';
-import '../components/account_related/route_manager/route_manager_options.dart';
-import '../components/account_related/route_manager/route_properties_settings.dart';
 import '../components/cooldown_button.dart';
 import '../components/header.dart';
 import '../components/left_drawer/logo.dart';
 import '../components/map_related/map.dart';
 import '../components/mobile_dashboard_unselected.dart';
 import '../components/left_drawer/route_list.dart';
-import '../components/unselected_desktop_route_info.dart';
 import '../config/responsive.dart';
 import '../config/size_config.dart';
 import '../models/account_model.dart';
+import '../models/jeep_model.dart';
 import '../models/ping_model.dart';
 import '../models/route_model.dart';
 import '../services/send_ping.dart';
@@ -40,9 +38,11 @@ class _DashboardState extends State<Dashboard> {
   User? currentUserAuth;
   AccountData? currentUserFirestore;
   List<RouteData> _routes = [];
+  List<JeepData> _jeeps = [];
   late StreamSubscription<User?> userAuthStream;                // Firebase Auth
   late StreamSubscription userFirestoreStream;                  // Firebase Firestore Accounts
   late StreamSubscription routesFirestoreStream;                // Firebase Firestore Routes
+  late StreamSubscription jeepsFirestoreStream;
 
   // Route Selection
   int routeChoice = -1;
@@ -50,8 +50,6 @@ class _DashboardState extends State<Dashboard> {
   // Device Location Found
   LatLng? deviceLoc;
 
-  // Route Manager Coordinates Option
-  int _coordConfig = -1;
 
   @override
   void initState() {
@@ -59,6 +57,7 @@ class _DashboardState extends State<Dashboard> {
     currentUserAuth = FirebaseAuth.instance.currentUser;
     listenToUserAuth();
     listenToRoutesFirestore();
+    listenToJeepsFirestore();
   }
 
   void hovering() {
@@ -68,7 +67,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void switchRoute(int choice) {
-    setState(() {
+    setState((){
       routeChoice = choice;
     });
   }
@@ -109,12 +108,28 @@ class _DashboardState extends State<Dashboard> {
         if (snapshot.docs.isNotEmpty) {
           setState(() {
             _routes = snapshot.docs
-                .map((doc) => RouteData.fromFirestore(doc))
-                .toList();
+              .map((doc) => RouteData.fromFirestore(doc))
+              .toList();
           });
         }
       }
     );
+  }
+  
+  void listenToJeepsFirestore() {
+    jeepsFirestoreStream = FirebaseFirestore.instance
+      .collection('jeeps_realtime')
+      .snapshots()
+      .listen((QuerySnapshot snapshot) {
+        if (snapshot.docs.isNotEmpty) {
+          setState(() {
+            _jeeps = snapshot.docs
+              .map((doc) => JeepData.fromSnapshot(doc))
+              .where((jeep) => jeep.route_id == routeChoice)
+              .toList();
+          });
+        }
+    });
   }
 
   @override
@@ -122,6 +137,7 @@ class _DashboardState extends State<Dashboard> {
     userAuthStream.cancel();
     userFirestoreStream.cancel();
     routesFirestoreStream.cancel();
+    jeepsFirestoreStream.cancel();
     super.dispose();
   }
 
@@ -209,15 +225,18 @@ class _DashboardState extends State<Dashboard> {
                           apiKey: widget.apiKey,
                           isDrawer: drawerOpen,
                           route: routeChoice == -1
-                              ? null
-                              : _routes[routeChoice],
-                          configRoute: _coordConfig,
+                            ? null
+                            : _routes[routeChoice],
+                          jeeps: routeChoice == -1
+                            ? null
+                            : _jeeps,
                           foundDeviceLocation: (LatLng newDeviceLocation) {
                             setState(() {
                               deviceLoc = newDeviceLocation;
                             });
                           },
-
+                          currentUserAuth: currentUserAuth,
+                          currentUserFirestore: currentUserFirestore,
                         )
                       ),
 
@@ -325,38 +344,6 @@ class _DashboardState extends State<Dashboard> {
                                   ]
                               ),
                             ),
-                            if(!Responsive.isMobile(context))
-                              const SizedBox(width: Constants.defaultPadding),
-                            if(!Responsive.isMobile(context))
-                              SingleChildScrollView(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  child: Column(
-                                    children: [
-                                      UnselectedDesktopRouteInfo(),
-
-                                      // Route Manager Dashboard
-                                      if (currentUserAuth != null && currentUserFirestore!.account_type == 2 && routeChoice == currentUserFirestore!.route_id)
-                                        Container(
-                                          width: 300,
-                                          padding: const EdgeInsets.all(Constants.defaultPadding),
-                                          margin: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
-                                          decoration: const BoxDecoration(
-                                            color: Constants.secondaryColor,
-                                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                                          ),
-                                          child: RouteManagerOptions(
-                                            route: _routes[currentUserFirestore!.route_id],
-                                            hoverToggle: hovering,
-                                            coordConfig: (int coordConfig) {
-                                                setState(() {
-                                                  _coordConfig = coordConfig;
-                                                });
-                                              },
-                                            )
-                                        )
-                                    ],
-                                  )
-                              )
                           ],
                         )
                       ),

@@ -10,8 +10,8 @@ import '../../text_field.dart';
 
 class PropertiesSettings extends StatefulWidget {
   RouteData route;
-  final Function() hoverToggle;
-  PropertiesSettings({super.key, required this.route, required this.hoverToggle});
+  final ValueChanged<bool> hover;
+  PropertiesSettings({super.key, required this.route, required this.hover});
 
   @override
   State<PropertiesSettings> createState() => _PropertiesSettingsState();
@@ -124,8 +124,8 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
   void pickColor(BuildContext context) => showDialog(
       context: context,
       builder: (context) => MouseRegion(
-        onEnter: (_) => widget.hoverToggle(),
-        onExit: (_) => widget.hoverToggle(),
+        onEnter: (_) => widget.hover(true),
+        onExit: (_) => widget.hover(false),
         child: AlertDialog(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

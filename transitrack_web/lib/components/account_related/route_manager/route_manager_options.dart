@@ -6,9 +6,9 @@ import '../../../style/constants.dart';
 
 class RouteManagerOptions extends StatefulWidget {
   final RouteData route;
-  final Function() hoverToggle;
+  final ValueChanged<bool> hover;
   final ValueChanged<int> coordConfig;
-  RouteManagerOptions({super.key, required this.route, required this.hoverToggle, required this.coordConfig});
+  RouteManagerOptions({super.key, required this.route, required this.hover, required this.coordConfig});
 
   @override
   State<RouteManagerOptions> createState() => _RouteManagerOptionsState();
@@ -21,11 +21,12 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      onEnter: (_) => widget.hoverToggle(),
-      onExit: (_) => widget.hoverToggle(),
+      onEnter: (_) => widget.hover(true),
+      onExit: (_) => widget.hover(false),
       child: Column(
         children: [
-          Row(
+          if (selected != 1)
+            Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
@@ -51,7 +52,8 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
             ],
           ),
 
-          const SizedBox(height: Constants.defaultPadding),
+          if (selected != 1)
+            const SizedBox(height: Constants.defaultPadding),
 
           if (selected == -1)
             Row(
@@ -99,7 +101,6 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
                       onTap: () async {
                         setState(() {
                           selected = 1;
-                          optionTitle = "Coordinates";
                         });
                       },
                       child: Container(
@@ -169,12 +170,19 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
             ),
 
           if (selected == 0)
-            PropertiesSettings(route: widget.route, hoverToggle: widget.hoverToggle),
+            PropertiesSettings(route: widget.route, hover: (bool value) {
+              widget.hover(value);
+            }),
 
           if (selected == 1)
             CoordinatesSettings(
               route: widget.route,
               coordConfig: (int coordConfig) {
+                if (coordConfig == -1) {
+                  setState(() {
+                    selected = -1;
+                  });
+                }
                 widget.coordConfig(coordConfig);
               }
             )
