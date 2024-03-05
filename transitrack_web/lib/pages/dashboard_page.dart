@@ -278,9 +278,6 @@ class _DashboardState extends State<Dashboard> {
                                 } else {
                                   switchRoute(choice);
                                 }
-                                setState(() {
-                                  _coordConfig = -2;
-                                });
                               },
                               account: currentUserAuth != null
                                   ? currentUserFirestore!

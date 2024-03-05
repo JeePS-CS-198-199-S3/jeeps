@@ -8,8 +8,8 @@ import '../style/constants.dart';
 class DesktopRouteInfo extends StatefulWidget {
   final RouteData route;
   final List<JeepData> jeeps;
-  // final JeepData? selectedJeep;
-  const DesktopRouteInfo({super.key, required this.route, required this.jeeps});
+  final JeepData? selectedJeep;
+  const DesktopRouteInfo({super.key, required this.route, required this.jeeps, required this.selectedJeep});
 
   @override
   State<DesktopRouteInfo> createState() => _DesktopRouteInfoState();
@@ -141,6 +141,54 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
           ),
 
           const SizedBox(height: Constants.defaultPadding),
+
+          const Divider(),
+
+          const SizedBox(height: Constants.defaultPadding),
+
+          if (widget.selectedJeep == null)
+            Container(
+            padding: const EdgeInsets.all(Constants.defaultPadding),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.white,
+                width: 2
+              ),
+              borderRadius: BorderRadius.circular(Constants.defaultPadding)
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.touch_app_rounded),
+                SizedBox(width: Constants.defaultPadding),
+                Text("Select a jeepney")
+              ],
+            ),
+          ),
+
+          if (widget.selectedJeep != null)
+            Container(
+              padding: const EdgeInsets.all(Constants.defaultPadding),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      color: Colors.white,
+                      width: 2
+                  ),
+                  borderRadius: BorderRadius.circular(Constants.defaultPadding)
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.circle, color: Color(widget.route.routeColor)),
+                      const SizedBox(width: Constants.defaultPadding),
+                      Text(widget.selectedJeep!.device_id)
+                    ],
+                  ),
+                  const Icon(Icons.arrow_drop_up)
+                ],
+              ),
+            ),
         ],
       ),
     );

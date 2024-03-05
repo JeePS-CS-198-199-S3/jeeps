@@ -17,17 +17,17 @@ class UnselectedDesktopRouteInfo extends StatelessWidget {
           color: Constants.secondaryColor,
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
-        child: const Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Select a route",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            SizedBox(height: Constants.defaultPadding),
-            SizedBox(
+            const SizedBox(height: Constants.defaultPadding),
+            const SizedBox(
               height: 200,
               child: Center(child: CircleAvatar(
                 radius: 90,
@@ -39,7 +39,26 @@ class UnselectedDesktopRouteInfo extends StatelessWidget {
                 ),
               )),
             ),
-            SizedBox(height: Constants.defaultPadding),
+
+            const SizedBox(height: Constants.defaultPadding),
+
+            const Divider(),
+
+            const SizedBox(height: Constants.defaultPadding),
+
+            Container(
+              width: double.maxFinite,
+              height: 60,
+              padding: const EdgeInsets.all(Constants.defaultPadding),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      color: Colors.white,
+                      width: 2
+                  ),
+                  borderRadius: BorderRadius.circular(Constants.defaultPadding)
+              ),
+              child: const Center(child: Text("Welcome to JeePS!"))
+            )
           ],
         )
     );

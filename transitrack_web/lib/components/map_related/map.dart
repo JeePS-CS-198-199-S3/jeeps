@@ -62,6 +62,8 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
   bool isHover = false;
 
+  JeepEntity? selectedJeep;
+
   @override
   void initState() {
     super.initState();
@@ -77,17 +79,25 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     super.didUpdateWidget(oldWidget);
     // if route choice changed
     if (widget.route != _value) {
+      selectedJeep = null;
+
+      if (_value == null) {
+        _mapController.onCircleTapped.add(onJeepTapped);
+      } else {
+        if (widget.route == null) {_mapController.onCircleTapped.remove(onJeepTapped);}
+      }
+
       setState(() {
         _value = widget.route;
       });
       addLine();
-      for (var jeep in jeepEntities) {
-        _mapController.removeCircle(jeep.jeepCircle);
-      }
+      for (var jeep in jeepEntities) {_mapController.removeCircle(jeep.jeepCircle);}
       jeepEntities.clear();
-      addJeeps();
+
+      if (_value != null) {addJeeps();}
     }
 
+    // jeepney updates
     if (widget.jeeps != null && widget.jeeps != _jeeps) {
       setState(() {
         _jeeps = widget.jeeps;
@@ -115,8 +125,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                   circleColor: intToHexColor(widget.route!.routeColor),
                   circleStrokeColor: '#FFFFFF',
                   circleOpacity: jeep.is_active?1:0,
-                  circleStrokeOpacity: jeep.is_active?1:0,
-                  circleStrokeWidth: 2
               )
           ).then((circle) => jeepEntities.add(JeepEntity(jeep: jeep, jeepCircle: circle)));
         }
@@ -145,8 +153,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                   circleColor: intToHexColor(widget.route!.routeColor),
                   circleStrokeColor: '#FFFFFF',
                   circleOpacity: jeep.is_active?1:0,
-                  circleStrokeOpacity: jeep.is_active?1:0,
-                  circleStrokeWidth: 2
               )
           ).then((circle) => jeepEntities.add(JeepEntity(jeep: jeep, jeepCircle: circle)));
         }
@@ -204,7 +210,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     ));
 
     animation.addListener(() {
-      _mapController.updateCircle(circle, CircleOptions(geometry: animation.value, circleOpacity: hide?0:1, circleStrokeOpacity: hide?0:1));
+      _mapController.updateCircle(circle, CircleOptions(geometry: animation.value, circleOpacity: hide?0:1));
     });
 
     animation.addStatusListener((status) {
@@ -257,6 +263,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
             LineOptions(
               lineWidth: 4.0,
               lineColor: intToHexColor(widget.route!.routeColor),
+              lineOpacity: 0.5,
               geometry: i != (_configRoute == -1? widget.route!.routeCoordinates.length:setRoute.length) - 1
                   ? (_configRoute == -1
                   ? [widget.route!.routeCoordinates[i], widget.route!.routeCoordinates[i+1]]
@@ -283,6 +290,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
         CircleOptions(
           circleRadius: 8.0,
           circleStrokeWidth: 2.0,
+          circleStrokeOpacity: 1,
           circleColor: intToHexColor(widget.route!.routeColor),
           geometry: setRoute[i],
           circleStrokeColor: '#FFFFFF',
@@ -313,6 +321,36 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
     addPoints();
     addLine();
+  }
+
+  void onJeepTapped(Circle pressedJeep) {
+    if (selectedJeep != null) {
+      if (pressedJeep != selectedJeep!.jeepCircle) {
+        if (jeepEntities.any((jeepEntity) => jeepEntity.jeepCircle == pressedJeep)) {
+          setState(() {
+            selectedJeep = jeepEntities.firstWhere((jeepEntity) => jeepEntity.jeepCircle == pressedJeep);
+          });
+        }
+      } else {
+        setState(() {
+          selectedJeep = null;
+        });
+      }
+    } else {
+      if (jeepEntities.any((jeepEntity) => jeepEntity.jeepCircle == pressedJeep)) {
+        setState(() {
+          selectedJeep = jeepEntities.firstWhere((jeepEntity) => jeepEntity.jeepCircle == pressedJeep);
+        });
+      }
+    }
+
+    for (var jeep in jeepEntities) {
+      _mapController.updateCircle(jeep.jeepCircle, const CircleOptions(circleStrokeWidth: 0));
+    }
+
+    if (selectedJeep != null) {
+      _mapController.updateCircle(selectedJeep!.jeepCircle, const CircleOptions(circleStrokeWidth: 2));
+    }
   }
 
   @override
@@ -367,7 +405,10 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                       const UnselectedDesktopRouteInfo(),
 
                     if (widget.route != null)
-                      DesktopRouteInfo(route: _value!, jeeps: _jeeps!),
+                      DesktopRouteInfo(route: _value!, jeeps: _jeeps!, selectedJeep: selectedJeep != null
+                          ? selectedJeep!.jeep
+                          : null
+                      ),
 
                     // Route Manager Dashboard
                     if (widget.route != null
