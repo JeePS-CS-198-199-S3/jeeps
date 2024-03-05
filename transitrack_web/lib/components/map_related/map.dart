@@ -102,7 +102,14 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       setState(() {
         _jeeps = widget.jeeps;
       });
+
       updateJeeps();
+
+      if (selectedJeep != null) {
+        setState(() {
+          selectedJeep = jeepEntities.firstWhere((jeepEntity) => jeepEntity.jeep.device_id == selectedJeep!.jeep.device_id);
+        });
+      }
     }
   }
 
@@ -135,16 +142,18 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   void updateJeeps() {
     if (_jeeps != null) {
       for (var jeep in _jeeps!) {
-        bool containsSpecificJeepData = jeepEntities.any((entity) => entity.jeep.device_id == jeep.device_id);
+        int index = jeepEntities.indexWhere((entity) => entity.jeep.device_id == jeep.device_id);
 
-        if (containsSpecificJeepData) {
-          JeepEntity? specificJeepEntity = jeepEntities.firstWhere((entity) => entity.jeep.device_id == jeep.device_id);
+        if (index != -1) {
+          JeepEntity? specificJeepEntity = jeepEntities[index];
           _animateCircleMovement(
             specificJeepEntity.jeepCircle.options.geometry!,
             LatLng(jeep.location.latitude, jeep.location.longitude),
             specificJeepEntity.jeepCircle,
             hide: !specificJeepEntity.jeep.is_active
           );
+
+          jeepEntities[index] = JeepEntity(jeepCircle: specificJeepEntity.jeepCircle, jeep: jeep);
         } else {
           _mapController.addCircle(
               CircleOptions(

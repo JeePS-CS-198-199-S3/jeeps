@@ -185,7 +185,13 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
                       Text(widget.selectedJeep!.device_id)
                     ],
                   ),
-                  const Icon(Icons.arrow_drop_up)
+                  Row(
+                    children: [
+                      Text("${widget.selectedJeep!.passenger_count}/${widget.selectedJeep!.max_capacity}"),
+                      const SizedBox(width: Constants.defaultPadding/2),
+                      const Icon(Icons.arrow_drop_up),
+                    ],
+                  )
                 ],
               ),
             ),
