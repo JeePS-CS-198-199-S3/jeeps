@@ -30,9 +30,8 @@ class _FeedbackFormState extends State<FeedbackForm> {
 
   final feedBackController = TextEditingController();
 
-  int _rating = -1;
-
-  String feedbackType = "Both";
+  int _drivingRating = -1;
+  int _jeepRating = -1;
 
   void sendFeedback() async {
     // show loading circle
@@ -47,7 +46,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
 
     // feedback field is not empty
     if (feedBackController.text.isNotEmpty) {
-      if (_rating != -1) {
+      if (_drivingRating != -1 && _jeepRating != -1) {
         try {
           // Add a new document with auto-generated ID
           await FirebaseFirestore.instance.collection('feedbacks').add({
@@ -56,8 +55,8 @@ class _FeedbackFormState extends State<FeedbackForm> {
             'feedback_jeepney': widget.jeep.device_id,
             'timestamp': FieldValue.serverTimestamp(),
             'feedback_content': feedBackController.text,
-            'feedback_rating': _rating,
-            'feedback_type': FeedbackData.feedbackTypeMap[feedbackType]
+            'feedback_driving_rating': _drivingRating,
+            'feedback_jeepney_rating': _jeepRating
           }).then((value) => Navigator.pop(context)).then((value) => Navigator.pop(context));
 
           errorMessage("Success!");
@@ -141,8 +140,8 @@ class _FeedbackFormState extends State<FeedbackForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Plate Number"),
-              Text(widget.jeep.device_id),
+              const Text("Driver"),
+              Text(widget.driver.account_name),
             ],
           ),
 
@@ -151,8 +150,8 @@ class _FeedbackFormState extends State<FeedbackForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Driver"),
-              Text(widget.driver.account_name),
+              const Text("Plate Number"),
+              Text(widget.jeep.device_id),
             ],
           ),
 
@@ -162,26 +161,26 @@ class _FeedbackFormState extends State<FeedbackForm> {
 
           const SizedBox(height: Constants.defaultPadding),
 
-          const Text("Driving Quality"),
+          const Text("Driver"),
 
-          if (_rating != -1)
+          if (_drivingRating != -1)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(5, (index) {
                 return IconButton(
                   icon: Icon(
-                    index < _rating ? Icons.star : Icons.star_border,
+                    index < _drivingRating ? Icons.star : Icons.star_border,
                     color: Color(widget.route.routeColor),
                     size: 40,
                   ),
                   onPressed: () {
-                    if (_rating == index + 1) {
+                    if (_drivingRating == index + 1) {
                       setState(() {
-                        _rating = -1;
+                        _drivingRating = -1;
                       });
                     } else {
                       setState(() {
-                        _rating = index + 1;
+                        _drivingRating = index + 1;
                       });
                     }
                   },
@@ -189,7 +188,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
               }),
             ),
 
-          if (_rating == -1)
+          if (_drivingRating == -1)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(5, (index) {
@@ -201,7 +200,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
                   ),
                   onPressed: () {
                     setState(() {
-                      _rating = index + 1;
+                      _drivingRating = index + 1;
                     });
                   },
                 );
@@ -210,26 +209,26 @@ class _FeedbackFormState extends State<FeedbackForm> {
 
           const SizedBox(height: Constants.defaultPadding),
 
-          const Text("Vehicle Quality"),
+          const Text("Jeepney"),
 
-          if (_rating != -1)
+          if (_jeepRating != -1)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(5, (index) {
                 return IconButton(
                   icon: Icon(
-                    index < _rating ? Icons.star : Icons.star_border,
+                    index < _jeepRating ? Icons.star : Icons.star_border,
                     color: Color(widget.route.routeColor),
                     size: 40,
                   ),
                   onPressed: () {
-                    if (_rating == index + 1) {
+                    if (_jeepRating == index + 1) {
                       setState(() {
-                        _rating = -1;
+                        _jeepRating = -1;
                       });
                     } else {
                       setState(() {
-                        _rating = index + 1;
+                        _jeepRating = index + 1;
                       });
                     }
                   },
@@ -237,7 +236,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
               }),
             ),
 
-          if (_rating == -1)
+          if (_jeepRating == -1)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(5, (index) {
@@ -249,7 +248,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
                   ),
                   onPressed: () {
                     setState(() {
-                      _rating = index + 1;
+                      _jeepRating = index + 1;
                     });
                   },
                 );

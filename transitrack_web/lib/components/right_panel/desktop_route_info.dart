@@ -1,6 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:transitrack_web/components/right_panel/report_form.dart';
 
 import '../../models/account_model.dart';
 import '../../models/jeep_model.dart';
@@ -277,9 +278,20 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
 
                                   const SizedBox(width: Constants.defaultPadding),
 
-                                  Expanded(child: Button(onTap: () {
-
-                                  }, text: 'Report', color: Colors.red[700]!)),
+                                  Expanded(child: Button(onTap: () => AwesomeDialog(
+                                    dialogType: DialogType.noHeader,
+                                    context: (context),
+                                    width: 500,
+                                    body: MouseRegion(
+                                      onEnter: (_) => widget.isHover(true),
+                                      onExit: (_) => widget.isHover(false),
+                                      child: ReportForm(
+                                          driver: driverInfo!,
+                                          jeep: _selectedJeep!,
+                                          route: widget.route,
+                                          user: widget.user),
+                                    ),
+                                  ).show(), text: 'Report', color: Colors.red[700]!)),
                                 ],
                               )
                             ],

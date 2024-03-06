@@ -18,16 +18,4 @@ class FeedbackData {
     required this.feedback_rating,
     required this.feedback_type,
   });
-
-  static Map<String, int> feedbackTypeMap = {
-    'Both': 0,
-    'Driver': 1,
-    'Jeepney': 2,
-  };
-
-  static List<String> feedbackType = [
-    'Both',
-    'Driver',
-    'Jeepney',
-  ];
 }
