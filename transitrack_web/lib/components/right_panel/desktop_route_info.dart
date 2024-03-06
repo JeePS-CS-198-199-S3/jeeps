@@ -1,5 +1,4 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +14,8 @@ class DesktopRouteInfo extends StatefulWidget {
   final List<JeepData> jeeps;
   final JeepData? selectedJeep;
   final AccountData? user;
-  const DesktopRouteInfo({super.key, required this.route, required this.user, required this.jeeps, required this.selectedJeep});
+  final ValueChanged<bool> isHover;
+  const DesktopRouteInfo({super.key, required this.route, required this.user, required this.jeeps, required this.selectedJeep, required this.isHover});
 
   @override
   State<DesktopRouteInfo> createState() => _DesktopRouteInfoState();
@@ -264,11 +264,15 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
                                     dialogType: DialogType.noHeader,
                                     context: (context),
                                     width: 500,
-                                    body: FeedbackForm(
-                                      driver: driverInfo!,
-                                      jeep: _selectedJeep!,
-                                      route: widget.route,
-                                      user: widget.user),
+                                    body: MouseRegion(
+                                      onEnter: (_) => widget.isHover(true),
+                                      onExit: (_) => widget.isHover(false),
+                                      child: FeedbackForm(
+                                        driver: driverInfo!,
+                                        jeep: _selectedJeep!,
+                                        route: widget.route,
+                                        user: widget.user),
+                                    ),
                                   ).show(), text: 'Feedback', color: Color(widget.route.routeColor))),
 
                                   const SizedBox(width: Constants.defaultPadding),

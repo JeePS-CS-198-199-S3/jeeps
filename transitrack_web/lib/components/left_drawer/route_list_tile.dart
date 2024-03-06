@@ -4,14 +4,12 @@ import '../../services/format_time.dart';
 import '../../style/constants.dart';
 
 class RouteListTile extends StatefulWidget {
-  String? apiKey;
   final RouteData route;
   final bool isSelected;
   final Function() hoverToggle;
 
   RouteListTile({
     super.key,
-    required this.apiKey,
     required this.route,
     required this.isSelected,
     required this.hoverToggle

@@ -1,21 +1,17 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:transitrack_web/components/left_drawer/route_list_tile.dart';
-import '../../models/account_model.dart';
 import '../../models/route_model.dart';
 
 class RouteList extends StatefulWidget {
-  String? apiKey;
-  final List<RouteData> routes;
+  final List<RouteData>? routes;
   final int routeChoice;
   final ValueChanged<int> newRouteChoice;
-  final AccountData? account;
   final Function() hoverToggle;
   RouteList({super.key,
-    required this.apiKey,
     required this.routeChoice,
     required this.routes,
     required this.newRouteChoice,
-    this.account,
     required this.hoverToggle}
   );
 
@@ -29,24 +25,27 @@ class _RouteListState extends State<RouteList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        if (widget.routes != null)
         ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: widget.routes.length,
+          itemCount: widget.routes!.length,
           itemBuilder: (context, index) {
             return GestureDetector(
               onTap: () {
                 widget.newRouteChoice(index);
               },
               child: RouteListTile(
-                apiKey: widget.apiKey,
-                route: widget.routes[index],
+                route: widget.routes![index],
                 isSelected: widget.routeChoice == index,
                 hoverToggle: widget.hoverToggle,
               ),
             );
           },
-        )
+        ),
+
+        if (widget.routes == null)
+          const Center(child: CircularProgressIndicator())
       ],
     );
   }

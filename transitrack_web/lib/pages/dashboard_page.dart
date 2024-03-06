@@ -24,8 +24,7 @@ import '../services/send_ping.dart';
 import '../style/constants.dart';
 
 class Dashboard extends StatefulWidget {
-  String? apiKey;
-  Dashboard({super.key, required this.apiKey});
+  Dashboard({super.key});
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -90,6 +89,7 @@ class _DashboardState extends State<Dashboard> {
           });
           userFirestoreStream.cancel();
         }
+        switchRoute(-1);
       },
     );
   }
@@ -129,13 +129,13 @@ class _DashboardState extends State<Dashboard> {
   void listenToJeepsFirestore() {
     jeepsFirestoreStream = FirebaseFirestore.instance
       .collection('jeeps_realtime')
+      .where('route_id', isEqualTo: routeChoice)
       .snapshots()
       .listen((QuerySnapshot snapshot) {
         if (snapshot.docs.isNotEmpty) {
           setState(() {
             _jeeps = snapshot.docs
               .map((doc) => JeepData.fromSnapshot(doc))
-              .where((jeep) => jeep.route_id == routeChoice)
               .toList();
           });
         }
@@ -178,7 +178,6 @@ class _DashboardState extends State<Dashboard> {
 
               if (mapLoaded)
               RouteList(
-                apiKey: widget.apiKey,
                 routeChoice: routeChoice,
                 routes: _routes,
                 newRouteChoice: (int choice) {
@@ -188,9 +187,6 @@ class _DashboardState extends State<Dashboard> {
                     switchRoute(choice);
                   }
                 },
-                account: currentUserAuth != null
-                    ? currentUserFirestore!
-                    : null,
                 hoverToggle: hovering
               ),
 
@@ -241,7 +237,6 @@ class _DashboardState extends State<Dashboard> {
                     children: [
                       Expanded(
                         child: MapWidget(
-                          apiKey: widget.apiKey,
                           isDrawer: drawerOpen,
                           route: routeChoice == -1
                             ? null
@@ -254,7 +249,6 @@ class _DashboardState extends State<Dashboard> {
                               deviceLoc = newDeviceLocation;
                             });
                           },
-                          currentUserAuth: currentUserAuth,
                           currentUserFirestore: currentUserFirestore, mapLoaded: (bool isLoaded) => setState(() {
                             mapLoaded = isLoaded;
                           }),
@@ -291,7 +285,6 @@ class _DashboardState extends State<Dashboard> {
 
                             if (mapLoaded)
                             RouteList(
-                              apiKey: widget.apiKey,
                               routeChoice: routeChoice,
                               routes: _routes,
                               newRouteChoice: (int choice) {
@@ -301,9 +294,6 @@ class _DashboardState extends State<Dashboard> {
                                   switchRoute(choice);
                                 }
                               },
-                              account: currentUserAuth != null
-                                  ? currentUserFirestore!
-                                  : null,
                               hoverToggle: hovering
                             ),
 

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
@@ -20,15 +19,13 @@ import '../right_panel/desktop_route_info.dart';
 import '../right_panel/unselected_desktop_route_info.dart';
 
 class MapWidget extends StatefulWidget {
-  String? apiKey;
   final bool isDrawer;
   final RouteData? route;
   final List<JeepData>? jeeps;
-  final User? currentUserAuth;
   final AccountData? currentUserFirestore;
   final ValueChanged<LatLng> foundDeviceLocation;
   final ValueChanged<bool> mapLoaded;
-  MapWidget({Key? key, required this.apiKey, required this.isDrawer, required this.route, required this.jeeps, required this.currentUserAuth, required this.currentUserFirestore, required this.foundDeviceLocation, required this.mapLoaded}) : super(key: key);
+  MapWidget({Key? key, required this.isDrawer, required this.route, required this.jeeps, required this.currentUserFirestore, required this.foundDeviceLocation, required this.mapLoaded}) : super(key: key);
 
   @override
   State<MapWidget> createState() => _MapWidgetState();
@@ -380,7 +377,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       body: Stack(
         children: [
           MapboxMap(
-            accessToken: widget.apiKey,
+            accessToken: Keys.MapBoxKey,
             styleString: Keys.MapBoxNight,
             doubleClickZoomEnabled: false,
             minMaxZoomPreference: MinMaxZoomPreference(mapMinZoom, mapMaxZoom),
@@ -416,7 +413,15 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
               child: Column(
                 children: [
                   if (widget.route == null)
-                    const UnselectedDesktopRouteInfo(),
+                    MouseRegion(
+                      onEnter: (_) => setState(() {
+                        isHover = true;
+                      }),
+                      onExit: (_) => setState(() {
+                        isHover = false;
+                      }),
+                      child: const UnselectedDesktopRouteInfo()
+                    ),
 
                   if (widget.route != null)
                     MouseRegion(
@@ -429,13 +434,15 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                       child: DesktopRouteInfo(route: _value!, jeeps: _jeeps!, selectedJeep: selectedJeep != null
                           ? selectedJeep!.jeep
                           : null,
-                        user: widget.currentUserFirestore,
+                        user: widget.currentUserFirestore, isHover: (bool value) {setState(() {
+                          isHover = value;
+                        });},
                       ),
                     ),
 
                   // Route Manager Dashboard
                   if (widget.route != null
-                      && widget.currentUserAuth != null
+                      && widget.currentUserFirestore != null
                       && widget.currentUserFirestore!.account_type == 2
                       && widget.currentUserFirestore!.is_verified
                       && widget.route!.routeId == widget.currentUserFirestore!.route_id)

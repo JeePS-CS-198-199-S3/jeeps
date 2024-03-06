@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/account_model.dart';
+import '../../models/feedback_model.dart';
 import '../../models/jeep_model.dart';
 import '../../models/route_model.dart';
 import '../../style/constants.dart';
@@ -31,6 +32,8 @@ class _FeedbackFormState extends State<FeedbackForm> {
 
   int _rating = -1;
 
+  String feedbackType = "Both";
+
   void sendFeedback() async {
     // show loading circle
     showDialog(
@@ -48,12 +51,13 @@ class _FeedbackFormState extends State<FeedbackForm> {
         try {
           // Add a new document with auto-generated ID
           await FirebaseFirestore.instance.collection('feedbacks').add({
-            'user_feedback': widget.user!.account_email,
-            'driver_feedback': widget.driver.account_email,
-            'jeepney_feedback': widget.jeep.device_id,
+            'feedback_sender': widget.user!.account_email,
+            'feedback_recepient': widget.driver.account_email,
+            'feedback_jeepney': widget.jeep.device_id,
             'timestamp': FieldValue.serverTimestamp(),
-            'content_feedback': feedBackController.text,
-            'rating_feedback': _rating,
+            'feedback_content': feedBackController.text,
+            'feedback_rating': _rating,
+            'feedback_type': FeedbackData.feedbackTypeMap[feedbackType]
           }).then((value) => Navigator.pop(context)).then((value) => Navigator.pop(context));
 
           errorMessage("Success!");
@@ -103,6 +107,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
     return Padding(
       padding: const EdgeInsets.only(left: Constants.defaultPadding, right: Constants.defaultPadding, bottom: Constants.defaultPadding),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Row(
@@ -112,26 +117,6 @@ class _FeedbackFormState extends State<FeedbackForm> {
           ),
 
           const Divider(color: Colors.white),
-
-          const SizedBox(height: Constants.defaultPadding),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text("Driver"),
-              Text(widget.driver.account_name),
-            ],
-          ),
-
-          const SizedBox(height: Constants.defaultPadding),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text("Plate Number"),
-              Text(widget.jeep.device_id),
-            ],
-          ),
 
           const SizedBox(height: Constants.defaultPadding),
 
@@ -153,13 +138,31 @@ class _FeedbackFormState extends State<FeedbackForm> {
 
           const SizedBox(height: Constants.defaultPadding),
 
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Plate Number"),
+              Text(widget.jeep.device_id),
+            ],
+          ),
+
+          const SizedBox(height: Constants.defaultPadding),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Driver"),
+              Text(widget.driver.account_name),
+            ],
+          ),
+
+          const SizedBox(height: Constants.defaultPadding),
+
           const Divider(color: Colors.white),
 
           const SizedBox(height: Constants.defaultPadding),
 
-          InputTextField(controller: feedBackController, hintText: "Feedback", obscureText: false, lines: 4, limit: 150),
-
-          const SizedBox(height: Constants.defaultPadding/2),
+          const Text("Driving Quality"),
 
           if (_rating != -1)
             Row(
@@ -169,6 +172,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
                   icon: Icon(
                     index < _rating ? Icons.star : Icons.star_border,
                     color: Color(widget.route.routeColor),
+                    size: 40,
                   ),
                   onPressed: () {
                     if (_rating == index + 1) {
@@ -193,6 +197,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
                   icon: const Icon(
                     Icons.star_border,
                     color: Colors.grey,
+                    size: 40,
                   ),
                   onPressed: () {
                     setState(() {
@@ -202,6 +207,62 @@ class _FeedbackFormState extends State<FeedbackForm> {
                 );
               }),
             ),
+
+          const SizedBox(height: Constants.defaultPadding),
+
+          const Text("Vehicle Quality"),
+
+          if (_rating != -1)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (index) {
+                return IconButton(
+                  icon: Icon(
+                    index < _rating ? Icons.star : Icons.star_border,
+                    color: Color(widget.route.routeColor),
+                    size: 40,
+                  ),
+                  onPressed: () {
+                    if (_rating == index + 1) {
+                      setState(() {
+                        _rating = -1;
+                      });
+                    } else {
+                      setState(() {
+                        _rating = index + 1;
+                      });
+                    }
+                  },
+                );
+              }),
+            ),
+
+          if (_rating == -1)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (index) {
+                return IconButton(
+                  icon: const Icon(
+                    Icons.star_border,
+                    color: Colors.grey,
+                    size: 40,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _rating = index + 1;
+                    });
+                  },
+                );
+              }),
+            ),
+
+          const SizedBox(height: Constants.defaultPadding),
+
+          const Divider(color: Colors.white),
+
+          const SizedBox(height: Constants.defaultPadding),
+
+          InputTextField(controller: feedBackController, hintText: "Feedback", obscureText: false, lines: 4, limit: 150),
 
           const SizedBox(height: Constants.defaultPadding),
 
