@@ -27,7 +27,8 @@ class MapWidget extends StatefulWidget {
   final User? currentUserAuth;
   final AccountData? currentUserFirestore;
   final ValueChanged<LatLng> foundDeviceLocation;
-  MapWidget({Key? key, required this.apiKey, required this.isDrawer, required this.route, required this.jeeps, required this.currentUserAuth, required this.currentUserFirestore, required this.foundDeviceLocation}) : super(key: key);
+  final ValueChanged<bool> mapLoaded;
+  MapWidget({Key? key, required this.apiKey, required this.isDrawer, required this.route, required this.jeeps, required this.currentUserAuth, required this.currentUserFirestore, required this.foundDeviceLocation, required this.mapLoaded}) : super(key: key);
 
   @override
   State<MapWidget> createState() => _MapWidgetState();
@@ -394,6 +395,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
             onMapCreated: (controller) {
               _onMapCreated(controller);
             },
+            onStyleLoadedCallback: () => widget.mapLoaded(true),
             initialCameraPosition: CameraPosition(
               target: Keys.MapCenter,
               zoom: mapStartZoom,

@@ -50,6 +50,8 @@ class _DashboardState extends State<Dashboard> {
   // Device Location Found
   LatLng? deviceLoc;
 
+  // Ensure map is loaded
+  bool mapLoaded = false;
 
   @override
   void initState() {
@@ -166,6 +168,7 @@ class _DashboardState extends State<Dashboard> {
                     child: CircularProgressIndicator()
                 ),
 
+              if (mapLoaded)
               RouteList(
                 apiKey: widget.apiKey,
                 routeChoice: routeChoice,
@@ -182,6 +185,14 @@ class _DashboardState extends State<Dashboard> {
                     : null,
                 hoverToggle: hovering
               ),
+
+              if (!mapLoaded)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: Constants.defaultPadding),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
 
               Container(
                   padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
@@ -236,7 +247,9 @@ class _DashboardState extends State<Dashboard> {
                             });
                           },
                           currentUserAuth: currentUserAuth,
-                          currentUserFirestore: currentUserFirestore,
+                          currentUserFirestore: currentUserFirestore, mapLoaded: (bool isLoaded) => setState(() {
+                            mapLoaded = isLoaded;
+                          }),
                         )
                       ),
 
@@ -268,6 +281,7 @@ class _DashboardState extends State<Dashboard> {
                                 child: CircularProgressIndicator()
                               ),
 
+                            if (mapLoaded)
                             RouteList(
                               apiKey: widget.apiKey,
                               routeChoice: routeChoice,
@@ -284,6 +298,14 @@ class _DashboardState extends State<Dashboard> {
                                   : null,
                               hoverToggle: hovering
                             ),
+
+                            if (!mapLoaded)
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: Constants.defaultPadding),
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
 
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
