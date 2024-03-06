@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../style/constants.dart';
+import '../../style/constants.dart';
 
 class MobileRouteInfo extends StatefulWidget {
   const MobileRouteInfo({super.key});

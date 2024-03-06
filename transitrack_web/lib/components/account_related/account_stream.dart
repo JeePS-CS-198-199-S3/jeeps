@@ -78,11 +78,12 @@ class _AccountStreamState extends State<AccountStream> {
                         onTap: () async {
                           if (Responsive.isDesktop(context)) {widget.hoverToggle();}
                           AwesomeDialog(
-                              context: context,
-                              dialogType: DialogType.noHeader,
-                              body: AccountSettings(
-                                  user: widget.currentUser!, account: widget.user!
-                              ),
+                            width: 500,
+                            context: context,
+                            dialogType: DialogType.noHeader,
+                            body: AccountSettings(
+                                user: widget.currentUser!, account: widget.user!
+                            ),
                           ).show().then((value) {
                             if (Responsive.isDesktop(context)) {widget.hoverToggle();}
                           }
@@ -168,9 +169,10 @@ class _AccountStreamState extends State<AccountStream> {
               onTap: () async {
                 setState(() {
                   AwesomeDialog(
-                      context: context,
-                      dialogType: DialogType.noHeader,
-                      body: const LoginSignupForm()
+                    width: 500,
+                    context: context,
+                    dialogType: DialogType.noHeader,
+                    body: const LoginSignupForm()
                   ).show();
                 });
               },

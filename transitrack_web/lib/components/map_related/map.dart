@@ -16,8 +16,8 @@ import '../../models/jeep_model.dart';
 import '../../models/route_model.dart';
 import '../../style/constants.dart';
 import '../account_related/route_manager/route_manager_options.dart';
-import '../desktop_route_info.dart';
-import '../unselected_desktop_route_info.dart';
+import '../right_panel/desktop_route_info.dart';
+import '../right_panel/unselected_desktop_route_info.dart';
 
 class MapWidget extends StatefulWidget {
   String? apiKey;
@@ -428,7 +428,8 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                       }),
                       child: DesktopRouteInfo(route: _value!, jeeps: _jeeps!, selectedJeep: selectedJeep != null
                           ? selectedJeep!.jeep
-                          : null
+                          : null,
+                        user: widget.currentUserFirestore,
                       ),
                     ),
 
@@ -436,6 +437,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                   if (widget.route != null
                       && widget.currentUserAuth != null
                       && widget.currentUserFirestore!.account_type == 2
+                      && widget.currentUserFirestore!.is_verified
                       && widget.route!.routeId == widget.currentUserFirestore!.route_id)
                     Container(
                         width: 300,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../style/constants.dart';
+import '../../style/constants.dart';
 
 class MobileDashboardUnselected extends StatelessWidget {
   const MobileDashboardUnselected({

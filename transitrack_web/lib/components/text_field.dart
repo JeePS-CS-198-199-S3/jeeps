@@ -8,14 +8,20 @@ class InputTextField extends StatelessWidget {
   final String hintText;
   final bool obscureText;
   final TextInputType? type;
+  final int? lines;
+  final int? limit;
 
   InputTextField({
     super.key,
     required this.controller,
     required this.hintText,
     required this.obscureText,
-    this.type
+    this.type,
+    this.lines,
+    this.limit
   });
+
+  int textLength = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +49,8 @@ class InputTextField extends StatelessWidget {
         hintStyle: const TextStyle(color: Colors.white),
       ),
       style: const TextStyle(color: Colors.white),
+      maxLines: obscureText? 1:lines,
+      maxLength: limit,
     );
   }
 }

@@ -12,7 +12,7 @@ import '../components/cooldown_button.dart';
 import '../components/header.dart';
 import '../components/left_drawer/logo.dart';
 import '../components/map_related/map.dart';
-import '../components/mobile_dashboard_unselected.dart';
+import '../components/right_panel/mobile_dashboard_unselected.dart';
 import '../components/left_drawer/route_list.dart';
 import '../config/responsive.dart';
 import '../config/size_config.dart';
@@ -81,7 +81,15 @@ class _DashboardState extends State<Dashboard> {
         setState(() {
           currentUserAuth = user;
         });
-        listenToUserFirestore();
+
+        if (currentUserAuth != null) {
+          listenToUserFirestore();
+        } else {
+          setState(() {
+            currentUserFirestore = null;
+          });
+          userFirestoreStream.cancel();
+        }
       },
     );
   }

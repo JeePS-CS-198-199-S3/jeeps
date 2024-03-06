@@ -1,20 +1,21 @@
-import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import '../models/account_model.dart';
-import '../models/jeep_model.dart';
-import '../models/route_model.dart';
-import '../style/constants.dart';
-import 'button.dart';
+import '../../models/account_model.dart';
+import '../../models/jeep_model.dart';
+import '../../models/route_model.dart';
+import '../../style/constants.dart';
+import '../button.dart';
+import 'feedback_form.dart';
 
 class DesktopRouteInfo extends StatefulWidget {
   final RouteData route;
   final List<JeepData> jeeps;
   final JeepData? selectedJeep;
-  const DesktopRouteInfo({super.key, required this.route, required this.jeeps, required this.selectedJeep});
+  final AccountData? user;
+  const DesktopRouteInfo({super.key, required this.route, required this.user, required this.jeeps, required this.selectedJeep});
 
   @override
   State<DesktopRouteInfo> createState() => _DesktopRouteInfoState();
@@ -40,6 +41,7 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
   @override
   void initState() {
     super.initState();
+
     setState(() {
       _value = widget.route;
       _jeeps = widget.jeeps;
@@ -250,13 +252,32 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
                             ],
                           ),
 
-                          const SizedBox(height: Constants.defaultPadding),
-
-                          Row(
+                          if (widget.user != null && widget.user!.is_verified && driverInfo != null)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(child: Button(onTap: () {  }, text: 'Feedback', color: Color(widget.route.routeColor))),
-                              const SizedBox(width: Constants.defaultPadding),
-                              Expanded(child: Button(onTap: () {  }, text: 'Report', color: Colors.red[700]!)),
+                              const SizedBox(height: Constants.defaultPadding),
+
+                              Row(
+                                children: [
+                                  Expanded(child: Button(onTap: () => AwesomeDialog(
+                                    dialogType: DialogType.noHeader,
+                                    context: (context),
+                                    width: 500,
+                                    body: FeedbackForm(
+                                      driver: driverInfo!,
+                                      jeep: _selectedJeep!,
+                                      route: widget.route,
+                                      user: widget.user),
+                                  ).show(), text: 'Feedback', color: Color(widget.route.routeColor))),
+
+                                  const SizedBox(width: Constants.defaultPadding),
+
+                                  Expanded(child: Button(onTap: () {
+
+                                  }, text: 'Report', color: Colors.red[700]!)),
+                                ],
+                              )
                             ],
                           )
                         ],
