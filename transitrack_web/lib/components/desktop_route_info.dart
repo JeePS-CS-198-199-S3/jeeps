@@ -1,9 +1,14 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../models/account_model.dart';
 import '../models/jeep_model.dart';
 import '../models/route_model.dart';
 import '../style/constants.dart';
+import 'button.dart';
 
 class DesktopRouteInfo extends StatefulWidget {
   final RouteData route;
@@ -18,8 +23,19 @@ class DesktopRouteInfo extends StatefulWidget {
 class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
   late RouteData _value;
   late List<JeepData> _jeeps;
+  late JeepData? _selectedJeep;
   late int operating;
   late int not_operating;
+
+  AccountData? driverInfo;
+  bool isTapped = false;
+
+ void fetchDriverData(String jeep_id) async {
+   AccountData? acc = await AccountData.getDriverAccountByJeep(jeep_id);
+    setState(() {
+      driverInfo = acc;
+    });
+  }
 
   @override
   void initState() {
@@ -27,6 +43,7 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
     setState(() {
       _value = widget.route;
       _jeeps = widget.jeeps;
+      _selectedJeep = widget.selectedJeep;
       operating = widget.jeeps.where((jeep) => jeep.is_active == true).length;
       not_operating = widget.jeeps.where((jeep) => jeep.is_active == false).length;
     });
@@ -40,6 +57,15 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
       setState(() {
         _value = widget.route;
       });
+    }
+
+    if (widget.selectedJeep != _selectedJeep) {
+      setState(() {
+        _selectedJeep = widget.selectedJeep;
+      });
+      if (_selectedJeep != null) {
+        fetchDriverData(_selectedJeep!.device_id);
+      }
     }
 
     if (widget.jeeps != _jeeps) {
@@ -175,23 +201,67 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
                   ),
                   borderRadius: BorderRadius.circular(Constants.defaultPadding)
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.circle, color: Color(widget.route.routeColor)),
-                      const SizedBox(width: Constants.defaultPadding),
-                      Text(widget.selectedJeep!.device_id)
+                      Row(
+                        children: [
+                          Icon(Icons.circle, color: Color(widget.route.routeColor)),
+                          const SizedBox(width: Constants.defaultPadding),
+                          Text(widget.selectedJeep!.device_id)
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text("${widget.selectedJeep!.passenger_count}/${widget.selectedJeep!.max_capacity}"),
+                          const SizedBox(width: Constants.defaultPadding/2),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isTapped = !isTapped;
+                              });
+                            },
+                            child: isTapped
+                              ? const Icon(Icons.arrow_drop_down)
+                              : const Icon(Icons.arrow_drop_up)
+                          ),
+                        ],
+                      )
                     ],
                   ),
-                  Row(
-                    children: [
-                      Text("${widget.selectedJeep!.passenger_count}/${widget.selectedJeep!.max_capacity}"),
-                      const SizedBox(width: Constants.defaultPadding/2),
-                      const Icon(Icons.arrow_drop_up),
-                    ],
-                  )
+
+                  if (widget.selectedJeep != null && isTapped)
+                    const Divider(color: Colors.white),
+
+                  if (widget.selectedJeep != null && isTapped)
+                    SizedBox(
+                      width: double.maxFinite,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text("Driver"),
+                              const SizedBox(width: Constants.defaultPadding),
+                              Text(driverInfo != null ? driverInfo!.account_name : "Unassigned", maxLines: 1, overflow: TextOverflow.ellipsis,)
+                            ],
+                          ),
+
+                          const SizedBox(height: Constants.defaultPadding),
+
+                          Row(
+                            children: [
+                              Expanded(child: Button(onTap: () {  }, text: 'Feedback', color: Color(widget.route.routeColor))),
+                              const SizedBox(width: Constants.defaultPadding),
+                              Expanded(child: Button(onTap: () {  }, text: 'Report', color: Colors.red[700]!)),
+                            ],
+                          )
+                        ],
+                      ),
+                    )
                 ],
               ),
             ),

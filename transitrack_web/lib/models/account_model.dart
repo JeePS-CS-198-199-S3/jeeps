@@ -56,6 +56,25 @@ class AccountData{
     }
   }
 
+  static Future<AccountData?> getDriverAccountByJeep(String jeep_id) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('accounts')
+          .where('account_type', isEqualTo: 1)
+          .where('jeep_driving', isEqualTo: jeep_id)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return AccountData.fromSnapshot(querySnapshot.docs.first);
+      } else {
+        return null; // No document found with the given email
+      }
+    } catch (e) {
+      print('Error fetching account data: $e');
+      return null;
+    }
+  }
+
   static Future<void> updateAccountFirestore(String email, Map<String, dynamic> dataToUpdate) async {
     try {
       CollectionReference accountsCollection = FirebaseFirestore.instance.collection('accounts');
