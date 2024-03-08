@@ -10,6 +10,7 @@ class RouteData {
   int routeId;
   String routeName;
   List<int> routeTime;
+  bool isClockwise;
 
   RouteData({
     required this.enabled,
@@ -20,6 +21,7 @@ class RouteData {
     required this.routeId,
     required this.routeName,
     required this.routeTime,
+    required this.isClockwise
   });
 
   factory RouteData.fromFirestore(DocumentSnapshot doc) {
@@ -37,6 +39,7 @@ class RouteData {
       routeTime: (data['route_time'] as List<dynamic>)
           .map((time) => time as int)
           .toList(),
+      isClockwise: data['is_clockwise'] as bool
     );
   }
 

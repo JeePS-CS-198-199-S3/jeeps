@@ -45,12 +45,13 @@ class LatLngTween extends Tween<LatLng> {
 class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   late RouteData? _value;
   late List<JeepData>? _jeeps;
+  late LatLng? myLocation;
   late int _configRoute;
 
   late MapboxMapController _mapController;
   late StreamSubscription<Position> _positionStream;
 
-  late Circle deviceCircle;
+  late Circle? deviceCircle;
   bool deviceInMap = false;
 
   late List<LatLng> setRoute;
@@ -65,11 +66,14 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
     setState(() {
       _value = widget.route;
       _jeeps = widget.jeeps;
       _configRoute = -1;
+      myLocation = null;
     });
+    _getLocation();
   }
 
   @override
@@ -88,6 +92,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       setState(() {
         _value = widget.route;
       });
+
       addLine();
       for (var jeep in jeepEntities) {_mapController.removeCircle(jeep.jeepCircle);}
       jeepEntities.clear();
@@ -172,6 +177,23 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     _listenToDeviceLocation();
   }
 
+  void _getLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      setState(() {
+        myLocation = position as LatLng;
+      });
+
+      _mapController.animateCamera(
+          CameraUpdate.newLatLngZoom(myLocation!, mapStartZoom)
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
   void _listenToDeviceLocation() {
     _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
@@ -183,9 +205,11 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   }
 
   void _updateDeviceCircle(LatLng latLng) {
+    setState(() {
+      myLocation = latLng;
+    });
     if (deviceInMap) {
-      LatLng previousLatLng = deviceCircle.options.geometry as LatLng;
-      _animateCircleMovement(previousLatLng, latLng, deviceCircle);
+      _animateCircleMovement(deviceCircle!.options.geometry as LatLng, latLng, deviceCircle!);
     } else {
       _mapController.addCircle(
           CircleOptions(
@@ -436,7 +460,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                           : null,
                         user: widget.currentUserFirestore, isHover: (bool value) {setState(() {
                           isHover = value;
-                        });},
+                        });}, myLocation: myLocation,
                       ),
                     ),
 

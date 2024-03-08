@@ -87,7 +87,6 @@ class _DashboardState extends State<Dashboard> {
           setState(() {
             currentUserFirestore = null;
           });
-          userFirestoreStream.cancel();
         }
         switchRoute(-1);
       },

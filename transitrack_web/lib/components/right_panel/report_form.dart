@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../config/keys.dart';
 import '../../models/account_model.dart';
 import '../../models/jeep_model.dart';
 import '../../models/report_model.dart';
@@ -9,6 +12,7 @@ import '../../style/constants.dart';
 import '../../style/style.dart';
 import '../button.dart';
 import '../text_field.dart';
+import 'package:http/http.dart' as http;
 
 class ReportForm extends StatefulWidget {
   AccountData driver;
@@ -30,6 +34,33 @@ class _ReportFormState extends State<ReportForm> {
   final reportController = TextEditingController();
 
   String reportType = "Lost Item";
+  late String address;
+
+  @override
+  void initState() {
+    super.initState();
+    findAddress();
+  }
+
+  Future<void> findAddress() async {
+    String loc = '${widget.jeep.location.longitude},${widget.jeep.location.latitude}';
+    String apiUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/$loc.json?access_token=${Keys.MapBoxKey}';
+
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+
+      final decoded = json.decode(response.body);
+      final features = decoded['features'];
+      setState(() {
+        address = '${features[0]['text']}, ${features[2]['text']}';
+      });
+    } else {
+      print('Error: ${response.statusCode} - ${response.reasonPhrase}');
+    }
+  }
+
+
 
   void sendReport() async {
     // show loading circle
@@ -67,7 +98,7 @@ class _ReportFormState extends State<ReportForm> {
       Navigator.pop(context);
 
       // password dont match
-      errorMessage("Feedback field is empty!");
+      errorMessage("Report field is empty!");
     }
     // try sign up
 
@@ -147,6 +178,22 @@ class _ReportFormState extends State<ReportForm> {
           ),
 
           const SizedBox(height: Constants.defaultPadding),
+
+          if (ReportData.reportTypeMap[reportType]! >= 1 && ReportData.reportTypeMap[reportType]! <= 3)
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Address"),
+                    const SizedBox(width: Constants.defaultPadding),
+                    Text(address, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+
+                const SizedBox(height: Constants.defaultPadding),
+              ]
+            ),
 
           const Divider(color: Colors.white),
 

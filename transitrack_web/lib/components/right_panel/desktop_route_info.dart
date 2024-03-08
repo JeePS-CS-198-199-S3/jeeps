@@ -2,6 +2,8 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:transitrack_web/components/right_panel/report_form.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
+import 'dart:async';
 
 import '../../models/account_model.dart';
 import '../../models/jeep_model.dart';
@@ -9,6 +11,8 @@ import '../../models/route_model.dart';
 import '../../style/constants.dart';
 import '../button.dart';
 import 'feedback_form.dart';
+import '../../services/eta.dart';
+import '../text_loader.dart';
 
 class DesktopRouteInfo extends StatefulWidget {
   final RouteData route;
@@ -16,7 +20,8 @@ class DesktopRouteInfo extends StatefulWidget {
   final JeepData? selectedJeep;
   final AccountData? user;
   final ValueChanged<bool> isHover;
-  const DesktopRouteInfo({super.key, required this.route, required this.user, required this.jeeps, required this.selectedJeep, required this.isHover});
+  final LatLng? myLocation;
+  const DesktopRouteInfo({super.key, required this.route, required this.user, required this.jeeps, required this.selectedJeep, required this.isHover, required this.myLocation});
 
   @override
   State<DesktopRouteInfo> createState() => _DesktopRouteInfoState();
@@ -26,18 +31,13 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
   late RouteData _value;
   late List<JeepData> _jeeps;
   late JeepData? _selectedJeep;
+  late String? _eta;
   late int operating;
   late int not_operating;
+  late LatLng? _myLocation;
 
   AccountData? driverInfo;
   bool isTapped = false;
-
- void fetchDriverData(String jeep_id) async {
-   AccountData? acc = await AccountData.getDriverAccountByJeep(jeep_id);
-    setState(() {
-      driverInfo = acc;
-    });
-  }
 
   @override
   void initState() {
@@ -47,9 +47,34 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
       _value = widget.route;
       _jeeps = widget.jeeps;
       _selectedJeep = widget.selectedJeep;
+      _myLocation = widget.myLocation;
       operating = widget.jeeps.where((jeep) => jeep.is_active == true).length;
+      _eta = null;
       not_operating = widget.jeeps.where((jeep) => jeep.is_active == false).length;
     });
+
+    Timer.periodic(const Duration(seconds: 3), fetchEta);
+  }
+
+ void fetchDriverData(String jeep_id) async {
+   AccountData? acc = await AccountData.getDriverAccountByJeep(jeep_id);
+    setState(() {
+      driverInfo = acc;
+    });
+  }
+
+  void fetchEta(Timer timer) async {
+   if (_myLocation != null && _selectedJeep != null) {
+     String time = await eta(
+         widget.route.routeCoordinates,
+         widget.route.isClockwise,
+         _myLocation!,
+         LatLng(_selectedJeep!.location.latitude, _selectedJeep!.location.longitude)
+     );
+     setState(() {
+       _eta = time;
+     });
+   }
   }
 
   @override
@@ -62,9 +87,17 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
       });
     }
 
+    if (widget.myLocation != _myLocation) {
+      setState(() {
+        _myLocation = widget.myLocation;
+      });
+    }
+
     if (widget.selectedJeep != _selectedJeep) {
       setState(() {
         _selectedJeep = widget.selectedJeep;
+        _eta = null;
+        driverInfo = null;
       });
       if (_selectedJeep != null) {
         fetchDriverData(_selectedJeep!.device_id);
@@ -249,7 +282,24 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
                             children: [
                               const Text("Driver"),
                               const SizedBox(width: Constants.defaultPadding),
-                              Text(driverInfo != null ? driverInfo!.account_name : "Unassigned", maxLines: 1, overflow: TextOverflow.ellipsis,)
+                              if (driverInfo == null)
+                                TextLoader(width: 70, height: 15),
+                              if (driverInfo != null)
+                                Text(driverInfo!.account_name, maxLines: 1, overflow: TextOverflow.ellipsis)
+                            ],
+                          ),
+
+                          const SizedBox(height: Constants.defaultPadding/2),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text("ETA"),
+                              const SizedBox(width: Constants.defaultPadding),
+                              if (_eta == null)
+                                TextLoader(width: 40, height: 15),
+                              if (_eta != null)
+                                Text(_eta!)
                             ],
                           ),
 
@@ -307,3 +357,4 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
     );
   }
 }
+
