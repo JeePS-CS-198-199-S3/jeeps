@@ -65,7 +65,7 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
 
   void fetchEta(Timer timer) async {
    if (_myLocation != null && _selectedJeep != null) {
-     String time = await eta(
+     String? time = await eta(
          widget.route.routeCoordinates,
          widget.route.isClockwise,
          _myLocation!,
@@ -94,14 +94,18 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
     }
 
     if (widget.selectedJeep != _selectedJeep) {
+      if (_selectedJeep != null && _selectedJeep!.device_id != widget.selectedJeep!.device_id) {
+        setState(() {
+          driverInfo = null;
+          _eta = null;
+        });
+      }
+
       setState(() {
         _selectedJeep = widget.selectedJeep;
-        _eta = null;
-        driverInfo = null;
       });
-      if (_selectedJeep != null) {
-        fetchDriverData(_selectedJeep!.device_id);
-      }
+
+      fetchDriverData(_selectedJeep!.device_id);
     }
 
     if (widget.jeeps != _jeeps) {

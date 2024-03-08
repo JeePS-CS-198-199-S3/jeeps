@@ -73,7 +73,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       _configRoute = -1;
       myLocation = null;
     });
-    _getLocation();
+
   }
 
   @override
@@ -101,7 +101,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     }
 
     // jeepney updates
-    if (widget.jeeps != null && widget.jeeps != _jeeps) {
+    if (widget.jeeps != _jeeps) {
       setState(() {
         _jeeps = widget.jeeps;
       });
@@ -174,7 +174,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
   void _onMapCreated(MapboxMapController controller) {
     _mapController = controller;
-    _listenToDeviceLocation();
   }
 
   void _getLocation() async {
@@ -186,9 +185,13 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
         myLocation = position as LatLng;
       });
 
-      _mapController.animateCamera(
-          CameraUpdate.newLatLngZoom(myLocation!, mapStartZoom)
-      );
+      if (myLocation != null) {
+        _updateDeviceCircle(myLocation!);
+
+        _mapController.animateCamera(
+            CameraUpdate.newLatLngZoom(myLocation!, mapStartZoom)
+        );
+      }
     } catch (e) {
       print(e);
     }
@@ -416,7 +419,11 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
             onMapCreated: (controller) {
               _onMapCreated(controller);
             },
-            onStyleLoadedCallback: () => widget.mapLoaded(true),
+            onStyleLoadedCallback: () {
+              _getLocation();
+              widget.mapLoaded(true);
+              _listenToDeviceLocation();
+            },
             initialCameraPosition: CameraPosition(
               target: Keys.MapCenter,
               zoom: mapStartZoom,

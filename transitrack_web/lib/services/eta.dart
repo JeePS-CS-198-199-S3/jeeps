@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../services/format_seconds.dart';
 
-Future<String> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter, LatLng jeep) async {
+Future<String?> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter, LatLng jeep) async {
   // Downsample List if longer than 22 entries
   List<LatLng> downsample = [];
   if (coords.length > 22) {
@@ -19,7 +19,6 @@ Future<String> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter, LatL
 
   List<LatLng> correctOrientation = downsample;
   List<LatLng> reduced = [];
-  reduced.add(jeep);
   if (is_clockwise) {
     if (!isClockwise(coords)) {
       correctOrientation = coords.reversed.toList();
@@ -70,6 +69,6 @@ Future<String> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter, LatL
     final routes = decoded['routes'] as List<dynamic>;
     return formatSeconds(routes[0]['duration'] as double);
   } else {
-    return "...";
+    return null;
   }
 }

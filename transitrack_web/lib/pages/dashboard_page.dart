@@ -58,7 +58,6 @@ class _DashboardState extends State<Dashboard> {
     currentUserAuth = FirebaseAuth.instance.currentUser;
     listenToUserAuth();
     listenToRoutesFirestore();
-    listenToJeepsFirestore();
   }
 
   void hovering() {
@@ -68,9 +67,19 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void switchRoute(int choice) {
+    if (routeChoice != -1) {
+      jeepsFirestoreStream.cancel();
+    }
+
     setState((){
       routeChoice = choice;
     });
+
+    if (routeChoice != -1) {
+      listenToJeepsFirestore();
+    } else {
+      jeepsFirestoreStream.cancel();
+    }
   }
 
   void listenToUserAuth() async {
@@ -88,7 +97,11 @@ class _DashboardState extends State<Dashboard> {
             currentUserFirestore = null;
           });
         }
-        switchRoute(-1);
+
+        if (routeChoice != -1) {
+          switchRoute(-1);
+        }
+
       },
     );
   }
@@ -131,6 +144,7 @@ class _DashboardState extends State<Dashboard> {
       .where('route_id', isEqualTo: routeChoice)
       .snapshots()
       .listen((QuerySnapshot snapshot) {
+
         if (snapshot.docs.isNotEmpty) {
           setState(() {
             _jeeps = snapshot.docs

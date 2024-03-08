@@ -7,13 +7,11 @@ String formatSeconds(double seconds) {
   String minutesStr = minutes.toString().padLeft(2, '0');
   String secondsStr = remainingSeconds.toString().padLeft(2, '0');
 
-  return '${hours != 0
-      ? "$hoursStr:"
-      : ""}'
-
-      '${minutes != 0 && hours == 0
-      ? "$minutesStr:"
-      : ""}'
-
-      '$secondsStr';
+  if (hours > 0) {
+    return "$hours ${hours > 1?"hrs":"hr"}";
+  } else if (minutes > 0) {
+    return "$minutes ${minutes > 1?"mins":"min"}";
+  } else {
+    return "< 1 min";
+  }
 }
