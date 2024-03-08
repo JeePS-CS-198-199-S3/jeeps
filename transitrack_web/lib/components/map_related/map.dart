@@ -487,6 +487,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                         ),
                         child: RouteManagerOptions(
                           route: widget.route!,
+                          jeeps: widget.jeeps!,
                           hover: (bool hover) {
                             setState(() {
                               isHover = hover;

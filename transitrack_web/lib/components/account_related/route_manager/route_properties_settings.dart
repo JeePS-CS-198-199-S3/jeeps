@@ -4,7 +4,6 @@ import 'package:transitrack_web/services/format_time.dart';
 
 import '../../../models/route_model.dart';
 import '../../../style/constants.dart';
-import '../../../style/style.dart';
 import '../../button.dart';
 import '../../text_field.dart';
 
@@ -164,13 +163,13 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 275,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
+    return SizedBox(
+      height: 150,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 InputTextField(controller: nameController, hintText: "Route Name", obscureText: false),
@@ -259,13 +258,13 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
                 ),
               ],
             ),
-          ),
+
+            const SizedBox(height: Constants.defaultPadding),
+
+            Button(onTap: update, text: "Save",),
+          ],
         ),
-
-        const SizedBox(height: Constants.defaultPadding),
-
-        Button(onTap: update, text: "Save",),
-      ],
+      ),
     );
   }
 }

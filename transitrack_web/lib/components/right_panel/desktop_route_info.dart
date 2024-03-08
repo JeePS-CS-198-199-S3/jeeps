@@ -94,7 +94,7 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
     }
 
     if (widget.selectedJeep != _selectedJeep) {
-      if (_selectedJeep != null && _selectedJeep!.device_id != widget.selectedJeep!.device_id) {
+      if (_selectedJeep != null && widget.selectedJeep != null && _selectedJeep!.device_id != widget.selectedJeep!.device_id) {
         setState(() {
           driverInfo = null;
           _eta = null;
@@ -105,7 +105,9 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
         _selectedJeep = widget.selectedJeep;
       });
 
-      fetchDriverData(_selectedJeep!.device_id);
+      if (_selectedJeep != null) {
+        fetchDriverData(_selectedJeep!.device_id);
+      }
     }
 
     if (widget.jeeps != _jeeps) {

@@ -3,12 +3,15 @@ import 'package:transitrack_web/components/account_related/route_manager/route_c
 import 'package:transitrack_web/components/account_related/route_manager/route_properties_settings.dart';
 import '../../../models/route_model.dart';
 import '../../../style/constants.dart';
+import '../../account_related/route_manager/route_vehicles_settings.dart';
+import '../../../models/jeep_model.dart';
 
 class RouteManagerOptions extends StatefulWidget {
   final RouteData route;
+  final List<JeepData> jeeps;
   final ValueChanged<bool> hover;
   final ValueChanged<int> coordConfig;
-  RouteManagerOptions({super.key, required this.route, required this.hover, required this.coordConfig});
+  RouteManagerOptions({super.key, required this.route, required this.jeeps, required this.hover, required this.coordConfig});
 
   @override
   State<RouteManagerOptions> createState() => _RouteManagerOptionsState();
@@ -170,21 +173,36 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
             ),
 
           if (selected == 0)
-            PropertiesSettings(route: widget.route, hover: (bool value) {
-              widget.hover(value);
-            }),
+            SizedBox(
+              height: 150,
+              child: PropertiesSettings(route: widget.route, hover: (bool value) {
+                widget.hover(value);
+              }),
+            ),
 
           if (selected == 1)
             CoordinatesSettings(
-              route: widget.route,
-              coordConfig: (int coordConfig) {
-                if (coordConfig == -1) {
-                  setState(() {
-                    selected = -1;
-                  });
+                route: widget.route,
+                coordConfig: (int coordConfig) {
+                  if (coordConfig == -1) {
+                    setState(() {
+                      selected = -1;
+                    });
+                  }
+                  widget.coordConfig(coordConfig);
                 }
-                widget.coordConfig(coordConfig);
-              }
+            ),
+
+          if (selected == 2)
+            SizedBox(
+              height: 150,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: VehiclesSettings(
+                  route: widget.route,
+                  jeeps: widget.jeeps
+                ),
+              ),
             )
         ],
       ),
