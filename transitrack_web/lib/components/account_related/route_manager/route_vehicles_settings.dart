@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../models/jeep_model.dart';
 import '../../../models/route_model.dart';
 import '../../../style/constants.dart';
+import '../../button.dart';
 
 class VehiclesSettings extends StatefulWidget {
   final RouteData? route;
@@ -40,26 +41,47 @@ class _VehiclesSettingsState extends State<VehiclesSettings> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 150,
-      child: ListView.builder(
-        itemCount: _jeeps!.length,
-        itemBuilder: (context, index) {
-          return Column(
-            children: [
-              const Divider(color: Constants.white),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: Constants.defaultPadding/2),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(_jeeps![index].device_id),
-                      Icon(Icons.circle, color: _jeeps![index].is_active ? Colors.green : Colors.red),
-                    ]
-                ),
-              ),
-            ],
-          );
-        },
+      height: 250,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Plate #'),
+                Text("Active"),
+              ]
+          ),
+          const SizedBox(height: Constants.defaultPadding),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _jeeps!.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    const Divider(color: Constants.white),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: Constants.defaultPadding/2),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(_jeeps![index].device_id),
+                            Icon(Icons.circle, color: _jeeps![index].is_active ? Colors.green : Colors.red),
+                          ]
+                      ),
+                    ),
+
+                    if (index == _jeeps!.length-1)
+                      const Divider(color: Colors.white),
+                  ],
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: Constants.defaultPadding),
+
+          Button(onTap: () {  }, text: '+', color: Color(widget.route!.routeColor))
+        ]
       ),
     );
   }

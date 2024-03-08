@@ -174,7 +174,7 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
 
           if (selected == 0)
             SizedBox(
-              height: 150,
+              height: 250,
               child: PropertiesSettings(route: widget.route, hover: (bool value) {
                 widget.hover(value);
               }),
@@ -195,7 +195,7 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
 
           if (selected == 2)
             SizedBox(
-              height: 150,
+              height: 250,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: VehiclesSettings(
