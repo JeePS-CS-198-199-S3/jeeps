@@ -184,12 +184,15 @@ class _DashboardState extends State<Dashboard> {
                 child: Logo()
               ),
 
-              if (_routes.isEmpty)
-                const Center(
-                    child: CircularProgressIndicator()
+              if (!mapLoaded || _routes.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: Constants.defaultPadding),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
 
-              if (mapLoaded)
+              if (mapLoaded && _routes.isNotEmpty)
               RouteList(
                 routeChoice: routeChoice,
                 routes: _routes,
@@ -203,13 +206,7 @@ class _DashboardState extends State<Dashboard> {
                 hoverToggle: hovering
               ),
 
-              if (!mapLoaded)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: Constants.defaultPadding),
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+
 
               Container(
                   padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
@@ -291,12 +288,15 @@ class _DashboardState extends State<Dashboard> {
                               child: Logo(),
                             ),
 
-                            if (_routes.isEmpty)
-                              const Center(
-                                child: CircularProgressIndicator()
+                            if (!mapLoaded || _routes.isEmpty)
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: Constants.defaultPadding),
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
                               ),
 
-                            if (mapLoaded)
+                            if (mapLoaded && _routes.isNotEmpty)
                             RouteList(
                               routeChoice: routeChoice,
                               routes: _routes,
@@ -309,14 +309,6 @@ class _DashboardState extends State<Dashboard> {
                               },
                               hoverToggle: hovering
                             ),
-
-                            if (!mapLoaded)
-                              const Padding(
-                                padding: EdgeInsets.symmetric(vertical: Constants.defaultPadding),
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              ),
 
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),

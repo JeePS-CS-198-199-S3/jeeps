@@ -60,8 +60,6 @@ Future<String?> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter, Lat
 
   String apiUrl = 'https://api.mapbox.com/directions/v5/mapbox/driving-traffic/$query?geometries=geojson&annotations=speed&access_token=${Keys.MapBoxKey}';
 
-
-
   final response = await http.get(Uri.parse(apiUrl));
 
   if (response.statusCode == 200) {
