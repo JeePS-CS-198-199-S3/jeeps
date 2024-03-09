@@ -9,7 +9,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 
 class VehiclesSettings extends StatefulWidget {
   final RouteData route;
-  final List<JeepData> jeeps;
+  final List<JeepsAndDrivers> jeeps;
   final ValueChanged<bool> isHover;
 
   const VehiclesSettings(
@@ -23,7 +23,7 @@ class VehiclesSettings extends StatefulWidget {
 }
 
 class _VehiclesSettingsState extends State<VehiclesSettings> {
-  List<JeepData>? _jeeps;
+  List<JeepsAndDrivers>? _jeeps;
 
   @override
   void initState() {
@@ -65,15 +65,17 @@ class _VehiclesSettingsState extends State<VehiclesSettings> {
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: Constants.defaultPadding / 2),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(_jeeps![index].device_id),
-                          Icon(Icons.circle,
-                              color: _jeeps![index].is_active
-                                  ? Colors.green
-                                  : Colors.red),
-                        ]),
+                    child: GestureDetector(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(_jeeps![index].jeep.device_id),
+                            Icon(Icons.circle,
+                                color: _jeeps![index].driver != null
+                                    ? Colors.green
+                                    : Colors.red),
+                          ]),
+                    ),
                   ),
                   if (index == _jeeps!.length - 1)
                     const Divider(color: Colors.white),

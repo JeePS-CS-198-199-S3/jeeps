@@ -23,7 +23,7 @@ import '../right_panel/mobile_route_info.dart';
 class MapWidget extends StatefulWidget {
   final bool isDrawer;
   final RouteData? route;
-  final List<JeepData>? jeeps;
+  final List<JeepsAndDrivers>? jeeps;
   final AccountData? currentUserFirestore;
   final ValueChanged<LatLng> foundDeviceLocation;
   final ValueChanged<bool> mapLoaded;
@@ -54,7 +54,7 @@ class LatLngTween extends Tween<LatLng> {
 
 class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   late RouteData? _value;
-  late List<JeepData>? jeeps;
+  late List<JeepsAndDrivers>? jeeps;
   late LatLng? myLocation;
   late int _configRoute;
 
@@ -122,42 +122,37 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
       updateJeeps();
 
-      if (selectedJeep != null) {
-        setState(() {
-          selectedJeep = jeepEntities.firstWhere((jeepEntity) =>
-              jeepEntity.jeep.device_id == selectedJeep!.jeep.device_id);
-        });
+      if (selectedJeep != null && jeeps != null) {
+        if (jeeps!.any((jeep) =>
+            jeep.jeep.device_id ==
+            selectedJeep!.jeepAndDriver.jeep.device_id)) {
+          setState(() {
+            selectedJeep = jeepEntities.firstWhere((jeepEntity) =>
+                jeepEntity.jeepAndDriver.jeep.device_id ==
+                selectedJeep!.jeepAndDriver.jeep.device_id);
+          });
+        } else {
+          setState(() {
+            selectedJeep = null;
+          });
+        }
       }
     }
   }
 
   Future<void> addJeeps() async {
-    if (widget.route != null) {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance
-              .collection('jeeps_realtime')
-              .where('route_id', isEqualTo: widget.route!.routeId)
-              .get();
-
-      setState(() {
-        jeeps = querySnapshot.docs
-            .map((doc) => JeepData.fromSnapshot(doc))
-            .toList();
-      });
-
-      if (jeeps != null && jeeps!.isNotEmpty) {
-        for (var jeep in jeeps!) {
-          _mapController
-              .addCircle(CircleOptions(
-                geometry:
-                    LatLng(jeep.location.latitude, jeep.location.longitude),
-                circleColor: intToHexColor(widget.route!.routeColor),
-                circleStrokeColor: '#FFFFFF',
-                circleRadius: jeep.is_active ? 7 : 0,
-              ))
-              .then((circle) =>
-                  jeepEntities.add(JeepEntity(jeep: jeep, jeepCircle: circle)));
-        }
+    if (widget.route != null && jeeps != null && jeeps!.isNotEmpty) {
+      for (var jeep in jeeps!) {
+        _mapController
+            .addCircle(CircleOptions(
+              geometry: LatLng(
+                  jeep.jeep.location.latitude, jeep.jeep.location.longitude),
+              circleColor: intToHexColor(widget.route!.routeColor),
+              circleStrokeColor: '#FFFFFF',
+              circleRadius: jeep.driver != null ? 7 : 0,
+            ))
+            .then((circle) => jeepEntities
+                .add(JeepEntity(jeepAndDriver: jeep, jeepCircle: circle)));
       }
     }
   }
@@ -165,42 +160,36 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   void updateJeeps() {
     if (jeeps != null) {
       for (var jeep in jeeps!) {
-        int index = jeepEntities
-            .indexWhere((entity) => entity.jeep.device_id == jeep.device_id);
+        int index = jeepEntities.indexWhere((entity) =>
+            entity.jeepAndDriver.jeep.device_id == jeep.jeep.device_id);
 
         if (index != -1) {
           JeepEntity? specificJeepEntity = jeepEntities[index];
-          if (specificJeepEntity.jeep.is_active) {
+          if (specificJeepEntity.jeepAndDriver.driver != null) {
             _animateCircleMovement(
               specificJeepEntity.jeepCircle.options.geometry!,
-              LatLng(jeep.location.latitude, jeep.location.longitude),
+              LatLng(jeep.jeep.location.latitude, jeep.jeep.location.longitude),
               specificJeepEntity.jeepCircle,
             );
           } else {
-            _mapController.updateCircle(
-                jeepEntities
-                    .where((entity) => entity.jeep.device_id == jeep.device_id)
-                    .first
-                    .jeepCircle,
-                const CircleOptions(
-                  circleRadius: 0,
-                  circleStrokeWidth: 0,
-                ));
+            _mapController
+                .removeCircle(specificJeepEntity.jeepCircle)
+                .then((value) => jeepEntities.removeAt(index));
           }
 
-          jeepEntities[index] =
-              JeepEntity(jeepCircle: specificJeepEntity.jeepCircle, jeep: jeep);
+          jeepEntities[index] = JeepEntity(
+              jeepCircle: specificJeepEntity.jeepCircle, jeepAndDriver: jeep);
         } else {
           _mapController
               .addCircle(CircleOptions(
-                geometry:
-                    LatLng(jeep.location.latitude, jeep.location.longitude),
+                geometry: LatLng(
+                    jeep.jeep.location.latitude, jeep.jeep.location.longitude),
                 circleColor: intToHexColor(widget.route!.routeColor),
                 circleStrokeColor: '#FFFFFF',
-                circleRadius: jeep.is_active ? 7 : 0,
+                circleRadius: jeep.driver != null ? 7 : 0,
               ))
-              .then((circle) =>
-                  jeepEntities.add(JeepEntity(jeep: jeep, jeepCircle: circle)));
+              .then((circle) => jeepEntities
+                  .add(JeepEntity(jeepAndDriver: jeep, jeepCircle: circle)));
         }
       }
     }
@@ -510,8 +499,9 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                       : MobileRouteInfo(
                           route: _value!,
                           jeeps: jeeps!,
-                          selectedJeep:
-                              selectedJeep != null ? selectedJeep!.jeep : null,
+                          selectedJeep: selectedJeep != null
+                              ? selectedJeep!.jeepAndDriver
+                              : null,
                           user: widget.currentUserFirestore,
                           isHover: (bool value) {
                             setState(() {
@@ -548,8 +538,9 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                         child: DesktopRouteInfo(
                           route: _value!,
                           jeeps: jeeps!,
-                          selectedJeep:
-                              selectedJeep != null ? selectedJeep!.jeep : null,
+                          selectedJeep: selectedJeep != null
+                              ? selectedJeep!.jeepAndDriver
+                              : null,
                           user: widget.currentUserFirestore,
                           isHover: (bool value) {
                             setState(() {

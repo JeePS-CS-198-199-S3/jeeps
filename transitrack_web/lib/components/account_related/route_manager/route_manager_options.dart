@@ -8,7 +8,7 @@ import '../../../models/jeep_model.dart';
 
 class RouteManagerOptions extends StatefulWidget {
   final RouteData route;
-  final List<JeepData> jeeps;
+  final List<JeepsAndDrivers> jeeps;
   final ValueChanged<bool> hover;
   final ValueChanged<int> coordConfig;
   RouteManagerOptions(

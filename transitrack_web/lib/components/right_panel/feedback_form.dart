@@ -10,16 +10,11 @@ import '../button.dart';
 import '../text_field.dart';
 
 class FeedbackForm extends StatefulWidget {
-  AccountData driver;
   AccountData? user;
-  JeepData jeep;
+  JeepsAndDrivers jeep;
   RouteData route;
   FeedbackForm(
-      {super.key,
-      required this.user,
-      required this.driver,
-      required this.jeep,
-      required this.route});
+      {super.key, required this.user, required this.jeep, required this.route});
 
   @override
   State<FeedbackForm> createState() => _FeedbackFormState();
@@ -48,8 +43,8 @@ class _FeedbackFormState extends State<FeedbackForm> {
               .collection('feedbacks')
               .add({
                 'feedback_sender': widget.user!.account_email,
-                'feedback_recepient': widget.driver.account_email,
-                'feedback_jeepney': widget.jeep.device_id,
+                'feedback_recepient': widget.jeep.driver!.account_email,
+                'feedback_jeepney': widget.jeep.jeep.device_id,
                 'timestamp': FieldValue.serverTimestamp(),
                 'feedback_content': feedBackController.text,
                 'feedback_driving_rating': _drivingRating,
@@ -135,7 +130,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text("Driver"),
-              Text(widget.driver.account_name),
+              Text(widget.jeep.driver!.account_name),
             ],
           ),
           const SizedBox(height: Constants.defaultPadding),
@@ -143,7 +138,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text("Plate Number"),
-              Text(widget.jeep.device_id),
+              Text(widget.jeep.jeep.device_id),
             ],
           ),
           const SizedBox(height: Constants.defaultPadding),

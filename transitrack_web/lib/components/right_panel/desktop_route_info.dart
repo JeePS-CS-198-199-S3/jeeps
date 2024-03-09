@@ -21,12 +21,19 @@ import '../../models/ping_model.dart';
 
 class DesktopRouteInfo extends StatefulWidget {
   final RouteData route;
-  final List<JeepData> jeeps;
-  final JeepData? selectedJeep;
+  final List<JeepsAndDrivers> jeeps;
+  final JeepsAndDrivers? selectedJeep;
   final AccountData? user;
   final ValueChanged<bool> isHover;
   final LatLng? myLocation;
-  const DesktopRouteInfo({super.key, required this.route, required this.user, required this.jeeps, required this.selectedJeep, required this.isHover, required this.myLocation});
+  const DesktopRouteInfo(
+      {super.key,
+      required this.route,
+      required this.user,
+      required this.jeeps,
+      required this.selectedJeep,
+      required this.isHover,
+      required this.myLocation});
 
   @override
   State<DesktopRouteInfo> createState() => _DesktopRouteInfoState();
@@ -34,14 +41,14 @@ class DesktopRouteInfo extends StatefulWidget {
 
 class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
   late RouteData _value;
-  late List<JeepData> _jeeps;
-  late JeepData? _selectedJeep;
+  late List<JeepsAndDrivers> _jeeps;
+  late JeepsAndDrivers? _selectedJeep;
   late String? _eta;
   late int operating;
   late int not_operating;
   late LatLng? _myLocation;
 
-  AccountData? driverInfo;
+  // AccountData? driverInfo;
   bool isTapped = false;
 
   @override
@@ -53,33 +60,33 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
       _jeeps = widget.jeeps;
       _selectedJeep = widget.selectedJeep;
       _myLocation = widget.myLocation;
-      operating = widget.jeeps.where((jeep) => jeep.is_active == true).length;
+      operating = widget.jeeps.where((jeep) => jeep.driver != null).length;
       _eta = null;
-      not_operating = widget.jeeps.where((jeep) => jeep.is_active == false).length;
+      not_operating = widget.jeeps.where((jeep) => jeep.driver == null).length;
     });
 
     Timer.periodic(const Duration(seconds: 3), fetchEta);
   }
 
- void fetchDriverData(String jeep_id) async {
-   AccountData? acc = await AccountData.getDriverAccountByJeep(jeep_id);
-    setState(() {
-      driverInfo = acc;
-    });
-  }
+//  void fetchDriverData(String jeep_id) async {
+//    AccountData? acc = await AccountData.getDriverAccountByJeep(jeep_id);
+//     setState(() {
+//       driverInfo = acc;
+//     });
+//   }
 
   void fetchEta(Timer timer) async {
-   if (_myLocation != null && _selectedJeep != null) {
-     String? time = await eta(
-         widget.route.routeCoordinates,
-         widget.route.isClockwise,
-         _myLocation!,
-         LatLng(_selectedJeep!.location.latitude, _selectedJeep!.location.longitude)
-     );
-     setState(() {
-       _eta = time;
-     });
-   }
+    if (_myLocation != null && _selectedJeep != null) {
+      String? time = await eta(
+          widget.route.routeCoordinates,
+          widget.route.isClockwise,
+          _myLocation!,
+          LatLng(_selectedJeep!.jeep.location.latitude,
+              _selectedJeep!.jeep.location.longitude));
+      setState(() {
+        _eta = time;
+      });
+    }
   }
 
   @override
@@ -99,9 +106,12 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
     }
 
     if (widget.selectedJeep != _selectedJeep) {
-      if (_selectedJeep != null && widget.selectedJeep != null && _selectedJeep!.device_id != widget.selectedJeep!.device_id) {
+      if (_selectedJeep != null &&
+          widget.selectedJeep != null &&
+          _selectedJeep!.jeep.device_id !=
+              widget.selectedJeep!.jeep.device_id) {
         setState(() {
-          driverInfo = null;
+          // driverInfo = null;
           _eta = null;
         });
       }
@@ -110,16 +120,17 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
         _selectedJeep = widget.selectedJeep;
       });
 
-      if (_selectedJeep != null) {
-        fetchDriverData(_selectedJeep!.device_id);
-      }
+      // if (_selectedJeep != null) {
+      //   fetchDriverData(_selectedJeep!.);
+      // }
     }
 
     if (widget.jeeps != _jeeps) {
       setState(() {
         _jeeps = widget.jeeps;
-        operating = widget.jeeps.where((jeep) => jeep.is_active == true).length;
-        not_operating = widget.jeeps.where((jeep) => jeep.is_active == false).length;
+        operating = widget.jeeps.where((jeep) => jeep.driver != null).length;
+        not_operating =
+            widget.jeeps.where((jeep) => jeep.driver == null).length;
       });
     }
   }
@@ -137,172 +148,157 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5.5),
-                  child: Text(
-                    _value.routeName,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                )
+              padding: EdgeInsets.symmetric(vertical: 5.5),
+              child: Text(
+                _value.routeName,
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-
-              const SizedBox(width: Constants.defaultPadding/2),
-
-              if (widget.user != null)
-                Container(
-                  padding: const EdgeInsets.all(Constants.defaultPadding/3),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                          color: Colors.white,
-                          width: 2
-                      ),
-                      borderRadius: BorderRadius.circular(Constants.defaultPadding)
-                  ),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("SendLoc", maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12)),
-                        const SizedBox(width: Constants.defaultPadding/3),
-                        CooldownButton(
-                            onPressed: () {
-                              sendPing(
-                                  PingData(
-                                      ping_email: widget.user!.account_email,
-                                      ping_location: _myLocation!,
-                                      ping_route: _value.routeId
-                                  )
-                              );
-                            },
-                            alert: "We have broadcasted your location.",
-                            verified: widget.user!.is_verified && _myLocation != null && _value != null,
-                            child: _myLocation != null
-                                ? const Icon(Icons.location_on, size: 15)
-                                : const SizedBox(
-                                width: 15,
-                                height: 15,
-                                child: CircularProgressIndicator(
-                                  color: Constants.bgColor,
-                                )
-                            )
-                        )
-                      ]
-                  ),
-                )
-            ]
-          ),
-
+            )),
+            const SizedBox(width: Constants.defaultPadding / 2),
+            if (widget.user != null)
+              Container(
+                padding: const EdgeInsets.all(Constants.defaultPadding / 3),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white, width: 2),
+                    borderRadius:
+                        BorderRadius.circular(Constants.defaultPadding)),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("SendLoc",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 12)),
+                      const SizedBox(width: Constants.defaultPadding / 3),
+                      CooldownButton(
+                          onPressed: () {
+                            sendPing(PingData(
+                                ping_email: widget.user!.account_email,
+                                ping_location: _myLocation!,
+                                ping_route: _value.routeId));
+                          },
+                          alert: "We have broadcasted your location.",
+                          verified:
+                              widget.user!.is_verified && _myLocation != null,
+                          child: _myLocation != null
+                              ? const Icon(Icons.location_on, size: 15)
+                              : const SizedBox(
+                                  width: 15,
+                                  height: 15,
+                                  child: CircularProgressIndicator(
+                                    color: Constants.bgColor,
+                                  )))
+                    ]),
+              )
+          ]),
           const SizedBox(height: Constants.defaultPadding),
-
-          Stack(
-            children: [
-              ClipRect(
-                  clipper: TopClipper(),
-                  child: SizedBox(
-                    height: 200,
-                    child: Stack(
-                      children: [
-                        PieChart(
-                          PieChartData(
-                            sectionsSpace: 0,
-                            centerSpaceRadius: 70,
-                            startDegreeOffset: -180,
-                            sections: [
-                              PieChartSectionData(
-                                color: Color(widget.route.routeColor),
-                                value: operating.toDouble(),
-                                showTitle: false,
-                                radius: 20,
-                              ),
-                              PieChartSectionData(
-                                color: Color(widget.route.routeColor).withOpacity(0.1),
-                                value: not_operating.toDouble(),
-                                showTitle: false,
-                                radius: 20,
-                              ),
-                              PieChartSectionData(
-                                color: Colors.transparent,
-                                value: (not_operating + operating).toDouble(),
-                                showTitle: false,
-                                radius: 20,
-                              ),
-                            ],
-                          ),
+          Stack(children: [
+            ClipRect(
+                clipper: TopClipper(),
+                child: SizedBox(
+                  height: 200,
+                  child: Stack(
+                    children: [
+                      PieChart(
+                        PieChartData(
+                          sectionsSpace: 0,
+                          centerSpaceRadius: 70,
+                          startDegreeOffset: -180,
+                          sections: [
+                            PieChartSectionData(
+                              color: Color(widget.route.routeColor),
+                              value: operating.toDouble(),
+                              showTitle: false,
+                              radius: 20,
+                            ),
+                            PieChartSectionData(
+                              color: Color(widget.route.routeColor)
+                                  .withOpacity(0.1),
+                              value: not_operating.toDouble(),
+                              showTitle: false,
+                              radius: 20,
+                            ),
+                            PieChartSectionData(
+                              color: Colors.transparent,
+                              value: (not_operating + operating).toDouble(),
+                              showTitle: false,
+                              radius: 20,
+                            ),
+                          ],
                         ),
-                        Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                      ),
+                      Center(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(height: Constants.defaultPadding * 3),
+                          RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
                               children: [
-                                SizedBox(height: Constants.defaultPadding*3),
-                                RichText(
-                                  textAlign: TextAlign.center,
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: '$operating',
-                                        style: Theme.of(context).textTheme.headline4?.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 20,
-                                        ),
+                                TextSpan(
+                                  text: '$operating',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline4
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 20,
                                       ),
-                                      TextSpan(
-                                        text: "/${operating + not_operating}",
-                                        style: Theme.of(context).textTheme.headline4?.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 16,
-                                        ),
+                                ),
+                                TextSpan(
+                                  text: "/${operating + not_operating}",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline4
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 16,
                                       ),
-                                      TextSpan(
-                                        text: '\noperating',
-                                        style: Theme.of(context).textTheme.headline4?.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 17,
-                                        ),
+                                ),
+                                TextSpan(
+                                  text: '\noperating',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline4
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 17,
                                       ),
-                                    ],
-                                  ),
                                 ),
                               ],
-                            )),
-                      ],
-                    ),
-                  )
-              ),
-
-              Column(
-                children: [
-                  const SizedBox(height: Constants.defaultPadding*7),
-
-                  const Divider(),
-
-                  const SizedBox(height: Constants.defaultPadding),
-
-                  if (_selectedJeep == null)
-                    const SelectJeepPrompt(),
-
-                  if (_selectedJeep != null)
-                    SelectedJeepInfo(
-                        jeep: _selectedJeep!,
-                        eta: _eta,
-                        driverInfo: driverInfo,
-                        user: widget.user,
-                        route: _value,
-                        isHover: (bool value) {
-                          widget.isHover(value);
-                        }
-                    ),
-                ]
-              )
-            ]
-          )
+                            ),
+                          ),
+                        ],
+                      )),
+                    ],
+                  ),
+                )),
+            Column(children: [
+              const SizedBox(height: Constants.defaultPadding * 7),
+              const Divider(),
+              const SizedBox(height: Constants.defaultPadding),
+              if (_selectedJeep == null) const SelectJeepPrompt(),
+              if (_selectedJeep != null)
+                SelectedJeepInfo(
+                    jeep: _selectedJeep!,
+                    eta: _eta,
+                    user: widget.user,
+                    route: _value,
+                    isHover: (bool value) {
+                      widget.isHover(value);
+                    }),
+            ])
+          ])
         ],
       ),
     );
