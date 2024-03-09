@@ -62,7 +62,7 @@ class _CooldownButtonState extends State<CooldownButton> {
 
   Widget get _buttonText {
     if (_isCooldown) {
-      return Text('$_cooldownSeconds s');
+      return Text('$_cooldownSeconds', style: TextStyle(fontSize: 10));
     } else {
       return widget.child;
     }
@@ -75,8 +75,8 @@ class _CooldownButtonState extends State<CooldownButton> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        width: 40,
-        height: 40,
+        width: 25,
+        height: 25,
         decoration: BoxDecoration(
           color: (_isCooldown || !widget.verified) ? Colors.grey : Colors.blue,
           borderRadius: BorderRadius.circular(50),

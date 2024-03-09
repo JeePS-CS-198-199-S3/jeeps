@@ -191,15 +191,11 @@ class _SelectedJeepInfoState extends State<SelectedJeepInfo> {
                                               dialogType: DialogType.noHeader,
                                               context: (context),
                                               width: 500,
-                                              body: MouseRegion(
-                                                onEnter: (_) => widget.isHover(true),
-                                                onExit: (_) => widget.isHover(false),
-                                                child: FeedbackForm(
-                                                    driver: _driverInfo!,
-                                                    jeep: _jeep,
-                                                    route: _route,
-                                                    user: _user
-                                                ),
+                                              body: FeedbackForm(
+                                                  driver: _driverInfo!,
+                                                  jeep: _jeep,
+                                                  route: _route,
+                                                  user: _user
                                               ),
                                             ).show(), text: 'Feedback', color: Color(widget.route.routeColor))),
 
@@ -211,16 +207,12 @@ class _SelectedJeepInfoState extends State<SelectedJeepInfo> {
                                                         dialogType: DialogType.noHeader,
                                                         context: (context),
                                                         width: 500,
-                                                        body: MouseRegion(
-                                                          onEnter: (_) => widget.isHover(true),
-                                                          onExit: (_) => widget.isHover(false),
-                                                          child: ReportForm(
-                                                              driver: _driverInfo!,
-                                                              jeep: _jeep,
-                                                              route: _route,
-                                                              user: _user
-                                                          ),
-                                                        )
+                                                        body: ReportForm(
+                                                            driver: _driverInfo!,
+                                                            jeep: _jeep,
+                                                            route: _route,
+                                                            user: _user
+                                                        ),
                                                     ).show(),
                                                     text: 'Report', color: Colors.red[700]!
                                                 )
@@ -244,41 +236,39 @@ class _SelectedJeepInfoState extends State<SelectedJeepInfo> {
                             children: [
                               Button(
                                   isMobile: true,
-                                  onTap: () => AwesomeDialog(
-                                    dialogType: DialogType.noHeader,
-                                    context: (context),
-                                    width: 500,
-                                    body: MouseRegion(
-                                      onEnter: (_) => widget.isHover(true),
-                                      onExit: (_) => widget.isHover(false),
-                                      child: FeedbackForm(
+                                  onTap: () {
+                                    widget.isHover(true);
+                                    AwesomeDialog(
+                                      dialogType: DialogType.noHeader,
+                                      context: (context),
+                                      width: 500,
+                                      body: FeedbackForm(
                                           driver: _driverInfo!,
                                           jeep: _jeep,
                                           route: _route,
                                           user: _user
                                       ),
-                                    ),
-                                  ).show(), text: 'Feedback', color: Color(widget.route.routeColor)),
+                                    ).show().then((_) => widget.isHover(false));
+                                  }, text: 'Feedback', color: Color(widget.route.routeColor)),
 
                               const SizedBox(height: Constants.defaultPadding/2),
 
                               Button(
                                   isMobile: true,
-                                  onTap: () => AwesomeDialog(
+                                  onTap: () {
+                                    widget.isHover(true);
+                                    AwesomeDialog(
                                       dialogType: DialogType.noHeader,
                                       context: (context),
                                       width: 500,
-                                      body: MouseRegion(
-                                        onEnter: (_) => widget.isHover(true),
-                                        onExit: (_) => widget.isHover(false),
-                                        child: ReportForm(
-                                            driver: _driverInfo!,
-                                            jeep: _jeep,
-                                            route: _route,
-                                            user: _user
-                                        ),
-                                      )
-                                  ).show(),
+                                      body: ReportForm(
+                                          driver: _driverInfo!,
+                                          jeep: _jeep,
+                                          route: _route,
+                                          user: _user
+                                      ),
+                                    ).show().then((_) => widget.isHover(false));
+                                  },
                                   text: 'Report', color: Colors.red[700]!
                               )
                             ],

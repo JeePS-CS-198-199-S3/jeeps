@@ -15,6 +15,9 @@ import 'selected_jeep_info.dart';
 import '../../services/eta.dart';
 import '../text_loader.dart';
 import '../select_jeep_prompt.dart';
+import '../../components/cooldown_button.dart';
+import '../../services/send_ping.dart';
+import '../../models/ping_model.dart';
 
 class DesktopRouteInfo extends StatefulWidget {
   final RouteData route;
@@ -134,11 +137,64 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            _value.routeName,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 5.5),
+                  child: Text(
+                    _value.routeName,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )
+              ),
+
+              const SizedBox(width: Constants.defaultPadding/2),
+
+              if (widget.user != null)
+                Container(
+                  padding: const EdgeInsets.all(Constants.defaultPadding/3),
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Colors.white,
+                          width: 2
+                      ),
+                      borderRadius: BorderRadius.circular(Constants.defaultPadding)
+                  ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("SendLoc", maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12)),
+                        const SizedBox(width: Constants.defaultPadding/3),
+                        CooldownButton(
+                            onPressed: () {
+                              sendPing(
+                                  PingData(
+                                      ping_email: widget.user!.account_email,
+                                      ping_location: _myLocation!,
+                                      ping_route: _value.routeId
+                                  )
+                              );
+                            },
+                            alert: "We have broadcasted your location.",
+                            verified: widget.user!.is_verified && _myLocation != null && _value != null,
+                            child: _myLocation != null
+                                ? const Icon(Icons.location_on, size: 15)
+                                : const SizedBox(
+                                width: 15,
+                                height: 15,
+                                child: CircularProgressIndicator(
+                                  color: Constants.bgColor,
+                                )
+                            )
+                        )
+                      ]
+                  ),
+                )
+            ]
           ),
 
           const SizedBox(height: Constants.defaultPadding),

@@ -347,18 +347,16 @@ class _DashboardState extends State<Dashboard> {
                     alert: "We have broadcasted your location.",
                     verified: currentUserFirestore!.is_verified && deviceLoc != null && routeChoice != -1,
                     child: deviceLoc != null
-                        ? (routeChoice != -1
-                            ? const Icon(Icons.location_on)
-                            : const Icon(Icons.touch_app)
-                          )
-                        : const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Constants.bgColor,
+                      ? const Icon(Icons.location_on)
+                      : const SizedBox(
+                      width: 15,
+                      height: 15,
+                      child: CircularProgressIndicator(
+                        color: Constants.bgColor,
                         )
+                      )
                     )
-                )
+
               )
           ],
         ),

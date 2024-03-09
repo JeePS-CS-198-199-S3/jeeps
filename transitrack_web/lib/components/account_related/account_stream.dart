@@ -3,13 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:transitrack_web/components/account_related/account_settings.dart';
-import 'package:transitrack_web/components/cooldown_button.dart';
-import 'package:transitrack_web/services/send_ping.dart';
 import 'package:transitrack_web/style/style.dart';
 
 import '../../config/responsive.dart';
 import '../../models/account_model.dart';
-import '../../models/ping_model.dart';
 import '../../style/constants.dart';
 import 'login_signup_form.dart';
 
@@ -123,33 +120,6 @@ class _AccountStreamState extends State<AccountStream> {
                           ]
                       ),
                     ),
-
-                    if (Responsive.isDesktop(context))
-                      CooldownButton(
-                        onPressed: () {
-                          sendPing(
-                            PingData(
-                              ping_email: widget.currentUser!.email!,
-                              ping_location: widget.deviceLoc!,
-                              ping_route: widget.route
-                            )
-                          );
-                        },
-                        alert: "We have broadcasted your location.",
-                        verified: widget.user!.is_verified && widget.deviceLoc != null && widget.route != -1,
-                        child: widget.deviceLoc != null
-                          ? (widget.route != -1
-                            ? const Icon(Icons.location_on)
-                            : const Icon(Icons.touch_app)
-                            )
-                          : const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                color: Constants.bgColor,
-                              )
-                          )
-                      )
                   ],
                 ),
               ],

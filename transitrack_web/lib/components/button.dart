@@ -5,11 +5,12 @@ import '../style/constants.dart';
 class Button extends StatelessWidget {
 
   final Function()? onTap;
-  final String text;
+  final String? text;
+  final Widget? widget;
   final Color color;
   final isMobile;
 
-  const Button({super.key, required this.onTap, required this.text, this.color = Colors.blue, this.isMobile = false});
+  const Button({super.key, required this.onTap, this.text = null, this.color = Colors.blue, this.isMobile = false, this.widget = null});
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +24,16 @@ class Button extends StatelessWidget {
         child: Center(
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: isMobile?Constants.defaultPadding/6:Constants.defaultPadding),
-            child: Text(
-              text,
-              style: const TextStyle(
+            child: text != null
+              ? Text(
+                text!,
+                style: const TextStyle(
                   color: Constants.bgColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 16
-              ),
-            ),
+                  ),
+                )
+              : widget
           ),
         ),
       ),

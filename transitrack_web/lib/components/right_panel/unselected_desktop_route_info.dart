@@ -20,11 +20,14 @@ class UnselectedDesktopRouteInfo extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Select a route",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 5.5),
+              child: const Text(
+                "Select a route",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             const SizedBox(height: Constants.defaultPadding),
 
@@ -64,7 +67,7 @@ class UnselectedDesktopRouteInfo extends StatelessWidget {
                   children: [
                     const SizedBox(height: Constants.defaultPadding*7),
 
-                    const Divider(),
+                    const Divider(color: Colors.white),
 
                     const SizedBox(height: Constants.defaultPadding),
 
