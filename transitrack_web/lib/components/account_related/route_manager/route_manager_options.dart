@@ -11,7 +11,12 @@ class RouteManagerOptions extends StatefulWidget {
   final List<JeepData> jeeps;
   final ValueChanged<bool> hover;
   final ValueChanged<int> coordConfig;
-  RouteManagerOptions({super.key, required this.route, required this.jeeps, required this.hover, required this.coordConfig});
+  RouteManagerOptions(
+      {super.key,
+      required this.route,
+      required this.jeeps,
+      required this.hover,
+      required this.coordConfig});
 
   @override
   State<RouteManagerOptions> createState() => _RouteManagerOptionsState();
@@ -30,34 +35,30 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
         children: [
           if (selected != 1)
             Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                optionTitle,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-
-              if (selected != -1)
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selected = -1;
-                      optionTitle = "Route Management";
-                    });
-                    widget.coordConfig(-2);
-                  },
-                  child: const Icon(
-                    Icons.keyboard_backspace_outlined,
-                  )
-                )
-            ],
-          ),
-
-          if (selected != 1)
-            const SizedBox(height: Constants.defaultPadding),
-
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  optionTitle,
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w500),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (selected != -1)
+                  GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selected = -1;
+                          optionTitle = "Route Management";
+                        });
+                        widget.coordConfig(-2);
+                      },
+                      child: const Icon(
+                        Icons.keyboard_backspace_outlined,
+                      ))
+              ],
+            ),
+          if (selected != 1) const SizedBox(height: Constants.defaultPadding),
           if (selected == -1)
             Row(
               children: [
@@ -80,9 +81,7 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
                         child: const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                                Icons.account_tree
-                            ),
+                            Icon(Icons.account_tree),
                             Text(
                               "Properties",
                               style: TextStyle(
@@ -92,94 +91,85 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
                               overflow: TextOverflow.ellipsis,
                             )
                           ],
-                        )
-                    ),
+                        )),
                   ),
                 ),
 
-
                 // Route Manager Coordinates
                 Expanded(
-                    child: GestureDetector(
-                      onTap: () async {
-                        setState(() {
-                          selected = 1;
-                        });
-                      },
-                      child: Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: selected == 1
-                                ? Color(widget.route.routeColor)
-                                : Color(widget.route.routeColor).withOpacity(0.5),
-                          ),
-                          child: const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                  Icons.line_axis
+                  child: GestureDetector(
+                    onTap: () async {
+                      setState(() {
+                        selected = 1;
+                      });
+                    },
+                    child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: selected == 1
+                              ? Color(widget.route.routeColor)
+                              : Color(widget.route.routeColor).withOpacity(0.5),
+                        ),
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.line_axis),
+                            Text(
+                              "Coordinates",
+                              style: TextStyle(
+                                fontSize: 10,
                               ),
-                              Text(
-                                "Coordinates",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              )
-                            ],
-                          )
-                      ),
-                    ),
-              ),
-
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          ],
+                        )),
+                  ),
+                ),
 
                 // Route Manager Vehicles
                 Expanded(
-                    child: GestureDetector(
-                      onTap: () async {
-                        setState(() {
-                          selected = 2;
-                          optionTitle = "Vehicles";
-                        });
-                      },
-                      child: Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: selected == 2
-                                ? Color(widget.route.routeColor)
-                                : Color(widget.route.routeColor).withOpacity(0.4),
-                          ),
-                          child: const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                  Icons.directions_bus
+                  child: GestureDetector(
+                    onTap: () async {
+                      setState(() {
+                        selected = 2;
+                        optionTitle = "Vehicles";
+                      });
+                    },
+                    child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: selected == 2
+                              ? Color(widget.route.routeColor)
+                              : Color(widget.route.routeColor).withOpacity(0.4),
+                        ),
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.directions_bus),
+                            Text(
+                              "Vehicles",
+                              style: TextStyle(
+                                fontSize: 10,
                               ),
-                              Text(
-                                "Vehicles",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              )
-                            ],
-                          )
-                      ),
-                    ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          ],
+                        )),
                   ),
+                ),
               ],
             ),
-
           if (selected == 0)
             SizedBox(
               height: 250,
-              child: PropertiesSettings(route: widget.route, hover: (bool value) {
-                widget.hover(value);
-              }),
+              child: PropertiesSettings(
+                  route: widget.route,
+                  hover: (bool value) {
+                    widget.hover(value);
+                  }),
             ),
-
           if (selected == 1)
             CoordinatesSettings(
                 route: widget.route,
@@ -190,18 +180,18 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
                     });
                   }
                   widget.coordConfig(coordConfig);
-                }
-            ),
-
+                }),
           if (selected == 2)
             SizedBox(
               height: 250,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: VehiclesSettings(
-                  route: widget.route,
-                  jeeps: widget.jeeps
-                ),
+                    route: widget.route,
+                    jeeps: widget.jeeps,
+                    isHover: (bool value) {
+                      widget.hover(value);
+                    }),
               ),
             )
         ],

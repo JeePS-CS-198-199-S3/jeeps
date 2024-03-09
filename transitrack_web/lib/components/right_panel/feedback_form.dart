@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/account_model.dart';
-import '../../models/feedback_model.dart';
 import '../../models/jeep_model.dart';
 import '../../models/route_model.dart';
 import '../../style/constants.dart';
@@ -15,19 +14,18 @@ class FeedbackForm extends StatefulWidget {
   AccountData? user;
   JeepData jeep;
   RouteData route;
-  FeedbackForm({super.key,
-    required this.user,
-    required this.driver,
-    required this.jeep,
-    required this.route
-  });
+  FeedbackForm(
+      {super.key,
+      required this.user,
+      required this.driver,
+      required this.jeep,
+      required this.route});
 
   @override
   State<FeedbackForm> createState() => _FeedbackFormState();
 }
 
 class _FeedbackFormState extends State<FeedbackForm> {
-
   final feedBackController = TextEditingController();
 
   int _drivingRating = -1;
@@ -38,26 +36,27 @@ class _FeedbackFormState extends State<FeedbackForm> {
     showDialog(
         context: context,
         builder: (context) {
-          return const Center(
-              child: CircularProgressIndicator()
-          );
-        }
-    );
+          return const Center(child: CircularProgressIndicator());
+        });
 
     // feedback field is not empty
     if (feedBackController.text.isNotEmpty) {
       if (_drivingRating != -1 && _jeepRating != -1) {
         try {
           // Add a new document with auto-generated ID
-          await FirebaseFirestore.instance.collection('feedbacks').add({
-            'feedback_sender': widget.user!.account_email,
-            'feedback_recepient': widget.driver.account_email,
-            'feedback_jeepney': widget.jeep.device_id,
-            'timestamp': FieldValue.serverTimestamp(),
-            'feedback_content': feedBackController.text,
-            'feedback_driving_rating': _drivingRating,
-            'feedback_jeepney_rating': _jeepRating
-          }).then((value) => Navigator.pop(context)).then((value) => Navigator.pop(context));
+          await FirebaseFirestore.instance
+              .collection('feedbacks')
+              .add({
+                'feedback_sender': widget.user!.account_email,
+                'feedback_recepient': widget.driver.account_email,
+                'feedback_jeepney': widget.jeep.device_id,
+                'timestamp': FieldValue.serverTimestamp(),
+                'feedback_content': feedBackController.text,
+                'feedback_driving_rating': _drivingRating,
+                'feedback_jeepney_rating': _jeepRating
+              })
+              .then((value) => Navigator.pop(context))
+              .then((value) => Navigator.pop(context));
 
           errorMessage("Success!");
         } catch (e) {
@@ -79,7 +78,6 @@ class _FeedbackFormState extends State<FeedbackForm> {
       errorMessage("Feedback field is empty!");
     }
     // try sign up
-
   }
 
   void errorMessage(String message) {
@@ -90,35 +88,35 @@ class _FeedbackFormState extends State<FeedbackForm> {
               backgroundColor: Constants.bgColor,
               title: Center(
                   child: Text(
-                    message,
-                    style: const TextStyle(
-                        color: Colors.white
-                    ),
-                  )
-              )
-          );
-        }
-    );
+                message,
+                style: const TextStyle(color: Colors.white),
+              )));
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: Constants.defaultPadding, right: Constants.defaultPadding, bottom: Constants.defaultPadding),
+      padding: const EdgeInsets.only(
+          left: Constants.defaultPadding,
+          right: Constants.defaultPadding,
+          bottom: Constants.defaultPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Row(
             children: [
-              PrimaryText(text: "Feedback", color: Colors.white, size: 40, fontWeight: FontWeight.w700,)
+              PrimaryText(
+                text: "Feedback",
+                color: Colors.white,
+                size: 40,
+                fontWeight: FontWeight.w700,
+              )
             ],
           ),
-
           const Divider(color: Colors.white),
-
           const SizedBox(height: Constants.defaultPadding),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -126,17 +124,13 @@ class _FeedbackFormState extends State<FeedbackForm> {
               Row(
                 children: [
                   Text(widget.route.routeName),
-
-                  const SizedBox(width: Constants.defaultPadding/2),
-
+                  const SizedBox(width: Constants.defaultPadding / 2),
                   Icon(Icons.circle, color: Color(widget.route.routeColor))
                 ],
               ),
             ],
           ),
-
           const SizedBox(height: Constants.defaultPadding),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -144,9 +138,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
               Text(widget.driver.account_name),
             ],
           ),
-
           const SizedBox(height: Constants.defaultPadding),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -154,15 +146,10 @@ class _FeedbackFormState extends State<FeedbackForm> {
               Text(widget.jeep.device_id),
             ],
           ),
-
           const SizedBox(height: Constants.defaultPadding),
-
           const Divider(color: Colors.white),
-
           const SizedBox(height: Constants.defaultPadding),
-
           const Text("Driver"),
-
           if (_drivingRating != -1)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -187,7 +174,6 @@ class _FeedbackFormState extends State<FeedbackForm> {
                 );
               }),
             ),
-
           if (_drivingRating == -1)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -206,11 +192,8 @@ class _FeedbackFormState extends State<FeedbackForm> {
                 );
               }),
             ),
-
           const SizedBox(height: Constants.defaultPadding),
-
           const Text("Jeepney"),
-
           if (_jeepRating != -1)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -235,7 +218,6 @@ class _FeedbackFormState extends State<FeedbackForm> {
                 );
               }),
             ),
-
           if (_jeepRating == -1)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -254,19 +236,20 @@ class _FeedbackFormState extends State<FeedbackForm> {
                 );
               }),
             ),
-
           const SizedBox(height: Constants.defaultPadding),
-
           const Divider(color: Colors.white),
-
           const SizedBox(height: Constants.defaultPadding),
-
-          InputTextField(controller: feedBackController, hintText: "Feedback", obscureText: false, lines: 4, limit: 150),
-
+          InputTextField(
+              controller: feedBackController,
+              hintText: "Feedback",
+              obscureText: false,
+              lines: 4,
+              limit: 150),
           const SizedBox(height: Constants.defaultPadding),
-
-          Button(onTap: () => sendFeedback(), text: "Send Feedback",),
-
+          Button(
+            onTap: () => sendFeedback(),
+            text: "Send Feedback",
+          ),
         ],
       ),
     );
