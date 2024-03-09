@@ -11,8 +11,10 @@ import '../../models/route_model.dart';
 import '../../style/constants.dart';
 import '../button.dart';
 import 'feedback_form.dart';
+import 'selected_jeep_info.dart';
 import '../../services/eta.dart';
 import '../text_loader.dart';
+import '../select_jeep_prompt.dart';
 
 class DesktopRouteInfo extends StatefulWidget {
   final RouteData route;
@@ -214,149 +216,19 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
 
           const SizedBox(height: Constants.defaultPadding),
 
-          if (widget.selectedJeep == null)
-            Container(
-            padding: const EdgeInsets.all(Constants.defaultPadding),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.white,
-                width: 2
-              ),
-              borderRadius: BorderRadius.circular(Constants.defaultPadding)
-            ),
-            child: const Row(
-              children: [
-                Icon(Icons.touch_app_rounded),
-                SizedBox(width: Constants.defaultPadding),
-                Text("Select a jeepney")
-              ],
-            ),
-          ),
+          if (_selectedJeep == null)
+            const SelectJeepPrompt(),
 
-          if (widget.selectedJeep != null)
-            Container(
-              padding: const EdgeInsets.all(Constants.defaultPadding),
-              decoration: BoxDecoration(
-                  border: Border.all(
-                      color: Colors.white,
-                      width: 2
-                  ),
-                  borderRadius: BorderRadius.circular(Constants.defaultPadding)
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.circle, color: Color(widget.route.routeColor)),
-                          const SizedBox(width: Constants.defaultPadding),
-                          Text(widget.selectedJeep!.device_id)
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text("${widget.selectedJeep!.passenger_count}/${widget.selectedJeep!.max_capacity}"),
-                          const SizedBox(width: Constants.defaultPadding/2),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                isTapped = !isTapped;
-                              });
-                            },
-                            child: isTapped
-                              ? const Icon(Icons.arrow_drop_down)
-                              : const Icon(Icons.arrow_drop_up)
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-
-                  if (widget.selectedJeep != null && isTapped)
-                    const Divider(color: Colors.white),
-
-                  if (widget.selectedJeep != null && isTapped)
-                    SizedBox(
-                      width: double.maxFinite,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text("Driver"),
-                              const SizedBox(width: Constants.defaultPadding),
-                              if (driverInfo == null)
-                                TextLoader(width: 70, height: 15),
-                              if (driverInfo != null)
-                                Text(driverInfo!.account_name, maxLines: 1, overflow: TextOverflow.ellipsis)
-                            ],
-                          ),
-
-                          const SizedBox(height: Constants.defaultPadding/2),
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text("ETA"),
-                              const SizedBox(width: Constants.defaultPadding),
-                              if (_eta == null)
-                                TextLoader(width: 40, height: 15),
-                              if (_eta != null)
-                                Text(_eta!)
-                            ],
-                          ),
-
-                          if (widget.user != null && widget.user!.is_verified && driverInfo != null)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: Constants.defaultPadding),
-
-                              Row(
-                                children: [
-                                  Expanded(child: Button(onTap: () => AwesomeDialog(
-                                    dialogType: DialogType.noHeader,
-                                    context: (context),
-                                    width: 500,
-                                    body: MouseRegion(
-                                      onEnter: (_) => widget.isHover(true),
-                                      onExit: (_) => widget.isHover(false),
-                                      child: FeedbackForm(
-                                        driver: driverInfo!,
-                                        jeep: _selectedJeep!,
-                                        route: widget.route,
-                                        user: widget.user),
-                                    ),
-                                  ).show(), text: 'Feedback', color: Color(widget.route.routeColor))),
-
-                                  const SizedBox(width: Constants.defaultPadding),
-
-                                  Expanded(child: Button(onTap: () => AwesomeDialog(
-                                    dialogType: DialogType.noHeader,
-                                    context: (context),
-                                    width: 500,
-                                    body: MouseRegion(
-                                      onEnter: (_) => widget.isHover(true),
-                                      onExit: (_) => widget.isHover(false),
-                                      child: ReportForm(
-                                          driver: driverInfo!,
-                                          jeep: _selectedJeep!,
-                                          route: widget.route,
-                                          user: widget.user),
-                                    ),
-                                  ).show(), text: 'Report', color: Colors.red[700]!)),
-                                ],
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    )
-                ],
-              ),
+          if (_selectedJeep != null)
+            SelectedJeepInfo(
+              jeep: _selectedJeep!,
+              eta: _eta,
+              driverInfo: driverInfo,
+              user: widget.user,
+              route: _value,
+              isHover: (bool value) {
+                widget.isHover(value);
+              }
             ),
         ],
       ),

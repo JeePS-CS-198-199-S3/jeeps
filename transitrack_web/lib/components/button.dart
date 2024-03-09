@@ -7,8 +7,9 @@ class Button extends StatelessWidget {
   final Function()? onTap;
   final String text;
   final Color color;
+  final isMobile;
 
-  const Button({super.key, required this.onTap, required this.text, this.color = Colors.blue});
+  const Button({super.key, required this.onTap, required this.text, this.color = Colors.blue, this.isMobile = false});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class Button extends StatelessWidget {
         ),
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: Constants.defaultPadding),
+            padding: EdgeInsets.symmetric(vertical: isMobile?Constants.defaultPadding/6:Constants.defaultPadding),
             child: Text(
               text,
               style: const TextStyle(

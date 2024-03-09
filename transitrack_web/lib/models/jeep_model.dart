@@ -28,7 +28,7 @@ class JeepData{
     int passenger_count = data['passenger_count'];
     int max_capacity = data['max_capacity'];
     GeoPoint location = data['location'];
-    bool is_active = data['is_active'];
+    bool is_active = data['is_active'] as bool;
     int route_id = data['route_id'];
 
     return JeepData(

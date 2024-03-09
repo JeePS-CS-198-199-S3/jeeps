@@ -17,6 +17,8 @@ import '../../style/constants.dart';
 import '../account_related/route_manager/route_manager_options.dart';
 import '../right_panel/desktop_route_info.dart';
 import '../right_panel/unselected_desktop_route_info.dart';
+import '../right_panel/mobile_dashboard_unselected.dart';
+import '../right_panel/mobile_route_info.dart';
 
 class MapWidget extends StatefulWidget {
   final bool isDrawer;
@@ -44,7 +46,7 @@ class LatLngTween extends Tween<LatLng> {
 
 class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   late RouteData? _value;
-  late List<JeepData>? _jeeps;
+  late List<JeepData>? jeeps;
   late LatLng? myLocation;
   late int _configRoute;
 
@@ -69,7 +71,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
     setState(() {
       _value = widget.route;
-      _jeeps = widget.jeeps;
+      jeeps = widget.jeeps;
       _configRoute = -1;
       myLocation = null;
     });
@@ -99,11 +101,10 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
       if (_value != null) {addJeeps();}
     }
-
     // jeepney updates
-    if (widget.jeeps != _jeeps) {
+    if (widget.jeeps != jeeps) {
       setState(() {
-        _jeeps = widget.jeeps;
+        jeeps = widget.jeeps;
       });
 
       updateJeeps();
@@ -123,18 +124,17 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
           .get();
 
       setState(() {
-        _jeeps = querySnapshot.docs.map((doc) => JeepData.fromSnapshot(doc)).toList();
+        jeeps = querySnapshot.docs.map((doc) => JeepData.fromSnapshot(doc)).toList();
       });
 
-      if (_jeeps != null && _jeeps!.isNotEmpty) {
-        for (var jeep in _jeeps!) {
+      if (jeeps != null && jeeps!.isNotEmpty) {
+        for (var jeep in jeeps!) {
           _mapController.addCircle(
               CircleOptions(
-                  geometry: LatLng(jeep.location.latitude, jeep.location.longitude),
-                  circleRadius: 7,
-                  circleColor: intToHexColor(widget.route!.routeColor),
-                  circleStrokeColor: '#FFFFFF',
-                  circleOpacity: jeep.is_active?1:0,
+                geometry: LatLng(jeep.location.latitude, jeep.location.longitude),
+                circleColor: intToHexColor(widget.route!.routeColor),
+                circleStrokeColor: '#FFFFFF',
+                circleRadius: jeep.is_active?7:0,
               )
           ).then((circle) => jeepEntities.add(JeepEntity(jeep: jeep, jeepCircle: circle)));
         }
@@ -143,28 +143,36 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   }
 
   void updateJeeps() {
-    if (_jeeps != null) {
-      for (var jeep in _jeeps!) {
+    if (jeeps != null) {
+      for (var jeep in jeeps!) {
         int index = jeepEntities.indexWhere((entity) => entity.jeep.device_id == jeep.device_id);
 
         if (index != -1) {
           JeepEntity? specificJeepEntity = jeepEntities[index];
-          _animateCircleMovement(
-            specificJeepEntity.jeepCircle.options.geometry!,
-            LatLng(jeep.location.latitude, jeep.location.longitude),
-            specificJeepEntity.jeepCircle,
-            hide: !specificJeepEntity.jeep.is_active
-          );
+          if (specificJeepEntity.jeep.is_active) {
+            _animateCircleMovement(
+              specificJeepEntity.jeepCircle.options.geometry!,
+              LatLng(jeep.location.latitude, jeep.location.longitude),
+              specificJeepEntity.jeepCircle,
+            );
+          } else {
+            _mapController.updateCircle(
+              jeepEntities.where((entity) => entity.jeep.device_id == jeep.device_id).first.jeepCircle,
+              const CircleOptions(
+                circleRadius: 0,
+                circleStrokeWidth: 0,
+              )
+            );
+          }
 
           jeepEntities[index] = JeepEntity(jeepCircle: specificJeepEntity.jeepCircle, jeep: jeep);
         } else {
           _mapController.addCircle(
               CircleOptions(
-                  geometry: LatLng(jeep.location.latitude, jeep.location.longitude),
-                  circleRadius: 7,
-                  circleColor: intToHexColor(widget.route!.routeColor),
-                  circleStrokeColor: '#FFFFFF',
-                  circleOpacity: jeep.is_active?1:0,
+                geometry: LatLng(jeep.location.latitude, jeep.location.longitude),
+                circleColor: intToHexColor(widget.route!.routeColor),
+                circleStrokeColor: '#FFFFFF',
+                circleRadius: jeep.is_active?7:0,
               )
           ).then((circle) => jeepEntities.add(JeepEntity(jeep: jeep, jeepCircle: circle)));
         }
@@ -182,7 +190,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
           desiredAccuracy: LocationAccuracy.high);
 
       setState(() {
-        myLocation = position as LatLng;
+        myLocation = LatLng(position.latitude, position.longitude);
       });
 
       if (myLocation != null) {
@@ -233,7 +241,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     }
   }
 
-  void _animateCircleMovement(LatLng from, LatLng to, Circle circle, {bool hide = false}) {
+  void _animateCircleMovement(LatLng from, LatLng to, Circle circle) {
     final animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -244,7 +252,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     ));
 
     animation.addListener(() {
-      _mapController.updateCircle(circle, CircleOptions(geometry: animation.value, circleOpacity: hide?0:1));
+      _mapController.updateCircle(circle, CircleOptions(geometry: animation.value, circleOpacity: 1, circleStrokeOpacity: 1));
     });
 
     animation.addStatusListener((status) {
@@ -403,161 +411,191 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     return Scaffold(
       body: Stack(
         children: [
-          MapboxMap(
-            accessToken: Keys.MapBoxKey,
-            styleString: Keys.MapBoxNight,
-            doubleClickZoomEnabled: false,
-            minMaxZoomPreference: MinMaxZoomPreference(mapMinZoom, mapMaxZoom),
-            scrollGesturesEnabled: !widget.isDrawer && !isHover,
-            zoomGesturesEnabled: !widget.isDrawer && !isHover,
-            rotateGesturesEnabled: !widget.isDrawer && !isHover,
-            tiltGesturesEnabled: !widget.isDrawer && !isHover,
-            compassEnabled: true,
-            compassViewPosition: Responsive.isDesktop(context)
-                ? CompassViewPosition.BottomLeft
-                : CompassViewPosition.TopRight,
-            onMapCreated: (controller) {
-              _onMapCreated(controller);
-            },
-            onStyleLoadedCallback: () {
-              _getLocation();
-              widget.mapLoaded(true);
-              _listenToDeviceLocation();
-            },
-            initialCameraPosition: CameraPosition(
-              target: Keys.MapCenter,
-              zoom: mapStartZoom,
-            ),
-            onMapClick: (point, latLng) {
-              if (_configRoute == 1 && !widget.isDrawer && !isHover) {
-                setRoute.add(latLng);
+          Column(
+              children: [
+                Expanded(
+                  child: MapboxMap(
+                    accessToken: Keys.MapBoxKey,
+                    styleString: Keys.MapBoxNight,
+                    doubleClickZoomEnabled: false,
+                    minMaxZoomPreference: MinMaxZoomPreference(mapMinZoom, mapMaxZoom),
+                    scrollGesturesEnabled: !widget.isDrawer && !isHover,
+                    zoomGesturesEnabled: !widget.isDrawer && !isHover,
+                    rotateGesturesEnabled: !widget.isDrawer && !isHover,
+                    tiltGesturesEnabled: !widget.isDrawer && !isHover,
+                    compassEnabled: true,
+                    compassViewPosition: Responsive.isDesktop(context)
+                        ? CompassViewPosition.BottomLeft
+                        : CompassViewPosition.TopRight,
+                    onMapCreated: (controller) {
+                      _onMapCreated(controller);
+                    },
+                    onStyleLoadedCallback: () {
+                      _getLocation();
+                      widget.mapLoaded(true);
+                      _listenToDeviceLocation();
+                    },
+                    initialCameraPosition: CameraPosition(
+                      target: Keys.MapCenter,
+                      zoom: mapStartZoom,
+                    ),
+                    onMapClick: (point, latLng) {
+                      if (_configRoute == 1 && !widget.isDrawer && !isHover) {
+                        setRoute.add(latLng);
 
-                addPoints();
-                addLine();
-              }
-            },
+                        addPoints();
+                        addLine();
+                      }
+                    },
+                  ),
+                ),
+
+                if(Responsive.isMobile(context))
+                  Container(
+                    height: 220,
+                    decoration: const BoxDecoration(
+                      color: Constants.secondaryColor,
+                    ),
+                    child: widget.route == null
+                        ? const MobileDashboardUnselected()
+                        : MobileRouteInfo(
+                        route: _value!,
+                        jeeps: jeeps!,
+                        selectedJeep: selectedJeep != null
+                            ? selectedJeep!.jeep
+                            : null,
+                        user: widget.currentUserFirestore,
+                        isHover: (bool value) {
+                          setState(() {
+                            isHover = value;
+                          });
+                        },
+                        myLocation: myLocation
+                    )
+                )
+              ]
           ),
 
-          if(!Responsive.isMobile(context))
+          if(Responsive.isDesktop(context))
             Positioned(
-              top: 0, right: 0,
-              child: Column(
-                children: [
-                  if (widget.route == null)
-                    MouseRegion(
-                      onEnter: (_) => setState(() {
-                        isHover = true;
-                      }),
-                      onExit: (_) => setState(() {
-                        isHover = false;
-                      }),
-                      child: const UnselectedDesktopRouteInfo()
-                    ),
-
-                  if (widget.route != null)
-                    MouseRegion(
-                      onEnter: (_) => setState(() {
-                        isHover = true;
-                      }),
-                      onExit: (_) => setState(() {
-                        isHover = false;
-                      }),
-                      child: DesktopRouteInfo(route: _value!, jeeps: _jeeps!, selectedJeep: selectedJeep != null
-                          ? selectedJeep!.jeep
-                          : null,
-                        user: widget.currentUserFirestore, isHover: (bool value) {setState(() {
-                          isHover = value;
-                        });}, myLocation: myLocation,
+                top: 0, right: 0,
+                child: Column(
+                  children: [
+                    if (widget.route == null)
+                      MouseRegion(
+                          onEnter: (_) => setState(() {
+                            isHover = true;
+                          }),
+                          onExit: (_) => setState(() {
+                            isHover = false;
+                          }),
+                          child: const UnselectedDesktopRouteInfo()
                       ),
-                    ),
 
-                  // Route Manager Dashboard
-                  if (widget.route != null
-                      && widget.currentUserFirestore != null
-                      && widget.currentUserFirestore!.account_type == 2
-                      && widget.currentUserFirestore!.is_verified
-                      && widget.route!.routeId == widget.currentUserFirestore!.route_id)
-                    Container(
-                        width: 300,
-                        padding: const EdgeInsets.all(Constants.defaultPadding),
-                        margin: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
-                        decoration: const BoxDecoration(
-                          color: Constants.secondaryColor,
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                    if (widget.route != null)
+                      MouseRegion(
+                        onEnter: (_) => setState(() {
+                          isHover = true;
+                        }),
+                        onExit: (_) => setState(() {
+                          isHover = false;
+                        }),
+                        child: DesktopRouteInfo(route: _value!, jeeps: jeeps!, selectedJeep: selectedJeep != null
+                            ? selectedJeep!.jeep
+                            : null,
+                          user: widget.currentUserFirestore, isHover: (bool value) {setState(() {
+                            isHover = value;
+                          });}, myLocation: myLocation,
                         ),
-                        child: RouteManagerOptions(
-                          route: widget.route!,
-                          jeeps: widget.jeeps!,
-                          hover: (bool hover) {
-                            setState(() {
-                              isHover = hover;
-                            });
-                          },
-                          coordConfig: (int coordConfig) {
-                            int prev = _configRoute;
+                      ),
 
-                            setState(() {
-                              _configRoute = coordConfig;
-                            });
+                    // Route Manager Dashboard
+                    if (widget.route != null
+                        && widget.currentUserFirestore != null
+                        && widget.currentUserFirestore!.account_type == 2
+                        && widget.currentUserFirestore!.is_verified
+                        && widget.route!.routeId == widget.currentUserFirestore!.route_id)
+                      Container(
+                          width: 300,
+                          padding: const EdgeInsets.all(Constants.defaultPadding),
+                          margin: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
+                          decoration: const BoxDecoration(
+                            color: Constants.secondaryColor,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          child: RouteManagerOptions(
+                            route: widget.route!,
+                            jeeps: widget.jeeps!,
+                            hover: (bool hover) {
+                              setState(() {
+                                isHover = hover;
+                              });
+                            },
+                            coordConfig: (int coordConfig) {
+                              int prev = _configRoute;
 
-                            // unselected any of the choices
-                            if (_configRoute < 0) {
+                              setState(() {
+                                _configRoute = coordConfig;
+                              });
 
-                              // Coming from moving points, we save the new coordinates.
-                              if (prev == 0) {
-                                setRoute.clear();
-                                for (var circle in circles) {
-                                  setRoute.add(circle.options.geometry!);
+                              // unselected any of the choices
+                              if (_configRoute < 0) {
+
+                                // Coming from moving points, we save the new coordinates.
+                                if (prev == 0) {
+                                  setRoute.clear();
+                                  for (var circle in circles) {
+                                    setRoute.add(circle.options.geometry!);
+                                  }
+
+                                  for (var circle in circles) {
+                                    _mapController.removeCircle(circle);
+                                  }
+                                  circles.clear();
+                                  if (_configRoute == -1) {
+                                    update();
+                                  }
+                                  addLine();
+                                } else if (prev == 1) {
+                                  _mapController.onCircleTapped.remove(onCircleTapped);
+                                  _mapController.onLineTapped.remove(onLineTapped);
+
+                                  for (var circle in circles) {
+                                    _mapController.removeCircle(circle);
+                                  }
+                                  circles.clear();
+
+                                  if (_configRoute == -1) {
+                                    update();
+                                  }
+
                                 }
 
-                                for (var circle in circles) {
-                                  _mapController.removeCircle(circle);
-                                }
-                                circles.clear();
-                                if (_configRoute == -1) {
-                                  update();
-                                }
-                                addLine();
-                              } else if (prev == 1) {
-                                _mapController.onCircleTapped.remove(onCircleTapped);
-                                _mapController.onLineTapped.remove(onLineTapped);
+                              } else {
+                                setRoute = widget.route!.routeCoordinates;
 
-                                for (var circle in circles) {
-                                  _mapController.removeCircle(circle);
-                                }
-                                circles.clear();
-
-                                if (_configRoute == -1) {
-                                  update();
+                                // Move points
+                                if (_configRoute == 0) {
+                                  _mapController.clearLines();
+                                  addPoints();
                                 }
 
+                                // Add or Remove Points
+                                else if (_configRoute == 1) {
+                                  _mapController.onLineTapped.add(onLineTapped);
+                                  _mapController.onCircleTapped.add(onCircleTapped);
+                                  addPoints();
+                                }
                               }
 
-                            } else {
-                              setRoute = widget.route!.routeCoordinates;
-
-                              // Move points
-                              if (_configRoute == 0) {
-                                _mapController.clearLines();
-                                addPoints();
+                              if (_configRoute == -2) {
+                                _configRoute = -1;
                               }
-
-                              // Add or Remove Points
-                              else if (_configRoute == 1) {
-                                _mapController.onLineTapped.add(onLineTapped);
-                                _mapController.onCircleTapped.add(onCircleTapped);
-                                addPoints();
-                              }
-                            }
-
-                            if (_configRoute == -2) {
-                              _configRoute = -1;
-                            }
-                          },
-                        )
-                    )
-                ],
-              )
+                            },
+                          )
+                      )
+                  ],
+                )
             )
         ],
       ),
