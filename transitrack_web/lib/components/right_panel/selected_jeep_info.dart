@@ -142,95 +142,96 @@ class _SelectedJeepInfoState extends State<SelectedJeepInfo> {
           if (_jeep != null && isTapped)
             SizedBox(
               width: double.maxFinite,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Row(
+              child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      flex: 4,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text("Driver"),
-                              const SizedBox(width: Constants.defaultPadding),
-                              if (_driverInfo == null)
-                                TextLoader(width: 70, height: 15),
-                              if (_driverInfo != null)
-                                Text(_driverInfo!.account_name, maxLines: 1, overflow: TextOverflow.ellipsis)
-                            ],
-                          ),
-
-                          const SizedBox(height: Constants.defaultPadding/2),
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text("ETA"),
-                              const SizedBox(width: Constants.defaultPadding),
-                              if (_eta == null)
-                                TextLoader(width: 40, height: 15),
-                              if (_eta != null)
-                                Text(_eta!)
-                            ],
-                          ),
-
-                          if (_user != null && _user!.is_verified && _driverInfo != null)
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                        flex: 4,
+                        child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                const SizedBox(height: Constants.defaultPadding),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text("Driver"),
+                                    const SizedBox(width: Constants.defaultPadding),
+                                    if (_driverInfo == null)
+                                      TextLoader(width: 70, height: 15),
+                                    if (_driverInfo != null)
+                                      Text(_driverInfo!.account_name, maxLines: 1, overflow: TextOverflow.ellipsis)
+                                  ],
+                                ),
 
-                                if (Responsive.isDesktop(context))
-                                  Row(
+                                const SizedBox(height: Constants.defaultPadding/2),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text("ETA"),
+                                    const SizedBox(width: Constants.defaultPadding),
+                                    if (_eta == null)
+                                      TextLoader(width: 40, height: 15),
+                                    if (_eta != null)
+                                      Text(_eta!)
+                                  ],
+                                ),
+
+                                if (_user != null && _user!.is_verified && _driverInfo != null)
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Expanded(child: Button(onTap: () => AwesomeDialog(
-                                        dialogType: DialogType.noHeader,
-                                        context: (context),
-                                        width: 500,
-                                        body: MouseRegion(
-                                          onEnter: (_) => widget.isHover(true),
-                                          onExit: (_) => widget.isHover(false),
-                                          child: FeedbackForm(
-                                              driver: _driverInfo!,
-                                              jeep: _jeep,
-                                              route: _route,
-                                              user: _user
-                                          ),
-                                        ),
-                                      ).show(), text: 'Feedback', color: Color(widget.route.routeColor))),
+                                      const SizedBox(height: Constants.defaultPadding),
 
-                                      const SizedBox(width: Constants.defaultPadding),
+                                      if (Responsive.isDesktop(context))
+                                        Row(
+                                          children: [
+                                            Expanded(child: Button(onTap: () => AwesomeDialog(
+                                              dialogType: DialogType.noHeader,
+                                              context: (context),
+                                              width: 500,
+                                              body: MouseRegion(
+                                                onEnter: (_) => widget.isHover(true),
+                                                onExit: (_) => widget.isHover(false),
+                                                child: FeedbackForm(
+                                                    driver: _driverInfo!,
+                                                    jeep: _jeep,
+                                                    route: _route,
+                                                    user: _user
+                                                ),
+                                              ),
+                                            ).show(), text: 'Feedback', color: Color(widget.route.routeColor))),
 
-                                      Expanded(
-                                          child: Button(
-                                              onTap: () => AwesomeDialog(
-                                                  dialogType: DialogType.noHeader,
-                                                  context: (context),
-                                                  width: 500,
-                                                  body: MouseRegion(
-                                                    onEnter: (_) => widget.isHover(true),
-                                                    onExit: (_) => widget.isHover(false),
-                                                    child: ReportForm(
-                                                        driver: _driverInfo!,
-                                                        jeep: _jeep,
-                                                        route: _route,
-                                                        user: _user
-                                                    ),
-                                                  )
-                                              ).show(),
-                                              text: 'Report', color: Colors.red[700]!
-                                          )
-                                      )
+                                            const SizedBox(width: Constants.defaultPadding),
+
+                                            Expanded(
+                                                child: Button(
+                                                    onTap: () => AwesomeDialog(
+                                                        dialogType: DialogType.noHeader,
+                                                        context: (context),
+                                                        width: 500,
+                                                        body: MouseRegion(
+                                                          onEnter: (_) => widget.isHover(true),
+                                                          onExit: (_) => widget.isHover(false),
+                                                          child: ReportForm(
+                                                              driver: _driverInfo!,
+                                                              jeep: _jeep,
+                                                              route: _route,
+                                                              user: _user
+                                                          ),
+                                                        )
+                                                    ).show(),
+                                                    text: 'Report', color: Colors.red[700]!
+                                                )
+                                            )
+                                          ],
+                                        )
                                     ],
                                   )
                               ],
                             )
-                        ],
-                      )
+                        )
                     ),
 
                     if (Responsive.isMobile(context) && _user != null && _user!.is_verified && _driverInfo != null)
@@ -238,54 +239,53 @@ class _SelectedJeepInfoState extends State<SelectedJeepInfo> {
 
                     if (Responsive.isMobile(context) && _user != null && _user!.is_verified && _driverInfo != null)
                       Expanded(
-                        flex: 2,
-                        child: Column(
-                          children: [
-                            Button(
-                              isMobile: true,
-                              onTap: () => AwesomeDialog(
-                              dialogType: DialogType.noHeader,
-                              context: (context),
-                              width: 500,
-                              body: MouseRegion(
-                                onEnter: (_) => widget.isHover(true),
-                                onExit: (_) => widget.isHover(false),
-                                child: FeedbackForm(
-                                    driver: _driverInfo!,
-                                    jeep: _jeep,
-                                    route: _route,
-                                    user: _user
-                                ),
-                              ),
-                            ).show(), text: 'Feedback', color: Color(widget.route.routeColor)),
-
-                            const SizedBox(height: Constants.defaultPadding/2),
-
-                            Button(
-                              isMobile: true,
-                              onTap: () => AwesomeDialog(
-                                  dialogType: DialogType.noHeader,
-                                  context: (context),
-                                  width: 500,
-                                  body: MouseRegion(
-                                    onEnter: (_) => widget.isHover(true),
-                                    onExit: (_) => widget.isHover(false),
-                                    child: ReportForm(
-                                        driver: _driverInfo!,
-                                        jeep: _jeep,
-                                        route: _route,
-                                        user: _user
+                          flex: 2,
+                          child: Column(
+                            children: [
+                              Button(
+                                  isMobile: true,
+                                  onTap: () => AwesomeDialog(
+                                    dialogType: DialogType.noHeader,
+                                    context: (context),
+                                    width: 500,
+                                    body: MouseRegion(
+                                      onEnter: (_) => widget.isHover(true),
+                                      onExit: (_) => widget.isHover(false),
+                                      child: FeedbackForm(
+                                          driver: _driverInfo!,
+                                          jeep: _jeep,
+                                          route: _route,
+                                          user: _user
+                                      ),
                                     ),
-                                  )
-                              ).show(),
-                              text: 'Report', color: Colors.red[700]!
-                            )
-                          ],
-                        )
+                                  ).show(), text: 'Feedback', color: Color(widget.route.routeColor)),
+
+                              const SizedBox(height: Constants.defaultPadding/2),
+
+                              Button(
+                                  isMobile: true,
+                                  onTap: () => AwesomeDialog(
+                                      dialogType: DialogType.noHeader,
+                                      context: (context),
+                                      width: 500,
+                                      body: MouseRegion(
+                                        onEnter: (_) => widget.isHover(true),
+                                        onExit: (_) => widget.isHover(false),
+                                        child: ReportForm(
+                                            driver: _driverInfo!,
+                                            jeep: _jeep,
+                                            route: _route,
+                                            user: _user
+                                        ),
+                                      )
+                                  ).show(),
+                                  text: 'Report', color: Colors.red[700]!
+                              )
+                            ],
+                          )
                       )
                   ]
-                )
-              ),
+              )
             )
         ],
       ),
