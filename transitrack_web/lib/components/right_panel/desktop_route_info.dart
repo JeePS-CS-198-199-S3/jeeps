@@ -143,96 +143,124 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
 
           const SizedBox(height: Constants.defaultPadding),
 
-          SizedBox(
-            height: 200,
-            child: Stack(
-              children: [
-                PieChart(
-                  PieChartData(
-                    sectionsSpace: 0,
-                    centerSpaceRadius: 70,
-                    startDegreeOffset: -90,
-                    sections: [
-                      PieChartSectionData(
-                        color: Color(widget.route.routeColor),
-                        value: operating.toDouble(),
-                        showTitle: false,
-                        radius: 20,
-                      ),
-                      PieChartSectionData(
-                        color: Color(widget.route.routeColor).withOpacity(0.1),
-                        value: not_operating.toDouble(),
-                        showTitle: false,
-                        radius: 20,
-                      ),
-                    ],
-                  ),
-                ),
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: '$operating',
-                              style: Theme.of(context).textTheme.headline4?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
+          Stack(
+            children: [
+              ClipRect(
+                  clipper: TopClipper(),
+                  child: SizedBox(
+                    height: 200,
+                    child: Stack(
+                      children: [
+                        PieChart(
+                          PieChartData(
+                            sectionsSpace: 0,
+                            centerSpaceRadius: 70,
+                            startDegreeOffset: -180,
+                            sections: [
+                              PieChartSectionData(
+                                color: Color(widget.route.routeColor),
+                                value: operating.toDouble(),
+                                showTitle: false,
+                                radius: 20,
                               ),
-                            ),
-                            TextSpan(
-                              text: "/${operating + not_operating}",
-                              style: Theme.of(context).textTheme.headline4?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 15,
+                              PieChartSectionData(
+                                color: Color(widget.route.routeColor).withOpacity(0.1),
+                                value: not_operating.toDouble(),
+                                showTitle: false,
+                                radius: 20,
                               ),
-                            ),
-                            TextSpan(
-                              text: '\noperating',
-                              style: Theme.of(context).textTheme.headline4?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 15,
+                              PieChartSectionData(
+                                color: Colors.transparent,
+                                value: (not_operating + operating).toDouble(),
+                                showTitle: false,
+                                radius: 20,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: Constants.defaultPadding),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+                        Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(height: Constants.defaultPadding*3),
+                                RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: '$operating',
+                                        style: Theme.of(context).textTheme.headline4?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: "/${operating + not_operating}",
+                                        style: Theme.of(context).textTheme.headline4?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: '\noperating',
+                                        style: Theme.of(context).textTheme.headline4?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 17,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )),
+                      ],
+                    ),
+                  )
+              ),
 
-          const SizedBox(height: Constants.defaultPadding),
+              Column(
+                children: [
+                  const SizedBox(height: Constants.defaultPadding*7),
 
-          const Divider(),
+                  const Divider(),
 
-          const SizedBox(height: Constants.defaultPadding),
+                  const SizedBox(height: Constants.defaultPadding),
 
-          if (_selectedJeep == null)
-            const SelectJeepPrompt(),
+                  if (_selectedJeep == null)
+                    const SelectJeepPrompt(),
 
-          if (_selectedJeep != null)
-            SelectedJeepInfo(
-              jeep: _selectedJeep!,
-              eta: _eta,
-              driverInfo: driverInfo,
-              user: widget.user,
-              route: _value,
-              isHover: (bool value) {
-                widget.isHover(value);
-              }
-            ),
+                  if (_selectedJeep != null)
+                    SelectedJeepInfo(
+                        jeep: _selectedJeep!,
+                        eta: _eta,
+                        driverInfo: driverInfo,
+                        user: widget.user,
+                        route: _value,
+                        isHover: (bool value) {
+                          widget.isHover(value);
+                        }
+                    ),
+                ]
+              )
+            ]
+          )
         ],
       ),
     );
   }
 }
 
+class TopClipper extends CustomClipper<Rect> {
+  @override
+  Rect getClip(Size size) {
+    return Rect.fromLTWH(0, 0, size.width, 110); // Clip to top 120 pixels
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Rect> oldClipper) {
+    return false;
+  }
+}
