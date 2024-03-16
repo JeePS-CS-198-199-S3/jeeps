@@ -149,7 +149,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   void updateJeeps() {
     List<JeepsAndDrivers>? toUpdate = jeeps;
     if (toUpdate != null) {
-      for (JeepsAndDrivers jeep in toUpdate!) {
+      for (JeepsAndDrivers jeep in toUpdate) {
         int index = jeepEntities.indexWhere((entity) =>
             entity.jeepAndDriver.jeep.device_id == jeep.jeep.device_id);
 

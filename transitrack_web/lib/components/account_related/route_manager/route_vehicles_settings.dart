@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transitrack_web/components/account_related/route_manager/edit_jeep.dart';
 
 import '../../../models/jeep_model.dart';
 import '../../../models/route_model.dart';
@@ -93,10 +94,30 @@ class _VehiclesSettingsState extends State<VehiclesSettings> {
                                         const SizedBox(
                                             width: Constants.defaultPadding),
                                       if (_jeeps![index].driver == null)
-                                        Icon(
-                                          Icons.edit,
-                                          size: 20,
-                                          color: Color(widget.route.routeColor),
+                                        GestureDetector(
+                                          onTap: () {
+                                            AwesomeDialog(
+                                              dialogType: DialogType.noHeader,
+                                              context: (context),
+                                              width: 500,
+                                              body: MouseRegion(
+                                                onEnter: (_) =>
+                                                    widget.isHover(true),
+                                                onExit: (_) =>
+                                                    widget.isHover(false),
+                                                child: EditJeep(
+                                                  route: widget.route,
+                                                  jeepData: _jeeps![index].jeep,
+                                                ),
+                                              ),
+                                            ).show();
+                                          },
+                                          child: Icon(
+                                            Icons.edit,
+                                            size: 20,
+                                            color:
+                                                Color(widget.route.routeColor),
+                                          ),
                                         ),
                                       if (_jeeps![index].driver == null)
                                         const SizedBox(
