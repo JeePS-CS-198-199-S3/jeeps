@@ -27,7 +27,7 @@ class MapWidget extends StatefulWidget {
   final AccountData? currentUserFirestore;
   final ValueChanged<LatLng> foundDeviceLocation;
   final ValueChanged<bool> mapLoaded;
-  MapWidget(
+  const MapWidget(
       {Key? key,
       required this.isDrawer,
       required this.route,
@@ -551,6 +551,17 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                               ? selectedJeep!.jeepAndDriver
                               : null,
                           user: widget.currentUserFirestore,
+                          sendPing: (bool value) async {
+                            _mapController.animateCamera(
+                                CameraUpdate.newLatLngZoom(
+                                    myLocation!, mapStartZoom));
+                            _animateRipple();
+
+                            await Future.delayed(
+                                const Duration(milliseconds: 2000));
+
+                            _animateRipple();
+                          },
                           isHover: (bool value) {
                             setState(() {
                               isHover = value;

@@ -151,7 +151,7 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Expanded(
                 child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 5.5),
+              padding: const EdgeInsets.symmetric(vertical: 5.5),
               child: Text(
                 _value.routeName,
                 style:
@@ -171,7 +171,7 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("SendLoc",
+                      const Text("SendLoc",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 12)),

@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import '../MenuController.dart';
 
 import '../components/account_related/account_stream.dart';
-import '../components/cooldown_button.dart';
 import '../components/header.dart';
 import '../components/left_drawer/logo.dart';
 import '../components/map_related/map.dart';
@@ -16,9 +15,7 @@ import '../components/left_drawer/route_list.dart';
 import '../config/responsive.dart';
 import '../models/account_model.dart';
 import '../models/jeep_model.dart';
-import '../models/ping_model.dart';
 import '../models/route_model.dart';
-import '../services/send_ping.dart';
 import '../style/constants.dart';
 
 class Dashboard extends StatefulWidget {
@@ -104,7 +101,6 @@ class _DashboardState extends State<Dashboard> {
         });
 
         List<JeepsAndDrivers> collected = [];
-        List<JeepData> _jeeps = [];
 
         for (JeepsAndDrivers jeep in jeeps) {
           bool found = drivers
@@ -273,111 +269,82 @@ class _DashboardState extends State<Dashboard> {
             ),
           )),
       body: SafeArea(
-        child: Stack(
+        child: Row(
           children: [
-            Row(
-              children: [
-                if (Responsive.isDesktop(context))
-                  Expanded(
-                    flex: 1,
-                    child: Drawer(
-                      shape: const Border(),
-                      elevation: 0.0,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            const DrawerHeader(
-                              child: Logo(),
-                            ),
-                            if (!mapLoaded || _routes.isEmpty)
-                              const Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: Constants.defaultPadding),
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              ),
-                            if (mapLoaded && _routes.isNotEmpty)
-                              RouteList(
-                                  routeChoice: routeChoice,
-                                  routes: _routes,
-                                  newRouteChoice: (int choice) {
-                                    if (routeChoice == choice) {
-                                      switchRoute(-1);
-                                    } else {
-                                      switchRoute(choice);
-                                    }
-                                  },
-                                  hoverToggle: hovering),
-                            Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: Constants.defaultPadding),
-                                child: const Divider()),
-                            const SizedBox(height: Constants.defaultPadding),
-                            AccountStream(
-                              hoverToggle: hovering,
-                              currentUser: currentUserAuth,
-                              user: currentUserFirestore,
-                              deviceLoc: deviceLoc,
-                              admin: currentUserFirestore != null &&
-                                      currentUserFirestore!.is_verified &&
-                                      currentUserFirestore!.route_id >= 0
-                                  ? "${_routes[currentUserFirestore!.route_id].routeName} "
-                                  : "",
-                              route: routeChoice,
-                            ),
-                          ],
+            if (Responsive.isDesktop(context))
+              Expanded(
+                flex: 1,
+                child: Drawer(
+                  shape: const Border(),
+                  elevation: 0.0,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const DrawerHeader(
+                          child: Logo(),
                         ),
-                      ),
+                        if (!mapLoaded || _routes.isEmpty)
+                          const Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: Constants.defaultPadding),
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        if (mapLoaded && _routes.isNotEmpty)
+                          RouteList(
+                              routeChoice: routeChoice,
+                              routes: _routes,
+                              newRouteChoice: (int choice) {
+                                if (routeChoice == choice) {
+                                  switchRoute(-1);
+                                } else {
+                                  switchRoute(choice);
+                                }
+                              },
+                              hoverToggle: hovering),
+                        Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: Constants.defaultPadding),
+                            child: const Divider()),
+                        const SizedBox(height: Constants.defaultPadding),
+                        AccountStream(
+                          hoverToggle: hovering,
+                          currentUser: currentUserAuth,
+                          user: currentUserFirestore,
+                          deviceLoc: deviceLoc,
+                          admin: currentUserFirestore != null &&
+                                  currentUserFirestore!.is_verified &&
+                                  currentUserFirestore!.route_id >= 0
+                              ? "${_routes[currentUserFirestore!.route_id].routeName} "
+                              : "",
+                          route: routeChoice,
+                        ),
+                      ],
                     ),
                   ),
-                Expanded(
-                  flex: 5,
-                  child: Stack(children: [
-                    MapWidget(
-                      isDrawer: drawerOpen,
-                      route: routeChoice == -1 ? null : _routes[routeChoice],
-                      jeeps: routeChoice == -1 ? null : jeeps,
-                      foundDeviceLocation: (LatLng newDeviceLocation) {
-                        setState(() {
-                          deviceLoc = newDeviceLocation;
-                        });
-                      },
-                      currentUserFirestore: currentUserFirestore,
-                      mapLoaded: (bool isLoaded) => setState(() {
-                        mapLoaded = isLoaded;
-                      }),
-                    ),
-                    if (!Responsive.isDesktop(context)) const Header(),
-                  ]),
-                )
-              ],
-            ),
-            if (Responsive.isMobile(context) &&
-                currentUserAuth != null &&
-                currentUserFirestore != null)
-              Positioned(
-                  bottom: Constants.defaultPadding / 2,
-                  right: Constants.defaultPadding / 2,
-                  child: CooldownButton(
-                      onPressed: () {
-                        sendPing(PingData(
-                            ping_email: currentUserAuth!.email!,
-                            ping_location: deviceLoc!,
-                            ping_route: routeChoice));
-                      },
-                      alert: "We have broadcasted your location.",
-                      verified: currentUserFirestore!.is_verified &&
-                          deviceLoc != null &&
-                          routeChoice != -1,
-                      child: deviceLoc != null
-                          ? const Icon(Icons.location_on)
-                          : const SizedBox(
-                              width: 15,
-                              height: 15,
-                              child: CircularProgressIndicator(
-                                color: Constants.bgColor,
-                              ))))
+                ),
+              ),
+            Expanded(
+              flex: 5,
+              child: Stack(children: [
+                MapWidget(
+                  isDrawer: drawerOpen,
+                  route: routeChoice == -1 ? null : _routes[routeChoice],
+                  jeeps: routeChoice == -1 ? null : jeeps,
+                  foundDeviceLocation: (LatLng newDeviceLocation) {
+                    setState(() {
+                      deviceLoc = newDeviceLocation;
+                    });
+                  },
+                  currentUserFirestore: currentUserFirestore,
+                  mapLoaded: (bool isLoaded) => setState(() {
+                    mapLoaded = isLoaded;
+                  }),
+                ),
+                if (!Responsive.isDesktop(context)) const Header(),
+              ]),
+            )
           ],
         ),
       ),
