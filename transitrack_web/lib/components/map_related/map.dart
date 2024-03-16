@@ -445,10 +445,11 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   void onCircleTapped(Circle pressedCircle) {
     int index = circles.indexWhere((circle) => pressedCircle == circle);
 
-    setRoute.removeAt(index);
-
-    addPoints();
-    addLine();
+    if (index != -1) {
+      setRoute.removeAt(index);
+      addPoints();
+      addLine();
+    }
   }
 
   void onJeepTapped(Circle pressedJeep) {

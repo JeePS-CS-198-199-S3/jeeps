@@ -164,12 +164,15 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const Text("Route Name"),
                   InputTextField(
                       controller: nameController,
                       hintText: "Route Name",
                       obscureText: false),
                   const SizedBox(height: Constants.defaultPadding),
+                  const Text("Regular Fare"),
                   InputTextField(
                     controller: fareController,
                     hintText: "Regular Fare",
@@ -177,9 +180,10 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
                     type: TextInputType.number,
                   ),
                   const SizedBox(height: Constants.defaultPadding),
+                  const Text("Students, PWDs, & Senior Citizens"),
                   InputTextField(
                       controller: fareDiscountedController,
-                      hintText: "Discounted Fare (Students/Senior Citizen)",
+                      hintText: "SPS",
                       obscureText: false,
                       type: TextInputType.number),
                   const SizedBox(height: Constants.defaultPadding),

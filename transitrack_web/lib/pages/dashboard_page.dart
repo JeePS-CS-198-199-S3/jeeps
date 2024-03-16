@@ -239,6 +239,7 @@ class _DashboardState extends State<Dashboard> {
                   RouteList(
                       routeChoice: routeChoice,
                       routes: _routes,
+                      user: currentUserFirestore,
                       newRouteChoice: (int choice) {
                         if (routeChoice == choice) {
                           switchRoute(-1);
@@ -295,6 +296,7 @@ class _DashboardState extends State<Dashboard> {
                           RouteList(
                               routeChoice: routeChoice,
                               routes: _routes,
+                              user: currentUserFirestore,
                               newRouteChoice: (int choice) {
                                 if (routeChoice == choice) {
                                   switchRoute(-1);
