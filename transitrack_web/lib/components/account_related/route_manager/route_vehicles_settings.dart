@@ -86,24 +86,32 @@ class _VehiclesSettingsState extends State<VehiclesSettings> {
                             Row(
                               children: [
                                 Text(_jeeps![index].jeep.device_id),
-                                const SizedBox(width: Constants.defaultPadding),
                                 if (hovered == index)
                                   Row(
                                     children: [
-                                      Icon(
-                                        Icons.edit,
-                                        size: 20,
-                                        color: Color(widget.route.routeColor),
-                                      ),
-                                      const SizedBox(
-                                          width: Constants.defaultPadding / 2),
-                                      Icon(
-                                        Icons.delete,
-                                        size: 20,
-                                        color: Colors.red,
-                                      ),
-                                      const SizedBox(
-                                          width: Constants.defaultPadding / 2),
+                                      if (_jeeps![index].driver == null)
+                                        const SizedBox(
+                                            width: Constants.defaultPadding),
+                                      if (_jeeps![index].driver == null)
+                                        Icon(
+                                          Icons.edit,
+                                          size: 20,
+                                          color: Color(widget.route.routeColor),
+                                        ),
+                                      if (_jeeps![index].driver == null)
+                                        const SizedBox(
+                                            width:
+                                                Constants.defaultPadding / 2),
+                                      if (_jeeps![index].driver == null)
+                                        Icon(
+                                          Icons.delete,
+                                          size: 20,
+                                          color: Colors.red,
+                                        ),
+                                      if (_jeeps![index].driver != null)
+                                        const SizedBox(
+                                            width:
+                                                Constants.defaultPadding / 2),
                                       if (_jeeps![index].driver != null)
                                         GestureDetector(
                                           onTap: () => widget

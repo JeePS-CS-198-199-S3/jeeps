@@ -555,12 +555,13 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                             _mapController.animateCamera(
                                 CameraUpdate.newLatLngZoom(
                                     myLocation!, mapStartZoom));
-                            _animateRipple();
 
-                            await Future.delayed(
-                                const Duration(milliseconds: 2000));
+                            for (int i = 0; i < 3; i++) {
+                              _animateRipple();
 
-                            _animateRipple();
+                              await Future.delayed(
+                                  const Duration(milliseconds: 2000));
+                            }
                           },
                           isHover: (bool value) {
                             setState(() {
@@ -604,12 +605,12 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                             _mapController.animateCamera(
                                 CameraUpdate.newLatLngZoom(
                                     myLocation!, mapStartZoom));
-                            _animateRipple();
+                            for (int i = 0; i < 3; i++) {
+                              _animateRipple();
 
-                            await Future.delayed(
-                                const Duration(milliseconds: 2000));
-
-                            _animateRipple();
+                              await Future.delayed(
+                                  const Duration(milliseconds: 2000));
+                            }
                           },
                           isHover: (bool value) {
                             setState(() {

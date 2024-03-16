@@ -32,27 +32,54 @@ class _RegisterJeepState extends State<RegisterJeep> {
     if (jeepNameController.text.isNotEmpty) {
       if (jeepCapacityController.text.isNotEmpty &&
           int.parse(jeepCapacityController.text) > 0) {
+        bool nameAvailable = true;
         try {
-          // Add a new document with auto-generated ID
-          await FirebaseFirestore.instance
-              .collection('jeeps_realtime')
-              .add({
-                'device_id': jeepNameController.text.toUpperCase(),
-                'timestamp': FieldValue.serverTimestamp(),
-                'passenger_count': 0,
-                'max_capacity': int.parse(jeepCapacityController.text),
-                'location': GeoPoint(0, 0),
-                'is_active': false,
-                'route_id': widget.route.routeId
-              })
-              .then((value) => Navigator.pop(context))
-              .then((value) => Navigator.pop(context));
+          // Get reference to Firestore collection
+          CollectionReference jeepsCollection =
+              FirebaseFirestore.instance.collection('jeeps_realtime');
 
-          errorMessage("Success!");
+          // Query Firestore for documents where 'device_id' is equal to given deviceId
+          QuerySnapshot querySnapshot = await jeepsCollection
+              .where('device_id', isEqualTo: jeepNameController.text)
+              .get();
+
+          // Check if any documents exist matching the query
+          if (querySnapshot.docs.isNotEmpty) {
+            nameAvailable = false;
+          }
         } catch (e) {
-          // pop loading circle
           Navigator.pop(context);
           errorMessage(e.toString());
+        }
+
+        if (nameAvailable) {
+          try {
+            // Add a new document with auto-generated ID
+            await FirebaseFirestore.instance
+                .collection('jeeps_realtime')
+                .add({
+                  'device_id': jeepNameController.text.toUpperCase(),
+                  'timestamp': FieldValue.serverTimestamp(),
+                  'passenger_count': 0,
+                  'max_capacity': int.parse(jeepCapacityController.text),
+                  'location': GeoPoint(0, 0),
+                  'is_active': false,
+                  'route_id': widget.route.routeId
+                })
+                .then((value) => Navigator.pop(context))
+                .then((value) => Navigator.pop(context));
+
+            errorMessage("Success!");
+          } catch (e) {
+            // pop loading circle
+            Navigator.pop(context);
+            errorMessage(e.toString());
+          }
+        } else {
+          // pop loading circle
+          Navigator.pop(context);
+          errorMessage(
+              "Plate Number is already registered to another vehicle.");
         }
       } else {
         // pop loading circle
