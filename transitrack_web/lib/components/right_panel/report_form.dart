@@ -64,7 +64,7 @@ class _ReportFormState extends State<ReportForm> {
           return const Center(child: CircularProgressIndicator());
         });
 
-    // feedback field is not empty
+    // report field is not empty
     if (reportController.text.isNotEmpty) {
       try {
         // Add a new document with auto-generated ID

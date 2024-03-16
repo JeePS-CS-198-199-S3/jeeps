@@ -1,7 +1,5 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:transitrack_web/components/right_panel/report_form.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'dart:async';
 
@@ -9,11 +7,8 @@ import '../../models/account_model.dart';
 import '../../models/jeep_model.dart';
 import '../../models/route_model.dart';
 import '../../style/constants.dart';
-import '../button.dart';
-import 'feedback_form.dart';
 import 'selected_jeep_info.dart';
 import '../../services/eta.dart';
-import '../text_loader.dart';
 import '../select_jeep_prompt.dart';
 import '../../components/cooldown_button.dart';
 import '../../services/send_ping.dart';
@@ -25,6 +20,7 @@ class DesktopRouteInfo extends StatefulWidget {
   final JeepsAndDrivers? selectedJeep;
   final AccountData? user;
   final ValueChanged<bool> isHover;
+  final ValueChanged<bool> sendPing;
   final LatLng? myLocation;
   const DesktopRouteInfo(
       {super.key,
@@ -33,6 +29,7 @@ class DesktopRouteInfo extends StatefulWidget {
       required this.jeeps,
       required this.selectedJeep,
       required this.isHover,
+      required this.sendPing,
       required this.myLocation});
 
   @override
@@ -68,12 +65,19 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
     Timer.periodic(const Duration(seconds: 3), fetchEta);
   }
 
-//  void fetchDriverData(String jeep_id) async {
-//    AccountData? acc = await AccountData.getDriverAccountByJeep(jeep_id);
-//     setState(() {
-//       driverInfo = acc;
-//     });
-//   }
+  void errorMessage(String message) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+              backgroundColor: Constants.bgColor,
+              title: Center(
+                  child: Text(
+                message,
+                style: const TextStyle(color: Colors.white),
+              )));
+        });
+  }
 
   void fetchEta(Timer timer) async {
     if (_myLocation != null && _selectedJeep != null) {
@@ -119,10 +123,6 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
       setState(() {
         _selectedJeep = widget.selectedJeep;
       });
-
-      // if (_selectedJeep != null) {
-      //   fetchDriverData(_selectedJeep!.);
-      // }
     }
 
     if (widget.jeeps != _jeeps) {
@@ -177,13 +177,19 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
                           style: TextStyle(fontSize: 12)),
                       const SizedBox(width: Constants.defaultPadding / 3),
                       CooldownButton(
-                          onPressed: () {
-                            sendPing(PingData(
+                          onPressed: () async {
+                            int result = await sendPing(PingData(
                                 ping_email: widget.user!.account_email,
                                 ping_location: _myLocation!,
                                 ping_route: _value.routeId));
+                            if (result == 0) {
+                              widget.sendPing(true);
+                            } else {
+                              errorMessage(
+                                  "Failed to send your current location");
+                            }
                           },
-                          alert: "We have broadcasted your location.",
+                          alert: "Broadcasting your location...",
                           verified:
                               widget.user!.is_verified && _myLocation != null,
                           child: _myLocation != null

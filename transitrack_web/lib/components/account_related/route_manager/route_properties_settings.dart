@@ -34,7 +34,8 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
     fareDiscountedController.text = widget.route.routeFareDiscounted.toString();
     enabled = widget.route.enabled;
     route_time = widget.route.routeTime;
-    selectedRange = RangeValues(route_time[0].toDouble(), route_time[1].toDouble());
+    selectedRange =
+        RangeValues(route_time[0].toDouble(), route_time[1].toDouble());
     selectedColor = Color(widget.route.routeColor);
   }
 
@@ -46,15 +47,10 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
               backgroundColor: Constants.bgColor,
               title: Center(
                   child: Text(
-                    message,
-                    style: const TextStyle(
-                        color: Colors.white
-                    ),
-                  )
-              )
-          );
-        }
-    );
+                message,
+                style: const TextStyle(color: Colors.white),
+              )));
+        });
   }
 
   void update() async {
@@ -79,24 +75,27 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
       showDialog(
           context: context,
           builder: (context) {
-            return const Center(
-                child: CircularProgressIndicator()
-            );
-          }
-      );
+            return const Center(child: CircularProgressIndicator());
+          });
+
       try {
         Map<String, dynamic> newAccountSettings = {
           'route_name': nameController.text,
           'route_fare': double.tryParse(fareController.text),
-          'route_fare_discounted': double.tryParse(fareDiscountedController.text),
+          'route_fare_discounted':
+              double.tryParse(fareDiscountedController.text),
           'enabled': enabled,
-          'route_time': [selectedRange.start.round(), selectedRange.end.round()],
+          'route_time': [
+            selectedRange.start.round(),
+            selectedRange.end.round()
+          ],
           'route_color': selectedColor.value
         };
-        RouteData.updateRouteFirestore(widget.route.routeId, newAccountSettings).then((value) => errorMessage("Success!"));
+        RouteData.updateRouteFirestore(widget.route.routeId, newAccountSettings)
+            .then((value) => Navigator.pop(context))
+            .then((value) => Navigator.pop(context));
 
-        Navigator.pop(context);
-        
+        errorMessage("Success!");
       } catch (e) {
         // pop loading circle
         Navigator.pop(context);
@@ -109,57 +108,50 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
     chosenColor = selectedColor;
 
     return ColorPicker(
-      pickerColor: chosenColor,
-      enableAlpha: false,
-      labelTypes: [],
-      onColorChanged: (color) {
-        setState(() {
-          chosenColor = color;
+        pickerColor: chosenColor,
+        enableAlpha: false,
+        labelTypes: [],
+        onColorChanged: (color) {
+          setState(() {
+            chosenColor = color;
+          });
         });
-      }
-    );
   }
 
   void pickColor(BuildContext context) => showDialog(
       context: context,
       builder: (context) => MouseRegion(
-        onEnter: (_) => widget.hover(true),
-        onExit: (_) => widget.hover(false),
-        child: AlertDialog(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Set Route Color'),
-                GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: const Icon(Icons.arrow_back_outlined)
-                )
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                buildColorPicker(),
-
-                const SizedBox(height: Constants.defaultPadding),
-
-                TextButton(
-                  child: const Text(
-                    'SELECT',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      selectedColor = chosenColor;
-                    });
-                    Navigator.of(context).pop();
-                  }
+            onEnter: (_) => widget.hover(true),
+            onExit: (_) => widget.hover(false),
+            child: AlertDialog(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Set Route Color'),
+                    GestureDetector(
+                        onTap: () => Navigator.of(context).pop(),
+                        child: const Icon(Icons.arrow_back_outlined))
+                  ],
                 ),
-              ],
-            )
-        ),
-      )
-  );
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    buildColorPicker(),
+                    const SizedBox(height: Constants.defaultPadding),
+                    TextButton(
+                        child: const Text(
+                          'SELECT',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            selectedColor = chosenColor;
+                          });
+                          Navigator.of(context).pop();
+                        }),
+                  ],
+                )),
+          ));
 
   @override
   Widget build(BuildContext context) {
@@ -173,18 +165,24 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  InputTextField(controller: nameController, hintText: "Route Name", obscureText: false),
-
+                  InputTextField(
+                      controller: nameController,
+                      hintText: "Route Name",
+                      obscureText: false),
                   const SizedBox(height: Constants.defaultPadding),
-
-                  InputTextField(controller: fareController, hintText: "Regular Fare", obscureText: false, type: TextInputType.number,),
-
+                  InputTextField(
+                    controller: fareController,
+                    hintText: "Regular Fare",
+                    obscureText: false,
+                    type: TextInputType.number,
+                  ),
                   const SizedBox(height: Constants.defaultPadding),
-
-                  InputTextField(controller: fareDiscountedController, hintText: "Discounted Fare (Students/Senior Citizen)", obscureText: false, type: TextInputType.number),
-
+                  InputTextField(
+                      controller: fareDiscountedController,
+                      hintText: "Discounted Fare (Students/Senior Citizen)",
+                      obscureText: false,
+                      type: TextInputType.number),
                   const SizedBox(height: Constants.defaultPadding),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -202,9 +200,7 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: Constants.defaultPadding),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -215,18 +211,14 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: selectedColor
-                          ),
+                              shape: BoxShape.circle, color: selectedColor),
                           width: 40,
                           height: 40,
                         ),
                       ),
                     ],
                   ),
-
                   const SizedBox(height: Constants.defaultPadding),
-
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -234,7 +226,10 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Operating Hours:'),
-                          Text(formatTime([selectedRange.start.round(), selectedRange.end.round()]))
+                          Text(formatTime([
+                            selectedRange.start.round(),
+                            selectedRange.end.round()
+                          ]))
                         ],
                       ),
                       RangeSlider(
@@ -250,7 +245,8 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
                             });
                           } else {
                             setState(() {
-                              selectedRange = RangeValues(values.start, values.start);
+                              selectedRange =
+                                  RangeValues(values.start, values.start);
                             });
                           }
                         },
@@ -261,10 +257,11 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
               ),
             ),
           ),
-
           const SizedBox(height: Constants.defaultPadding),
-
-          Button(onTap: update, text: "Save",),
+          Button(
+            onTap: update,
+            text: "Save",
+          ),
         ],
       ),
     );

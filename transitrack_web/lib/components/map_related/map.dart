@@ -52,6 +52,14 @@ class LatLngTween extends Tween<LatLng> {
       );
 }
 
+class RippleTween extends Tween<double> {
+  RippleTween({required double begin, required double end})
+      : super(begin: begin, end: end);
+
+  @override
+  double lerp(double t) => lerpDouble(begin!, end!, t)!;
+}
+
 class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   late RouteData? _value;
   late List<JeepsAndDrivers>? jeeps;
@@ -242,6 +250,77 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     animationController.forward();
   }
 
+  void _animateRipple() async {
+    Circle? ripple1;
+    Circle? ripple2;
+    _mapController
+        .addCircle(CircleOptions(
+            geometry: myLocation,
+            circleColor: intToHexColor(_value!.routeColor),
+            circleOpacity: 1,
+            circleRadius: 0))
+        .then((value) => ripple1 = value);
+    _mapController
+        .addCircle(CircleOptions(
+            geometry: myLocation,
+            circleColor: intToHexColor(_value!.routeColor),
+            circleOpacity: 1,
+            circleRadius: 0))
+        .then((value) => ripple2 = value);
+
+    final animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
+    final animation = RippleTween(begin: 0, end: 1).animate(CurvedAnimation(
+      parent: animationController,
+      curve: Curves.easeInOut,
+    ));
+    final animationController2 = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    );
+    final animation2 = RippleTween(begin: 0, end: 1).animate(CurvedAnimation(
+      parent: animationController2,
+      curve: Curves.easeInOut,
+    ));
+
+    animation.addListener(() {
+      _mapController.updateCircle(
+          ripple1!,
+          CircleOptions(
+              circleRadius: (animation.value * 70),
+              circleOpacity: 1 - animation.value));
+    });
+
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    animation2.addListener(() {
+      _mapController.updateCircle(
+          ripple2!,
+          CircleOptions(
+              circleRadius: (animation2.value * 70),
+              circleOpacity: 1 - animation2.value));
+    });
+
+    animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        animationController.dispose();
+        _mapController.removeCircle(ripple1!);
+      }
+    });
+
+    animation2.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        animationController2.dispose();
+        _mapController.removeCircle(ripple2!);
+      }
+    });
+
+    animationController.forward();
+    animationController2.forward();
+  }
+
   void errorMessage(String message) {
     showDialog(
         context: context,
@@ -257,6 +336,13 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   }
 
   void update() async {
+    // show loading circle
+    showDialog(
+        context: context,
+        builder: (context) {
+          return const Center(child: CircularProgressIndicator());
+        });
+
     try {
       Map<String, dynamic> newAccountSettings = {
         'route_coordinates': setRoute
@@ -265,10 +351,13 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       };
 
       RouteData.updateRouteFirestore(widget.route!.routeId, newAccountSettings)
-          .then((value) {
-        errorMessage("Route coordinates updated!");
-      });
+          .then((value) => Navigator.pop(context))
+          .then((value) => Navigator.pop(context));
+
+      errorMessage("Success!");
     } catch (e) {
+      // pop loading circle
+      Navigator.pop(context);
       errorMessage(e.toString());
     }
   }
@@ -466,7 +555,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                             setState(() {
                               isHover = value;
                             });
-                            print(isHover);
                           },
                           myLocation: myLocation))
           ]),
@@ -501,6 +589,17 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                               ? selectedJeep!.jeepAndDriver
                               : null,
                           user: widget.currentUserFirestore,
+                          sendPing: (bool value) async {
+                            _mapController.animateCamera(
+                                CameraUpdate.newLatLngZoom(
+                                    myLocation!, mapStartZoom));
+                            _animateRipple();
+
+                            await Future.delayed(
+                                const Duration(milliseconds: 2000));
+
+                            _animateRipple();
+                          },
                           isHover: (bool value) {
                             setState(() {
                               isHover = value;
