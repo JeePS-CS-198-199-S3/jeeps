@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transitrack_web/components/account_related/route_manager/delete_jeep.dart';
 import 'package:transitrack_web/components/account_related/route_manager/edit_jeep.dart';
 
 import '../../../models/jeep_model.dart';
@@ -124,10 +125,28 @@ class _VehiclesSettingsState extends State<VehiclesSettings> {
                                             width:
                                                 Constants.defaultPadding / 2),
                                       if (_jeeps![index].driver == null)
-                                        Icon(
-                                          Icons.delete,
-                                          size: 20,
-                                          color: Colors.red,
+                                        GestureDetector(
+                                          onTap: () {
+                                            AwesomeDialog(
+                                              dialogType: DialogType.noHeader,
+                                              context: (context),
+                                              width: 500,
+                                              body: MouseRegion(
+                                                onEnter: (_) =>
+                                                    widget.isHover(true),
+                                                onExit: (_) =>
+                                                    widget.isHover(false),
+                                                child: DeleteJeep(
+                                                  jeepData: _jeeps![index].jeep,
+                                                ),
+                                              ),
+                                            ).show();
+                                          },
+                                          child: Icon(
+                                            Icons.delete,
+                                            size: 20,
+                                            color: Colors.red,
+                                          ),
                                         ),
                                       if (_jeeps![index].driver != null)
                                         const SizedBox(

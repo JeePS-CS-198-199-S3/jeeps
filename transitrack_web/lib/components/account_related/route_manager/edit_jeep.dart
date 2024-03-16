@@ -34,7 +34,18 @@ class _EditJeepState extends State<EditJeep> {
     });
   }
 
-  void registerJeep() async {
+  @override
+  void didUpdateWidget(covariant EditJeep oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // if route choice changed
+    if (widget.jeepData.device_id != currentName) {
+      setState(() {
+        currentName = widget.jeepData.device_id;
+      });
+    }
+  }
+
+  void editJeep() async {
     // show loading circle
     showDialog(
         context: context,
@@ -164,7 +175,7 @@ class _EditJeepState extends State<EditJeep> {
           const Divider(color: Colors.white),
           const SizedBox(height: Constants.defaultPadding),
           Button(
-            onTap: () => registerJeep(),
+            onTap: () => editJeep(),
             text: "Save",
           ),
         ],
