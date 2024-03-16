@@ -19,7 +19,7 @@ import '../models/route_model.dart';
 import '../style/constants.dart';
 
 class Dashboard extends StatefulWidget {
-  Dashboard({super.key});
+  const Dashboard({super.key});
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -49,7 +49,7 @@ class _DashboardState extends State<Dashboard> {
   // Ensure map is loaded
   bool mapLoaded = false;
 
-  JeepData? selectedJeepMobile = null;
+  JeepData? selectedJeepMobile;
 
   @override
   void initState() {

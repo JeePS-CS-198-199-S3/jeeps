@@ -11,11 +11,13 @@ class VehiclesSettings extends StatefulWidget {
   final RouteData route;
   final List<JeepsAndDrivers> jeeps;
   final ValueChanged<bool> isHover;
+  final ValueChanged<JeepsAndDrivers> pressedJeep;
 
   const VehiclesSettings(
       {super.key,
       required this.route,
       required this.jeeps,
+      required this.pressedJeep,
       required this.isHover});
 
   @override
@@ -24,6 +26,9 @@ class VehiclesSettings extends StatefulWidget {
 
 class _VehiclesSettingsState extends State<VehiclesSettings> {
   List<JeepsAndDrivers>? _jeeps;
+  JeepsAndDrivers? pressedJeep;
+
+  int hovered = -1;
 
   @override
   void initState() {
@@ -62,14 +67,57 @@ class _VehiclesSettingsState extends State<VehiclesSettings> {
               return Column(
                 children: [
                   const Divider(color: Constants.white),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: Constants.defaultPadding / 2),
-                    child: GestureDetector(
+                  MouseRegion(
+                    onHover: (_) => setState(() {
+                      hovered = index;
+                    }),
+                    onExit: (_) => setState(() {
+                      hovered = -1;
+                    }),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: Constants.defaultPadding / 2),
+                      color: hovered == index
+                          ? Colors.white.withOpacity(0.1)
+                          : Colors.transparent,
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(_jeeps![index].jeep.device_id),
+                            Row(
+                              children: [
+                                Text(_jeeps![index].jeep.device_id),
+                                const SizedBox(width: Constants.defaultPadding),
+                                if (hovered == index)
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.edit,
+                                        size: 20,
+                                        color: Color(widget.route.routeColor),
+                                      ),
+                                      const SizedBox(
+                                          width: Constants.defaultPadding / 2),
+                                      Icon(
+                                        Icons.delete,
+                                        size: 20,
+                                        color: Colors.red,
+                                      ),
+                                      const SizedBox(
+                                          width: Constants.defaultPadding / 2),
+                                      if (_jeeps![index].driver != null)
+                                        GestureDetector(
+                                          onTap: () => widget
+                                              .pressedJeep(_jeeps![index]),
+                                          child: Icon(
+                                            Icons.search,
+                                            size: 20,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                    ],
+                                  )
+                              ],
+                            ),
                             Icon(Icons.circle,
                                 color: _jeeps![index].driver != null
                                     ? Colors.green

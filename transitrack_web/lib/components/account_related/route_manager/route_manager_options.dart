@@ -11,11 +11,13 @@ class RouteManagerOptions extends StatefulWidget {
   final List<JeepsAndDrivers> jeeps;
   final ValueChanged<bool> hover;
   final ValueChanged<int> coordConfig;
+  final ValueChanged<JeepsAndDrivers> pressedJeep;
   RouteManagerOptions(
       {super.key,
       required this.route,
       required this.jeeps,
       required this.hover,
+      required this.pressedJeep,
       required this.coordConfig});
 
   @override
@@ -189,6 +191,9 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
                 child: VehiclesSettings(
                     route: widget.route,
                     jeeps: widget.jeeps,
+                    pressedJeep: (JeepsAndDrivers jeep) {
+                      widget.pressedJeep(jeep);
+                    },
                     isHover: (bool value) {
                       widget.hover(value);
                     }),

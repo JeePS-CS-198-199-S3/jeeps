@@ -640,6 +640,20 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                           child: RouteManagerOptions(
                             route: widget.route!,
                             jeeps: widget.jeeps!,
+                            pressedJeep: (JeepsAndDrivers searchedJeep) {
+                              selectedJeep = null;
+                              onJeepTapped(jeepEntities
+                                  .firstWhere((element) =>
+                                      element.jeepAndDriver.jeep.device_id ==
+                                      searchedJeep.jeep.device_id)
+                                  .jeepCircle);
+                              _mapController.animateCamera(
+                                  CameraUpdate.newLatLngZoom(
+                                      LatLng(
+                                          searchedJeep.jeep.location.latitude,
+                                          searchedJeep.jeep.location.longitude),
+                                      mapStartZoom));
+                            },
                             hover: (bool hover) {
                               setState(() {
                                 isHover = hover;
