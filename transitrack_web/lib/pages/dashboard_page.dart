@@ -79,6 +79,8 @@ class _DashboardState extends State<Dashboard> {
     });
 
     if (routeChoice != -1) {
+      drivers.clear();
+      jeeps.clear();
       listenToDriversFirestore();
       listenToJeepsFirestore();
     } else {
@@ -99,6 +101,23 @@ class _DashboardState extends State<Dashboard> {
           drivers = snapshot.docs
               .map((doc) => AccountData.fromSnapshot(doc))
               .toList();
+        });
+
+        List<JeepsAndDrivers> collected = [];
+        List<JeepData> _jeeps = [];
+
+        for (JeepsAndDrivers jeep in jeeps) {
+          bool found = drivers
+              .any((driver) => driver!.jeep_driving == jeep.jeep.device_id);
+          collected.add(JeepsAndDrivers(
+              driver: found
+                  ? drivers.firstWhere(
+                      (driver) => driver!.jeep_driving == jeep.jeep.device_id)
+                  : null,
+              jeep: jeep.jeep));
+        }
+        setState(() {
+          jeeps = collected;
         });
       }
     });

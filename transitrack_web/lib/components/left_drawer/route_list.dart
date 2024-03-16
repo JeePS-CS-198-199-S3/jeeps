@@ -8,42 +8,40 @@ class RouteList extends StatefulWidget {
   final int routeChoice;
   final ValueChanged<int> newRouteChoice;
   final Function() hoverToggle;
-  RouteList({super.key,
-    required this.routeChoice,
-    required this.routes,
-    required this.newRouteChoice,
-    required this.hoverToggle}
-  );
+  RouteList(
+      {super.key,
+      required this.routeChoice,
+      required this.routes,
+      required this.newRouteChoice,
+      required this.hoverToggle});
 
   @override
   State<RouteList> createState() => _RouteListState();
 }
 
 class _RouteListState extends State<RouteList> {
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         if (widget.routes != null)
-        ListView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: widget.routes!.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                widget.newRouteChoice(index);
-              },
-              child: RouteListTile(
-                route: widget.routes![index],
-                isSelected: widget.routeChoice == index,
-                hoverToggle: widget.hoverToggle,
-              ),
-            );
-          },
-        ),
-
+          ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: widget.routes!.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  widget.newRouteChoice(index);
+                },
+                child: RouteListTile(
+                  route: widget.routes![index],
+                  isSelected: widget.routeChoice == index,
+                  hoverToggle: widget.hoverToggle,
+                ),
+              );
+            },
+          ),
         if (widget.routes == null)
           const Center(child: CircularProgressIndicator())
       ],

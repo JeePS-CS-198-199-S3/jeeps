@@ -62,7 +62,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   late StreamSubscription<Position> _positionStream;
 
   late Circle? deviceCircle;
-  bool deviceInMap = false;
 
   late List<LatLng> setRoute;
   List<Circle> circles = [];
@@ -82,6 +81,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       jeeps = widget.jeeps;
       _configRoute = -1;
       myLocation = null;
+      deviceCircle = null;
     });
   }
 
@@ -105,15 +105,13 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       });
 
       addLine();
-      for (var jeep in jeepEntities) {
-        _mapController.removeCircle(jeep.jeepCircle);
-      }
-      jeepEntities.clear();
 
-      if (_value != null) {
-        addJeeps();
-      }
+      _mapController
+          .removeCircles(
+              jeepEntities.map((jeepEntity) => jeepEntity.jeepCircle))
+          .then((value) => jeepEntities.clear());
     }
+
     // jeepney updates
     if (widget.jeeps != jeeps) {
       setState(() {
@@ -122,44 +120,28 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
       updateJeeps();
 
-      if (selectedJeep != null && jeeps != null) {
-        if (jeeps!.any((jeep) =>
-            jeep.jeep.device_id ==
-            selectedJeep!.jeepAndDriver.jeep.device_id)) {
-          setState(() {
-            selectedJeep = jeepEntities.firstWhere((jeepEntity) =>
-                jeepEntity.jeepAndDriver.jeep.device_id ==
-                selectedJeep!.jeepAndDriver.jeep.device_id);
-          });
-        } else {
-          setState(() {
-            selectedJeep = null;
-          });
-        }
-      }
-    }
-  }
-
-  Future<void> addJeeps() async {
-    if (widget.route != null && jeeps != null && jeeps!.isNotEmpty) {
-      for (var jeep in jeeps!) {
-        _mapController
-            .addCircle(CircleOptions(
-              geometry: LatLng(
-                  jeep.jeep.location.latitude, jeep.jeep.location.longitude),
-              circleColor: intToHexColor(widget.route!.routeColor),
-              circleStrokeColor: '#FFFFFF',
-              circleRadius: jeep.driver != null ? 7 : 0,
-            ))
-            .then((circle) => jeepEntities
-                .add(JeepEntity(jeepAndDriver: jeep, jeepCircle: circle)));
+      if (selectedJeep != null &&
+          jeeps != null &&
+          jeeps!.any((jeep) =>
+              jeep.jeep.device_id ==
+              selectedJeep!.jeepAndDriver.jeep.device_id)) {
+        setState(() {
+          selectedJeep = jeepEntities.firstWhere((jeepEntity) =>
+              jeepEntity.jeepAndDriver.jeep.device_id ==
+              selectedJeep!.jeepAndDriver.jeep.device_id);
+        });
+      } else {
+        setState(() {
+          selectedJeep = null;
+        });
       }
     }
   }
 
   void updateJeeps() {
-    if (jeeps != null) {
-      for (var jeep in jeeps!) {
+    List<JeepsAndDrivers>? toUpdate = jeeps;
+    if (toUpdate != null) {
+      for (JeepsAndDrivers jeep in toUpdate!) {
         int index = jeepEntities.indexWhere((entity) =>
             entity.jeepAndDriver.jeep.device_id == jeep.jeep.device_id);
 
@@ -171,23 +153,22 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
               LatLng(jeep.jeep.location.latitude, jeep.jeep.location.longitude),
               specificJeepEntity.jeepCircle,
             );
+
+            jeepEntities[index] = JeepEntity(
+                jeepAndDriver: jeep, jeepCircle: specificJeepEntity.jeepCircle);
           } else {
             _mapController
                 .removeCircle(specificJeepEntity.jeepCircle)
                 .then((value) => jeepEntities.removeAt(index));
           }
-
-          jeepEntities[index] = JeepEntity(
-              jeepCircle: specificJeepEntity.jeepCircle, jeepAndDriver: jeep);
-        } else {
+        } else if (jeep.driver != null) {
           _mapController
               .addCircle(CircleOptions(
-                geometry: LatLng(
-                    jeep.jeep.location.latitude, jeep.jeep.location.longitude),
-                circleColor: intToHexColor(widget.route!.routeColor),
-                circleStrokeColor: '#FFFFFF',
-                circleRadius: jeep.driver != null ? 7 : 0,
-              ))
+                  geometry: LatLng(jeep.jeep.location.latitude,
+                      jeep.jeep.location.longitude),
+                  circleColor: intToHexColor(widget.route!.routeColor),
+                  circleStrokeColor: '#FFFFFF',
+                  circleRadius: 7))
               .then((circle) => jeepEntities
                   .add(JeepEntity(jeepAndDriver: jeep, jeepCircle: circle)));
         }
@@ -197,26 +178,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
   void _onMapCreated(MapboxMapController controller) {
     _mapController = controller;
-  }
-
-  void _getLocation() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-
-      setState(() {
-        myLocation = LatLng(position.latitude, position.longitude);
-      });
-
-      if (myLocation != null) {
-        _updateDeviceCircle(myLocation!);
-
-        _mapController.animateCamera(
-            CameraUpdate.newLatLngZoom(myLocation!, mapStartZoom));
-      }
-    } catch (e) {
-      print(e);
-    }
   }
 
   void _listenToDeviceLocation() {
@@ -233,7 +194,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     setState(() {
       myLocation = latLng;
     });
-    if (deviceInMap) {
+    if (deviceCircle != null) {
       _animateCircleMovement(
           deviceCircle!.options.geometry as LatLng, latLng, deviceCircle!);
     } else {
@@ -245,11 +206,10 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
               circleStrokeWidth: 2,
               circleStrokeColor: '#FFFFFF'))
           .then((circle) {
-        _mapController
-            .animateCamera(CameraUpdate.newLatLngZoom(latLng, mapStartZoom));
         deviceCircle = circle;
-        deviceInMap = true;
       });
+      _mapController
+          .animateCamera(CameraUpdate.newLatLngZoom(myLocation!, mapStartZoom));
       widget.foundDeviceLocation(latLng);
     }
   }
@@ -470,7 +430,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                   _onMapCreated(controller);
                 },
                 onStyleLoadedCallback: () {
-                  _getLocation();
                   widget.mapLoaded(true);
                   _listenToDeviceLocation();
                 },
