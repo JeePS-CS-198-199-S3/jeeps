@@ -21,6 +21,7 @@ class DesktopRouteInfo extends StatefulWidget {
   final AccountData? user;
   final ValueChanged<bool> isHover;
   final ValueChanged<bool> sendPing;
+  final ValueChanged<List<LatLng>> etaCoordinates;
   final LatLng? myLocation;
   const DesktopRouteInfo(
       {super.key,
@@ -29,6 +30,7 @@ class DesktopRouteInfo extends StatefulWidget {
       required this.jeeps,
       required this.selectedJeep,
       required this.isHover,
+      required this.etaCoordinates,
       required this.sendPing,
       required this.myLocation});
 
@@ -81,15 +83,19 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
 
   void fetchEta(Timer timer) async {
     if (_myLocation != null && _selectedJeep != null) {
-      String? time = await eta(
+      EtaData? result = await eta(
           widget.route.routeCoordinates,
           widget.route.isClockwise,
           _myLocation!,
           LatLng(_selectedJeep!.jeep.location.latitude,
               _selectedJeep!.jeep.location.longitude));
-      setState(() {
-        _eta = time;
-      });
+      if (result != null) {
+        setState(() {
+          _eta = result.etaTime;
+        });
+
+        widget.etaCoordinates(result.etaCoordinates);
+      }
     }
   }
 

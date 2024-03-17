@@ -1,9 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:transitrack_web/components/right_panel/report_form.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
-import 'dart:async';
 
 import '../../models/account_model.dart';
 import '../../models/jeep_model.dart';
@@ -12,10 +9,7 @@ import '../../config/responsive.dart';
 import '../../style/constants.dart';
 import '../button.dart';
 import 'feedback_form.dart';
-import 'report_form.dart';
-import '../../services/eta.dart';
 import '../text_loader.dart';
-import '../select_jeep_prompt.dart';
 
 class SelectedJeepInfo extends StatefulWidget {
   final JeepsAndDrivers jeep;
@@ -140,8 +134,6 @@ class _SelectedJeepInfoState extends State<SelectedJeepInfo> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text("Driver"),
-                                      const SizedBox(
-                                          width: Constants.defaultPadding),
                                       if (_jeep.driver == null)
                                         TextLoader(width: 70, height: 15),
                                       if (_jeep.driver != null)
@@ -157,8 +149,6 @@ class _SelectedJeepInfoState extends State<SelectedJeepInfo> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text("ETA"),
-                                      const SizedBox(
-                                          width: Constants.defaultPadding),
                                       if (_eta == null)
                                         TextLoader(width: 40, height: 15),
                                       if (_eta != null) Text(_eta!)

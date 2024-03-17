@@ -22,6 +22,7 @@ class MobileRouteInfo extends StatefulWidget {
   final AccountData? user;
   final ValueChanged<bool> isHover;
   final ValueChanged<bool> sendPing;
+  final ValueChanged<List<LatLng>> etaCoordinates;
   final LatLng? myLocation;
   const MobileRouteInfo(
       {super.key,
@@ -31,6 +32,7 @@ class MobileRouteInfo extends StatefulWidget {
       required this.user,
       required this.isHover,
       required this.sendPing,
+      required this.etaCoordinates,
       required this.myLocation});
 
   @override
@@ -82,15 +84,19 @@ class _MobileRouteInfoState extends State<MobileRouteInfo> {
 
   void fetchEta(Timer timer) async {
     if (_myLocation != null && _selectedJeep != null) {
-      String? time = await eta(
+      EtaData? result = await eta(
           widget.route.routeCoordinates,
           widget.route.isClockwise,
           _myLocation!,
           LatLng(_selectedJeep!.jeep.location.latitude,
               _selectedJeep!.jeep.location.longitude));
-      setState(() {
-        _eta = time;
-      });
+      if (result != null) {
+        setState(() {
+          _eta = result.etaTime;
+        });
+
+        widget.etaCoordinates(result.etaCoordinates);
+      }
     }
   }
 

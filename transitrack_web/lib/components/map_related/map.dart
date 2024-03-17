@@ -80,6 +80,8 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
   JeepEntity? selectedJeep;
 
+  List<Line> etaCoords = [];
+
   @override
   void initState() {
     super.initState();
@@ -466,6 +468,12 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
         setState(() {
           selectedJeep = null;
         });
+
+        if (etaCoords.isNotEmpty) {
+          _mapController
+              .removeLines(etaCoords)
+              .then((value) => etaCoords.clear());
+        }
       }
     } else {
       if (jeepEntities
@@ -564,6 +572,21 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                                   const Duration(milliseconds: 2000));
                             }
                           },
+                          etaCoordinates: (List<LatLng> etaCoordinates) {
+                            if (selectedJeep != null) {
+                              if (etaCoords.isNotEmpty) {
+                                _mapController
+                                    .removeLines(etaCoords)
+                                    .then((value) => etaCoords.clear());
+                              }
+                              _mapController.addLines([
+                                LineOptions(
+                                    geometry: etaCoordinates,
+                                    lineColor: deviceCircleColor,
+                                    lineWidth: 2.0)
+                              ]).then((value) => etaCoords = value);
+                            }
+                          },
                           isHover: (bool value) {
                             setState(() {
                               isHover = value;
@@ -611,6 +634,21 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
                               await Future.delayed(
                                   const Duration(milliseconds: 2000));
+                            }
+                          },
+                          etaCoordinates: (List<LatLng> etaCoordinates) {
+                            if (selectedJeep != null) {
+                              if (etaCoords.isNotEmpty) {
+                                _mapController
+                                    .removeLines(etaCoords)
+                                    .then((value) => etaCoords.clear());
+                              }
+                              _mapController.addLines([
+                                LineOptions(
+                                    geometry: etaCoordinates,
+                                    lineColor: deviceCircleColor,
+                                    lineWidth: 2.0)
+                              ]).then((value) => etaCoords = value);
                             }
                           },
                           isHover: (bool value) {
