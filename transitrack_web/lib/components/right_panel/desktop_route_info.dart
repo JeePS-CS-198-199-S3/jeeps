@@ -47,6 +47,8 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
   late int not_operating;
   late LatLng? _myLocation;
 
+  late Timer etaFetcher;
+
   // AccountData? driverInfo;
   bool isTapped = false;
 
@@ -64,7 +66,7 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
       not_operating = widget.jeeps.where((jeep) => jeep.driver == null).length;
     });
 
-    Timer.periodic(const Duration(seconds: 3), fetchEta);
+    etaFetcher = Timer.periodic(const Duration(seconds: 3), fetchEta);
   }
 
   void errorMessage(String message) {
@@ -139,6 +141,12 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
             widget.jeeps.where((jeep) => jeep.driver == null).length;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    etaFetcher.cancel();
+    super.dispose();
   }
 
   @override

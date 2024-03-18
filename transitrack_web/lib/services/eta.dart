@@ -75,7 +75,7 @@ Future<EtaData?> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter,
     final routes = decoded['routes'] as List<dynamic>;
     return EtaData(
         etaTime: formatSeconds(routes[0]['duration'] as double),
-        etaCoordinates: extractCoordinates(decoded));
+        etaCoordinates: reduced);
   } else {
     return null;
   }

@@ -161,11 +161,13 @@ class _EditJeepState extends State<EditJeep> {
           ),
           const Divider(color: Colors.white),
           const SizedBox(height: Constants.defaultPadding),
+          const Text("Plate Number"),
           InputTextField(
               controller: jeepNameController,
               hintText: "Plate Number",
               obscureText: false),
           const SizedBox(height: Constants.defaultPadding),
+          const Text("Max Capacity"),
           InputTextField(
               controller: jeepCapacityController,
               hintText: "Max Capacity",

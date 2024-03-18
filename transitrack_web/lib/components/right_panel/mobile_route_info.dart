@@ -51,6 +51,8 @@ class _MobileRouteInfoState extends State<MobileRouteInfo> {
   // AccountData? driverInfo;
   bool isTapped = false;
 
+  late Timer etaFetcher;
+
   @override
   void initState() {
     super.initState();
@@ -65,7 +67,7 @@ class _MobileRouteInfoState extends State<MobileRouteInfo> {
       not_operating = widget.jeeps.where((jeep) => jeep.driver == null).length;
     });
 
-    Timer.periodic(const Duration(seconds: 3), fetchEta);
+    etaFetcher = Timer.periodic(const Duration(seconds: 3), fetchEta);
   }
 
   void errorMessage(String message) {
@@ -140,6 +142,12 @@ class _MobileRouteInfoState extends State<MobileRouteInfo> {
             widget.jeeps.where((jeep) => jeep.driver == null).length;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    etaFetcher.cancel();
+    super.dispose();
   }
 
   @override

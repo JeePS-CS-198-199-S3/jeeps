@@ -48,7 +48,8 @@ class _FeedbackFormState extends State<FeedbackForm> {
                 'timestamp': FieldValue.serverTimestamp(),
                 'feedback_content': feedBackController.text,
                 'feedback_driving_rating': _drivingRating,
-                'feedback_jeepney_rating': _jeepRating
+                'feedback_jeepney_rating': _jeepRating,
+                'feedback_route': widget.route.routeId
               })
               .then((value) => Navigator.pop(context))
               .then((value) => Navigator.pop(context));

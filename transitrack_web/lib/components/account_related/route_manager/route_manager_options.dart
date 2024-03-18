@@ -1,4 +1,6 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:transitrack_web/components/account_related/route_manager/data_visualization.dart';
 import 'package:transitrack_web/components/account_related/route_manager/route_coordinates_settings.dart';
 import 'package:transitrack_web/components/account_related/route_manager/route_properties_settings.dart';
 import '../../../models/route_model.dart';
@@ -34,6 +36,7 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
       onEnter: (_) => widget.hover(true),
       onExit: (_) => widget.hover(false),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (selected != 1)
             Row(
@@ -57,7 +60,19 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
                       },
                       child: const Icon(
                         Icons.keyboard_backspace_outlined,
-                      ))
+                      )),
+                if (selected == -1)
+                  GestureDetector(
+                      onTap: () {
+                        AwesomeDialog(
+                          dialogType: DialogType.noHeader,
+                          context: (context),
+                          body: DataVisualizationTab(
+                            route: widget.route,
+                          ),
+                        ).show();
+                      },
+                      child: const Icon(Icons.assessment_outlined))
               ],
             ),
           if (selected != 1) const SizedBox(height: Constants.defaultPadding),

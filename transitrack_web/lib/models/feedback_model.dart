@@ -5,17 +5,33 @@ class FeedbackData {
   String feedback_recepient;
   String feedback_jeepney;
   Timestamp timestamp;
+  int feedback_driving_rating;
+  int feedback_jeepney_rating;
+  int feedback_route;
   String feedback_content;
-  int feedback_rating;
-  int feedback_type; // 0 for both, 1 for driver, 2 for jeepney
 
-  FeedbackData({
-    required this.feedback_sender,
-    required this.feedback_recepient,
-    required this.feedback_jeepney,
-    required this.timestamp,
-    required this.feedback_content,
-    required this.feedback_rating,
-    required this.feedback_type,
-  });
+  FeedbackData(
+      {required this.feedback_sender,
+      required this.feedback_recepient,
+      required this.feedback_jeepney,
+      required this.timestamp,
+      required this.feedback_route,
+      required this.feedback_driving_rating,
+      required this.feedback_content,
+      required this.feedback_jeepney_rating});
+
+  factory FeedbackData.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+    return FeedbackData(
+      feedback_sender: data['feedback_sender'] ?? '',
+      feedback_recepient: data['feedback_recepient'] ?? '',
+      feedback_jeepney: data['feedback_jeepney'] ?? '',
+      timestamp: data['timestamp'] ?? Timestamp.now(),
+      feedback_driving_rating: data['feedback_driving_rating'] ?? 0,
+      feedback_jeepney_rating: data['feedback_rating'] ?? 0,
+      feedback_content: data['feedback_content'] ?? '',
+      feedback_route: data['feedback_route'] ?? 0,
+    );
+  }
 }

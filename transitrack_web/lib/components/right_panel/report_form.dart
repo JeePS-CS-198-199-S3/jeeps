@@ -173,7 +173,11 @@ class _ReportFormState extends State<ReportForm> {
                 children: [
                   const Text("Address"),
                   const SizedBox(width: Constants.defaultPadding),
-                  Text(address, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Expanded(
+                      child: Text(address,
+                          textAlign: TextAlign.end,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis)),
                 ],
               ),
               const SizedBox(height: Constants.defaultPadding),
