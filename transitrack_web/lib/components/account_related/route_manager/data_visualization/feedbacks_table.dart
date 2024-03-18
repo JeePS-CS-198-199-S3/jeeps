@@ -31,6 +31,8 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
 
   List<FeedbackData>? feedbacks;
 
+  String searchString = "";
+
   @override
   void initState() {
     super.initState();
@@ -82,6 +84,14 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
               overlayColor:
                   MaterialStateProperty.all(Colors.white.withOpacity(0.2)),
               elevation: MaterialStateProperty.all(0.0),
+              onChanged: (String value) {
+                setState(() {
+                  searchString = value;
+                });
+              },
+              hintText: 'Search feedback content',
+              hintStyle: MaterialStateProperty.all(
+                  TextStyle(color: Color(widget.route.routeColor))),
               leading: const Icon(Icons.search),
               shape: MaterialStateProperty.all(const ContinuousRectangleBorder(
                 borderRadius: BorderRadius.zero,
@@ -108,9 +118,12 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
               ],
             ),
             if (feedbacks == null)
-              const SizedBox(
+              SizedBox(
                   height: 500,
-                  child: Center(child: CircularProgressIndicator())),
+                  child: Center(
+                      child: CircularProgressIndicator(
+                    color: Color(widget.route.routeColor),
+                  ))),
             if (feedbacks != null)
               ListView.builder(
                 shrinkWrap: true,
@@ -118,6 +131,13 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                 itemBuilder: (context, index) {
                   FeedbackData feedback = feedbacks![index];
                   bool isSelected = index == selected;
+
+                  if (searchString.isNotEmpty &&
+                      !feedback.feedback_content
+                          .toLowerCase()
+                          .contains(searchString.toLowerCase())) {
+                    return const SizedBox();
+                  }
                   return ListTile(
                     onTap: () {
                       if (selected == index) {
@@ -218,8 +238,10 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                            color:
+                                                Color(widget.route.routeColor)),
                                       );
                                     }
 
