@@ -37,28 +37,35 @@ class _FeedbackFormState extends State<FeedbackForm> {
     // feedback field is not empty
     if (feedBackController.text.isNotEmpty) {
       if (_drivingRating != -1 && _jeepRating != -1) {
-        try {
-          // Add a new document with auto-generated ID
-          await FirebaseFirestore.instance
-              .collection('feedbacks')
-              .add({
-                'feedback_sender': widget.user!.account_email,
-                'feedback_recepient': widget.jeep.driver!.account_email,
-                'feedback_jeepney': widget.jeep.jeep.device_id,
-                'timestamp': FieldValue.serverTimestamp(),
-                'feedback_content': feedBackController.text,
-                'feedback_driving_rating': _drivingRating,
-                'feedback_jeepney_rating': _jeepRating,
-                'feedback_route': widget.route.routeId
-              })
-              .then((value) => Navigator.pop(context))
-              .then((value) => Navigator.pop(context));
+        if (widget.user!.account_email != widget.jeep.driver!.account_email) {
+          try {
+            // Add a new document with auto-generated ID
+            await FirebaseFirestore.instance
+                .collection('feedbacks')
+                .add({
+                  'feedback_sender': widget.user!.account_email,
+                  'feedback_recepient': widget.jeep.driver!.account_email,
+                  'feedback_jeepney': widget.jeep.jeep.device_id,
+                  'timestamp': FieldValue.serverTimestamp(),
+                  'feedback_content': feedBackController.text,
+                  'feedback_driving_rating': _drivingRating,
+                  'feedback_jeepney_rating': _jeepRating,
+                  'feedback_route': widget.route.routeId
+                })
+                .then((value) => Navigator.pop(context))
+                .then((value) => Navigator.pop(context));
 
-          errorMessage("Success!");
-        } catch (e) {
+            errorMessage("Success!");
+          } catch (e) {
+            // pop loading circle
+            Navigator.pop(context);
+            errorMessage(e.toString());
+          }
+        } else {
           // pop loading circle
           Navigator.pop(context);
-          errorMessage(e.toString());
+
+          errorMessage("You cannot rate yourself!");
         }
       } else {
         // pop loading circle
@@ -153,7 +160,9 @@ class _FeedbackFormState extends State<FeedbackForm> {
                 return IconButton(
                   icon: Icon(
                     index < _drivingRating ? Icons.star : Icons.star_border,
-                    color: Color(widget.route.routeColor),
+                    color: index < _drivingRating
+                        ? Color(widget.route.routeColor)
+                        : Colors.grey,
                     size: 40,
                   ),
                   onPressed: () {
@@ -197,7 +206,9 @@ class _FeedbackFormState extends State<FeedbackForm> {
                 return IconButton(
                   icon: Icon(
                     index < _jeepRating ? Icons.star : Icons.star_border,
-                    color: Color(widget.route.routeColor),
+                    color: index < _jeepRating
+                        ? Color(widget.route.routeColor)
+                        : Colors.grey,
                     size: 40,
                   ),
                   onPressed: () {

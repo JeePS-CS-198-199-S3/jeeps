@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:transitrack_web/services/int_to_hex.dart';
@@ -103,10 +105,10 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       selectedJeep = null;
 
       if (_value == null) {
-        _mapController.onCircleTapped.add(onJeepTapped);
+        _mapController.onSymbolTapped.add(onJeepTapped);
       } else {
         if (widget.route == null) {
-          _mapController.onCircleTapped.remove(onJeepTapped);
+          _mapController.onSymbolTapped.remove(onJeepTapped);
         }
       }
 
@@ -117,8 +119,8 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       addLine();
 
       _mapController
-          .removeCircles(
-              jeepEntities.map((jeepEntity) => jeepEntity.jeepCircle))
+          .removeSymbols(
+              jeepEntities.map((jeepEntity) => jeepEntity.jeepSymbol))
           .then((value) => jeepEntities.clear());
     }
 
@@ -159,28 +161,34 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
           JeepEntity? specificJeepEntity = jeepEntities[index];
           if (specificJeepEntity.jeepAndDriver.driver != null) {
             _animateCircleMovement(
-              specificJeepEntity.jeepCircle.options.geometry!,
-              LatLng(jeep.jeep.location.latitude, jeep.jeep.location.longitude),
-              specificJeepEntity.jeepCircle,
-            );
+                specificJeepEntity.jeepSymbol.options.geometry!,
+                LatLng(
+                    jeep.jeep.location.latitude, jeep.jeep.location.longitude),
+                symbol: specificJeepEntity.jeepSymbol,
+                bearing: specificJeepEntity.jeepAndDriver.jeep.bearing);
 
             jeepEntities[index] = JeepEntity(
-                jeepAndDriver: jeep, jeepCircle: specificJeepEntity.jeepCircle);
+                jeepAndDriver: jeep, jeepSymbol: specificJeepEntity.jeepSymbol);
           } else {
             _mapController
-                .removeCircle(specificJeepEntity.jeepCircle)
+                .removeSymbol(specificJeepEntity.jeepSymbol)
                 .then((value) => jeepEntities.removeAt(index));
           }
         } else if (jeep.driver != null) {
           _mapController
-              .addCircle(CircleOptions(
+              .addSymbol(SymbolOptions(
                   geometry: LatLng(jeep.jeep.location.latitude,
                       jeep.jeep.location.longitude),
-                  circleColor: intToHexColor(widget.route!.routeColor),
-                  circleStrokeColor: '#FFFFFF',
-                  circleRadius: 7))
+                  iconImage: "jeepTop",
+                  textField: "▬▬",
+                  textLetterSpacing: -0.35,
+                  textSize: 50,
+                  textColor: intToHexColor(_value!.routeColor),
+                  textRotate: jeep.jeep.bearing + 90,
+                  iconRotate: jeep.jeep.bearing,
+                  iconSize: 1))
               .then((circle) => jeepEntities
-                  .add(JeepEntity(jeepAndDriver: jeep, jeepCircle: circle)));
+                  .add(JeepEntity(jeepAndDriver: jeep, jeepSymbol: circle)));
         }
       }
     }
@@ -188,6 +196,17 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
   void _onMapCreated(MapboxMapController controller) {
     _mapController = controller;
+  }
+
+  Future<void> addImageFromAsset() async {
+    final ByteData bytes1 = await rootBundle.load("assets/jeep.png");
+    final Uint8List list1 = bytes1.buffer.asUint8List();
+
+    final ByteData bytes2 = await rootBundle.load("assets/jeepSelected.png");
+    final Uint8List list2 = bytes2.buffer.asUint8List();
+
+    await _mapController.addImage("jeepTop", list1);
+    await _mapController.addImage("jeepTopSelected", list2);
   }
 
   void _listenToDeviceLocation() {
@@ -205,8 +224,8 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       myLocation = latLng;
     });
     if (deviceCircle != null) {
-      _animateCircleMovement(
-          deviceCircle!.options.geometry as LatLng, latLng, deviceCircle!);
+      _animateCircleMovement(deviceCircle!.options.geometry as LatLng, latLng,
+          circle: deviceCircle!);
     } else {
       _mapController
           .addCircle(CircleOptions(
@@ -224,7 +243,8 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     }
   }
 
-  void _animateCircleMovement(LatLng from, LatLng to, Circle circle) {
+  void _animateCircleMovement(LatLng from, LatLng to,
+      {Circle? circle, Symbol? symbol, double? bearing}) {
     final animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -234,14 +254,19 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       curve: Curves.easeInOut,
     ));
 
-    animation.addListener(() {
-      _mapController.updateCircle(
-          circle,
-          CircleOptions(
-              geometry: animation.value,
-              circleOpacity: 1,
-              circleStrokeOpacity: 1));
-    });
+    if (circle != null) {
+      animation.addListener(() {
+        _mapController.updateCircle(
+            circle, CircleOptions(geometry: animation.value));
+      });
+    } else {
+      _mapController.updateSymbol(symbol!, SymbolOptions(iconRotate: bearing!));
+
+      animation.addListener(() {
+        _mapController.updateSymbol(
+            symbol, SymbolOptions(geometry: animation.value));
+      });
+    }
 
     animation.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
@@ -454,14 +479,14 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     }
   }
 
-  void onJeepTapped(Circle pressedJeep) {
+  void onJeepTapped(Symbol pressedJeep) {
     if (selectedJeep != null) {
-      if (pressedJeep != selectedJeep!.jeepCircle) {
+      if (pressedJeep != selectedJeep!.jeepSymbol) {
         if (jeepEntities
-            .any((jeepEntity) => jeepEntity.jeepCircle == pressedJeep)) {
+            .any((jeepEntity) => jeepEntity.jeepSymbol == pressedJeep)) {
           setState(() {
             selectedJeep = jeepEntities.firstWhere(
-                (jeepEntity) => jeepEntity.jeepCircle == pressedJeep);
+                (jeepEntity) => jeepEntity.jeepSymbol == pressedJeep);
           });
         }
       } else {
@@ -477,22 +502,22 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       }
     } else {
       if (jeepEntities
-          .any((jeepEntity) => jeepEntity.jeepCircle == pressedJeep)) {
+          .any((jeepEntity) => jeepEntity.jeepSymbol == pressedJeep)) {
         setState(() {
           selectedJeep = jeepEntities
-              .firstWhere((jeepEntity) => jeepEntity.jeepCircle == pressedJeep);
+              .firstWhere((jeepEntity) => jeepEntity.jeepSymbol == pressedJeep);
         });
       }
     }
 
     for (var jeep in jeepEntities) {
-      _mapController.updateCircle(
-          jeep.jeepCircle, const CircleOptions(circleStrokeWidth: 0));
+      _mapController.updateSymbol(
+          jeep.jeepSymbol, const SymbolOptions(iconImage: 'jeepTop'));
     }
 
     if (selectedJeep != null) {
-      _mapController.updateCircle(
-          selectedJeep!.jeepCircle, const CircleOptions(circleStrokeWidth: 2));
+      _mapController.updateSymbol(selectedJeep!.jeepSymbol,
+          const SymbolOptions(iconImage: 'jeepTopSelected'));
     }
   }
 
@@ -527,7 +552,10 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                 onMapCreated: (controller) {
                   _onMapCreated(controller);
                 },
-                onStyleLoadedCallback: () {
+                onStyleLoadedCallback: () async {
+                  await addImageFromAsset();
+                  _mapController.setSymbolIconAllowOverlap(true);
+                  _mapController.setSymbolIconIgnorePlacement(true);
                   widget.mapLoaded(true);
                   _listenToDeviceLocation();
                 },
@@ -686,7 +714,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                                   .firstWhere((element) =>
                                       element.jeepAndDriver.jeep.device_id ==
                                       searchedJeep.jeep.device_id)
-                                  .jeepCircle);
+                                  .jeepSymbol);
                               _mapController.animateCamera(
                                   CameraUpdate.newLatLngZoom(
                                       LatLng(

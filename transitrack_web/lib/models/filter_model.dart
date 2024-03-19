@@ -27,22 +27,21 @@ class FilterParameters {
     filterEnd = value;
   }
 
-  static List<FilterName> orderBy = [
-    FilterName(filterName: "Order by Date", filterQueryName: "timestamp"),
+  static List<FilterName> feedbacksOrderBy = [
+    FilterName(filterName: "Date", filterQueryName: "timestamp"),
     FilterName(
-        filterName: "Order by Driver Rating",
+        filterName: "Driver Rating",
         filterQueryName: "feedback_driving_rating"),
     FilterName(
-        filterName: 'Order by Driver Email',
-        filterQueryName: "feedback_recepient"),
+        filterName: 'Driver Email', filterQueryName: "feedback_recepient"),
     FilterName(
-        filterName: 'Order by Jeepney Rating',
+        filterName: 'Jeepney Rating',
         filterQueryName: "feedback_jeepney_rating"),
     FilterName(
-        filterName: 'Order by Jeepney Plate Number',
+        filterName: 'Jeepney Plate Number',
         filterQueryName: "feedback_jeepney"),
     FilterName(
-        filterName: 'Order by Feedback Provider Email',
+        filterName: 'Feedback Provider Email',
         filterQueryName: "feedback_sender"),
   ];
 }

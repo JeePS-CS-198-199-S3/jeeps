@@ -132,6 +132,9 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                                   onEnter: (_) => widget.hover(true),
                                   onExit: (_) => widget.hover(false),
                                   child: Filters(
+                                    route: widget.route,
+                                    dropdownList:
+                                        FilterParameters.feedbacksOrderBy,
                                     oldFilter: orderBy,
                                     newFilter: (FilterParameters newFilter) {
                                       setState(() {
@@ -155,44 +158,50 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                           color: Color(widget.route.routeColor),
                         ))),
                   if (feedbacks != null)
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: feedbacks!.length,
-                      itemBuilder: (context, index) {
-                        FeedbackData feedback = feedbacks![index];
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: feedbacks!.length,
+                          itemBuilder: (context, index) {
+                            FeedbackData feedback = feedbacks![index];
 
-                        if (searchString.isNotEmpty &&
-                            !feedback.feedback_content
-                                .toLowerCase()
-                                .contains(searchString.toLowerCase())) {
-                          return const SizedBox();
-                        }
-                        return ListTile(
-                          onTap: () async {
-                            if (selected == index) {
-                              select(-1, null);
-                            } else {
-                              select(index, feedback);
+                            if (searchString.isNotEmpty &&
+                                !feedback.feedback_content
+                                    .toLowerCase()
+                                    .contains(searchString.toLowerCase())) {
+                              return const SizedBox();
                             }
+                            return ListTile(
+                              onTap: () async {
+                                if (selected == index) {
+                                  select(-1, null);
+                                } else {
+                                  select(index, feedback);
+                                }
+                              },
+                              selected: index == selected,
+                              selectedColor: Colors.white,
+                              selectedTileColor: Color(widget.route.routeColor)
+                                  .withOpacity(0.1),
+                              hoverColor: Colors.white.withOpacity(0.2),
+                              trailing: Text(
+                                DateFormat('MMM d')
+                                    .format(feedback.timestamp.toDate()),
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                              title: Text(
+                                '"${feedback.feedback_content}"',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontStyle: FontStyle.italic),
+                              ),
+                            );
                           },
-                          selected: index == selected,
-                          selectedColor: Colors.white,
-                          selectedTileColor:
-                              Color(widget.route.routeColor).withOpacity(0.1),
-                          hoverColor: Colors.white.withOpacity(0.2),
-                          trailing: Text(
-                            DateFormat('MMM d')
-                                .format(feedback.timestamp.toDate()),
-                            style: const TextStyle(fontSize: 13),
-                          ),
-                          title: Text(
-                            '"${feedback.feedback_content}"',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontStyle: FontStyle.italic),
-                          ),
-                        );
-                      },
+                        ),
+                      ),
                     ),
                 ],
               ),
