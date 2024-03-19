@@ -30,15 +30,10 @@ class AccountSettings extends StatelessWidget {
                 backgroundColor: Constants.bgColor,
                 title: Center(
                     child: Text(
-                      message,
-                      style: const TextStyle(
-                          color: Colors.white
-                      ),
-                    )
-                )
-            );
-          }
-      );
+                  message,
+                  style: const TextStyle(color: Colors.white),
+                )));
+          });
     }
 
     void update() async {
@@ -46,11 +41,8 @@ class AccountSettings extends StatelessWidget {
       showDialog(
           context: context,
           builder: (context) {
-            return const Center(
-                child: CircularProgressIndicator()
-            );
-          }
-      );
+            return const Center(child: CircularProgressIndicator());
+          });
 
       try {
         // check if password is confirmed
@@ -61,20 +53,23 @@ class AccountSettings extends StatelessWidget {
           AccountData.updateAccountFirestore(user.email!, newAccountSettings);
         }
 
-        if (emailController.text != user.email! || (passwordController.text != "" &&  passwordController.text == confirmPasswordController.text)) {
+        if (emailController.text != user.email! ||
+            (passwordController.text != "" &&
+                passwordController.text == confirmPasswordController.text)) {
           Map<String, dynamic> newAccountSettings = {
             'account_email': emailController.text,
           };
 
           AccountData.updateAccountFirestore(user.email!, newAccountSettings);
 
-          AccountData.updateEmailAndPassword(emailController.text, passwordController.text).then((value) => FirebaseAuth.instance.signOut());
+          AccountData.updateEmailAndPassword(
+                  emailController.text, passwordController.text)
+              .then((value) => FirebaseAuth.instance.signOut());
         }
 
-          // pop loading circle
-          Navigator.pop(context);
-          Navigator.pop(context);
-
+        // pop loading circle
+        Navigator.pop(context);
+        Navigator.pop(context);
       } on FirebaseAuthException catch (e) {
         // pop loading circle
         Navigator.pop(context);
@@ -82,44 +77,54 @@ class AccountSettings extends StatelessWidget {
       }
     }
 
-
     return Padding(
-      padding: const EdgeInsets.only(left: Constants.defaultPadding, right: Constants.defaultPadding, bottom: Constants.defaultPadding),
+      padding: const EdgeInsets.only(
+          left: Constants.defaultPadding,
+          right: Constants.defaultPadding,
+          bottom: Constants.defaultPadding),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Row(
             children: [
-              PrimaryText(text: "Settings", color: Colors.white, size: 40, fontWeight: FontWeight.w700,)
+              PrimaryText(
+                text: "Settings",
+                color: Colors.white,
+                size: 40,
+                fontWeight: FontWeight.w700,
+              )
             ],
           ),
-
           const SizedBox(height: Constants.defaultPadding),
-
-          InputTextField(controller: emailController, hintText: "Email", obscureText: false),
-
+          InputTextField(
+            controller: emailController,
+            hintText: "Email",
+            obscureText: false,
+            enabled: false,
+          ),
           const SizedBox(height: Constants.defaultPadding),
-
-          InputTextField(controller: nameController, hintText: "Name", obscureText: false),
-
+          InputTextField(
+              controller: nameController, hintText: "Name", obscureText: false),
           const SizedBox(height: Constants.defaultPadding),
-
-          InputTextField(controller: passwordController, hintText: "Password", obscureText: true),
-
+          InputTextField(
+              controller: passwordController,
+              hintText: "Password",
+              obscureText: true),
           const SizedBox(height: Constants.defaultPadding),
-
-          InputTextField(controller: confirmPasswordController, hintText: "Confirm Password", obscureText: true),
-
+          InputTextField(
+              controller: confirmPasswordController,
+              hintText: "Confirm Password",
+              obscureText: true),
           const SizedBox(height: Constants.defaultPadding),
-
-          const SizedBox(height: Constants.defaultPadding/2),
-
-          const PrimaryText(text: "Email and password changes will log you out.", color: Colors.white),
-
-          const SizedBox(height: Constants.defaultPadding*2),
-
-          Button(onTap: update, text: "Save",),
-
+          const SizedBox(height: Constants.defaultPadding / 2),
+          const PrimaryText(
+              text: "Email and password changes will log you out.",
+              color: Colors.white),
+          const SizedBox(height: Constants.defaultPadding * 2),
+          Button(
+            onTap: update,
+            text: "Save",
+          ),
         ],
       ),
     );

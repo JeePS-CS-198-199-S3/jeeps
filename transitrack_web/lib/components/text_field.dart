@@ -10,16 +10,17 @@ class InputTextField extends StatelessWidget {
   final TextInputType? type;
   final int? lines;
   final int? limit;
+  final bool? enabled;
 
-  InputTextField({
-    super.key,
-    required this.controller,
-    required this.hintText,
-    required this.obscureText,
-    this.type,
-    this.lines,
-    this.limit
-  });
+  InputTextField(
+      {super.key,
+      required this.controller,
+      required this.hintText,
+      required this.obscureText,
+      this.type,
+      this.lines,
+      this.enabled,
+      this.limit});
 
   int textLength = 0;
 
@@ -28,28 +29,24 @@ class InputTextField extends StatelessWidget {
     return TextField(
       controller: controller,
       obscureText: obscureText,
+      enabled: enabled ?? true,
       keyboardType: type ?? TextInputType.text,
-      inputFormatters: type != null && type == TextInputType.number?<TextInputFormatter>[
-        FilteringTextInputFormatter.digitsOnly
-      ]:[],
+      inputFormatters: type != null && type == TextInputType.number
+          ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]
+          : [],
       decoration: InputDecoration(
         enabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(
-              color: Colors.white
-          ),
+          borderSide: BorderSide(color: Colors.white),
         ),
         focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(
-                color: Constants.primaryColor
-            )
-        ),
+            borderSide: BorderSide(color: Constants.primaryColor)),
         fillColor: Constants.secondaryColor,
         filled: true,
         hintText: hintText,
         hintStyle: const TextStyle(color: Colors.white),
       ),
       style: const TextStyle(color: Colors.white),
-      maxLines: obscureText? 1:lines,
+      maxLines: obscureText ? 1 : lines,
       maxLength: limit,
     );
   }

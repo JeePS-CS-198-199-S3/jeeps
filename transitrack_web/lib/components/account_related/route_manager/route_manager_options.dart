@@ -63,12 +63,19 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
                       )),
                 if (selected == -1)
                   GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         AwesomeDialog(
                           dialogType: DialogType.noHeader,
                           context: (context),
-                          body: DataVisualizationTab(
-                            route: widget.route,
+                          body: MouseRegion(
+                            onEnter: (_) => widget.hover(true),
+                            onExit: (_) => widget.hover(false),
+                            child: DataVisualizationTab(
+                              route: widget.route,
+                              hover: (bool hover) {
+                                widget.hover(hover);
+                              },
+                            ),
                           ),
                         ).show();
                       },

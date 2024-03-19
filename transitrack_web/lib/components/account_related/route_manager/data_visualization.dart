@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/feedbacks_table.dart';
 import 'package:transitrack_web/components/left_drawer/logo.dart';
 import 'package:transitrack_web/models/route_model.dart';
@@ -8,7 +7,9 @@ import 'package:transitrack_web/style/style.dart';
 
 class DataVisualizationTab extends StatefulWidget {
   final RouteData route;
-  const DataVisualizationTab({super.key, required this.route});
+  final ValueChanged<bool> hover;
+  const DataVisualizationTab(
+      {super.key, required this.route, required this.hover});
 
   @override
   State<DataVisualizationTab> createState() => _DataVisualizationTabState();
@@ -27,6 +28,9 @@ class _DataVisualizationTabState extends State<DataVisualizationTab> {
         menuName: "Feedbacks",
         menuWidget: FeedbacksTable(
           route: widget.route,
+          hover: (bool hover) {
+            widget.hover(hover);
+          },
         )),
     DataVisualizationMenuList(
         menuName: "Reports", menuWidget: const SizedBox()),
@@ -91,26 +95,14 @@ class _DataVisualizationTabState extends State<DataVisualizationTab> {
                   },
                 ),
               ),
-              Container(
-                width: 500,
-                height: 700,
-                child: selected == -1
-                    ? const SizedBox()
-                    : menuList[selected].menuWidget,
-              ),
               Expanded(
-                flex: 4,
-                child: selected > 0
-                    ? Container(
-                        height: 700,
-                        color: Colors.blue,
-                      )
-                    : const SizedBox(
+                child: selected == -1
+                    ? const SizedBox(
                         height: 700,
                         child: Center(
                           child: Logo(),
-                        ),
-                      ),
+                        ))
+                    : menuList[selected].menuWidget,
               )
             ],
           )

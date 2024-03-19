@@ -1,37 +1,36 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:transitrack_web/components/account_related/route_manager/data_visualization/filters.dart';
+import 'package:transitrack_web/components/left_drawer/logo.dart';
 import 'package:transitrack_web/models/account_model.dart';
 import 'package:transitrack_web/models/feedback_model.dart';
+import 'package:transitrack_web/models/filter_model.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 
 class FeedbacksTable extends StatefulWidget {
   final RouteData route;
-  const FeedbacksTable({super.key, required this.route});
+  final ValueChanged<bool> hover;
+  const FeedbacksTable({super.key, required this.route, required this.hover});
 
   @override
   State<FeedbacksTable> createState() => _FeedbacksTableState();
-}
-
-class FeedbackAdditionalInfo {
-  AccountData senderData;
-  AccountData recepientData;
-
-  FeedbackAdditionalInfo({
-    required this.senderData,
-    required this.recepientData,
-  });
 }
 
 class _FeedbacksTableState extends State<FeedbacksTable> {
   TextEditingController searchController = TextEditingController();
 
   int selected = -1;
+  late FeedbackData? selectedFeedback;
 
   List<FeedbackData>? feedbacks;
 
   String searchString = "";
+
+  FilterParameters orderBy =
+      FilterParameters(filterSearch: "timestamp", filterDescending: true);
 
   @override
   void initState() {
@@ -40,17 +39,27 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
     loadFeedbacks();
   }
 
-  void select(int index) {
+  void select(int index, FeedbackData? feedback) {
     setState(() {
       selected = index;
+      selectedFeedback = feedback;
     });
   }
 
   Future<void> loadFeedbacks() async {
-    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+    setState(() {
+      feedbacks = null;
+    });
+    select(-1, null);
+
+    Query<Map<String, dynamic>> query = await FirebaseFirestore.instance
         .collection('feedbacks')
-        .where('feedback_route', isEqualTo: widget.route.routeId)
-        .get();
+        .where('feedback_route', isEqualTo: widget.route.routeId);
+
+    query = query.orderBy(orderBy.filterSearch,
+        descending: orderBy.filterDescending);
+
+    QuerySnapshot querySnapshot = await query.limit(20).get();
 
     setState(() {
       feedbacks = querySnapshot.docs.map((DocumentSnapshot document) {
@@ -75,278 +84,387 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding:
-            const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
-        child: Column(
+        padding: const EdgeInsets.only(left: Constants.defaultPadding),
+        child: Row(
           children: [
-            SearchBar(
-              controller: searchController,
-              overlayColor:
-                  MaterialStateProperty.all(Colors.white.withOpacity(0.2)),
-              elevation: MaterialStateProperty.all(0.0),
-              onChanged: (String value) {
-                setState(() {
-                  searchString = value;
-                });
-              },
-              hintText: 'Search feedback content',
-              hintStyle: MaterialStateProperty.all(
-                  TextStyle(color: Color(widget.route.routeColor))),
-              leading: const Icon(Icons.search),
-              shape: MaterialStateProperty.all(const ContinuousRectangleBorder(
-                borderRadius: BorderRadius.zero,
-              )),
-              trailing: <Widget>[
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          feedbacks = null;
-                        });
-                        select(-1);
-                        loadFeedbacks();
-                      },
-                      icon: const Icon(Icons.refresh),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.filter_list),
-                    )
-                  ],
-                )
-              ],
-            ),
-            if (feedbacks == null)
-              SizedBox(
-                  height: 500,
-                  child: Center(
-                      child: CircularProgressIndicator(
-                    color: Color(widget.route.routeColor),
-                  ))),
-            if (feedbacks != null)
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: feedbacks!.length,
-                itemBuilder: (context, index) {
-                  FeedbackData feedback = feedbacks![index];
-                  bool isSelected = index == selected;
-
-                  if (searchString.isNotEmpty &&
-                      !feedback.feedback_content
-                          .toLowerCase()
-                          .contains(searchString.toLowerCase())) {
-                    return const SizedBox();
-                  }
-                  return ListTile(
-                    onTap: () {
-                      if (selected == index) {
-                        select(-1);
-                      } else {
-                        select(index);
-                      }
+            SizedBox(
+              height: 700,
+              width: 500,
+              child: Column(
+                children: [
+                  SearchBar(
+                    controller: searchController,
+                    overlayColor: MaterialStateProperty.all(
+                        Colors.white.withOpacity(0.2)),
+                    elevation: MaterialStateProperty.all(0.0),
+                    onChanged: (String value) {
+                      setState(() {
+                        searchString = value;
+                      });
+                      select(-1, null);
                     },
-                    selected: isSelected,
-                    selectedColor: Colors.white,
-                    selectedTileColor:
-                        Color(widget.route.routeColor).withOpacity(0.1),
-                    hoverColor: Colors.white.withOpacity(0.2),
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
+                    hintText: 'Search feedback message',
+                    hintStyle: MaterialStateProperty.all(
+                        TextStyle(color: Color(widget.route.routeColor))),
+                    leading: const Icon(Icons.search),
+                    shape: MaterialStateProperty.all(
+                        const ContinuousRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                    )),
+                    trailing: <Widget>[
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                feedbacks = null;
+                              });
+                              loadFeedbacks();
+                            },
+                            icon: const Icon(Icons.refresh),
+                          ),
+                          IconButton(
+                            onPressed: () => AwesomeDialog(
+                              dialogType: DialogType.noHeader,
+                              context: (context),
+                              width: 500,
+                              body: MouseRegion(
+                                  onEnter: (_) => widget.hover(true),
+                                  onExit: (_) => widget.hover(false),
+                                  child: Filters(
+                                    oldFilter: orderBy,
+                                    newFilter: (FilterParameters newFilter) {
+                                      setState(() {
+                                        orderBy = newFilter;
+                                      });
+                                      loadFeedbacks();
+                                    },
+                                  )),
+                            ).show(),
+                            icon: const Icon(Icons.filter_list),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                  if (feedbacks == null)
+                    SizedBox(
+                        height: 500,
+                        child: Center(
+                            child: CircularProgressIndicator(
+                          color: Color(widget.route.routeColor),
+                        ))),
+                  if (feedbacks != null)
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: feedbacks!.length,
+                      itemBuilder: (context, index) {
+                        FeedbackData feedback = feedbacks![index];
+
+                        if (searchString.isNotEmpty &&
+                            !feedback.feedback_content
+                                .toLowerCase()
+                                .contains(searchString.toLowerCase())) {
+                          return const SizedBox();
+                        }
+                        return ListTile(
+                          onTap: () async {
+                            if (selected == index) {
+                              select(-1, null);
+                            } else {
+                              select(index, feedback);
+                            }
+                          },
+                          selected: index == selected,
+                          selectedColor: Colors.white,
+                          selectedTileColor:
+                              Color(widget.route.routeColor).withOpacity(0.1),
+                          hoverColor: Colors.white.withOpacity(0.2),
+                          trailing: Text(
+                            DateFormat('MMM d')
+                                .format(feedback.timestamp.toDate()),
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                          title: Text(
                             '"${feedback.feedback_content}"',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(fontStyle: FontStyle.italic),
                           ),
-                        ),
-                        const SizedBox(width: Constants.defaultPadding),
-                        Text(DateFormat('MMMM d, y')
-                            .format(feedback.timestamp.toDate()))
-                      ],
+                        );
+                      },
                     ),
-                    subtitle: Column(
-                      children: [
-                        Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text("Driver"),
-                                    Row(
-                                      children: List.generate(5, (index) {
-                                        return Icon(
-                                          index <
-                                                  feedback
-                                                      .feedback_driving_rating
-                                              ? Icons.star
-                                              : Icons.star_border,
-                                          color: index <
-                                                  feedback
-                                                      .feedback_driving_rating
-                                              ? Color(widget.route.routeColor)
-                                              : Colors.grey,
-                                          size: 20,
-                                        );
-                                      }),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                  width: Constants.defaultPadding * 2),
-                              Expanded(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text("Jeepney"),
-                                    Row(
-                                      children: List.generate(5, (index) {
-                                        return Icon(
-                                          index <
-                                                  feedback
-                                                      .feedback_jeepney_rating
-                                              ? Icons.star
-                                              : Icons.star_border,
-                                          color: index <
-                                                  feedback
-                                                      .feedback_jeepney_rating
-                                              ? Color(widget.route.routeColor)
-                                              : Colors.grey,
-                                          size: 20,
-                                        );
-                                      }),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ]),
-                        if (isSelected)
-                          Column(
-                            children: [
-                              const Divider(color: Colors.white),
-                              FutureBuilder(
-                                  future: loadFeedbackDetails(
-                                      feedback.feedback_sender,
-                                      feedback.feedback_recepient),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                            color:
-                                                Color(widget.route.routeColor)),
-                                      );
-                                    }
-
-                                    if (snapshot.hasError) {
-                                      return Center(
-                                        child: Text('Error: ${snapshot.error}'),
-                                      );
-                                    }
-
-                                    if (!snapshot.hasData ||
-                                        snapshot.data == null) {
-                                      return const Center(
-                                        child: Text(
-                                            'Feedback Details cannot be recovered.'),
-                                      );
-                                    }
-
-                                    FeedbackAdditionalInfo
-                                        feedbackAdditionalInfo = snapshot.data!;
-
-                                    return SizedBox(
-                                      width: double.maxFinite,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                              'Feedback by ${feedbackAdditionalInfo.senderData.account_name} (${feedback.feedback_sender})'),
-                                          const SizedBox(
-                                              height: Constants.defaultPadding),
-                                          RichText(
-                                              textAlign: TextAlign.justify,
-                                              text: TextSpan(
-                                                children: [
-                                                  const WidgetSpan(
-                                                      child: SizedBox(
-                                                          width: 40.0)),
-                                                  TextSpan(
-                                                      text:
-                                                          '"${feedback.feedback_content}"',
-                                                      style: const TextStyle(
-                                                          color: Colors.white,
-                                                          fontStyle:
-                                                              FontStyle.italic,
-                                                          fontWeight:
-                                                              FontWeight.w200)),
-                                                ],
-                                              )),
-                                          const SizedBox(
-                                              height: Constants.defaultPadding),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              const Text("Driver"),
-                                              const SizedBox(
-                                                  width:
-                                                      Constants.defaultPadding),
-                                              Expanded(
-                                                child: Text(
-                                                  '${feedbackAdditionalInfo.recepientData.account_name} (${feedback.feedback_recepient})',
-                                                  textAlign: TextAlign.right,
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                              height:
-                                                  Constants.defaultPadding / 2),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              const Text("PUV"),
-                                              const SizedBox(
-                                                  width:
-                                                      Constants.defaultPadding),
-                                              Expanded(
-                                                child: Text(
-                                                  feedback.feedback_jeepney,
-                                                  textAlign: TextAlign.right,
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              )
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                    );
-                                  }),
-                              const Divider(color: Colors.white),
-                            ],
-                          )
-                      ],
-                    ),
-                  );
-                },
+                ],
               ),
+            ),
+            const SizedBox(width: Constants.defaultPadding),
+            Expanded(
+                child: selectedFeedback != null
+                    ? FutureBuilder(
+                        future: loadFeedbackDetails(
+                            selectedFeedback!.feedback_sender,
+                            selectedFeedback!.feedback_recepient),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: CircularProgressIndicator(
+                                  color: Color(widget.route.routeColor)),
+                            );
+                          }
+
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          }
+
+                          if (!snapshot.hasData || snapshot.data == null) {
+                            return const Center(
+                              child:
+                                  Text('Feedback Details cannot be recovered.'),
+                            );
+                          }
+
+                          FeedbackAdditionalInfo feedbackAdditionalInfo =
+                              snapshot.data!;
+
+                          return SizedBox(
+                            height: 700,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Center(
+                                          child: Container(
+                                            width: 34,
+                                            height: 34,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Color(widget.route
+                                                  .routeColor), // Circle color
+                                            ),
+                                            child: const Center(
+                                              child: Icon(
+                                                Icons.person,
+                                                size: 22,
+                                                color: Constants
+                                                    .bgColor, // Icon color
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                            width: Constants.defaultPadding),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                                'Feedback by ${feedbackAdditionalInfo.senderData.account_name} <${selectedFeedback!.feedback_sender}>'),
+                                            Text(
+                                                'reviewing ${feedbackAdditionalInfo.recepientData.account_name} <${feedbackAdditionalInfo.recepientData.account_email}>',
+                                                style: TextStyle(
+                                                    fontSize: 11,
+                                                    color: Colors.white
+                                                        .withOpacity(0.5))),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Text(DateFormat('MMMM d, y').format(
+                                            selectedFeedback!.timestamp
+                                                .toDate())),
+                                        Text(
+                                            DateFormat('hh:mm a').format(
+                                                selectedFeedback!.timestamp
+                                                    .toDate()),
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.white
+                                                    .withOpacity(0.5))),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                const Spacer(),
+                                Center(
+                                  child: Container(
+                                    width: 500,
+                                    padding: const EdgeInsets.all(
+                                        Constants.defaultPadding * 2),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 2,
+                                            color:
+                                                Colors.white.withOpacity(0.5)),
+                                        borderRadius: BorderRadius.circular(
+                                            Constants.defaultPadding / 2)),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  const Text(
+                                                    "Driver",
+                                                    textAlign: TextAlign.right,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                  Text(
+                                                    feedbackAdditionalInfo
+                                                        .recepientData
+                                                        .account_name,
+                                                    textAlign: TextAlign.right,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                                width:
+                                                    Constants.defaultPadding *
+                                                        2),
+                                            Expanded(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  const Text(
+                                                    "Jeepney",
+                                                    textAlign: TextAlign.right,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                  Text(
+                                                    selectedFeedback!
+                                                        .feedback_jeepney,
+                                                    textAlign: TextAlign.right,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                            height:
+                                                Constants.defaultPadding / 2),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children:
+                                                    List.generate(5, (index) {
+                                                  return Icon(
+                                                    index <
+                                                            selectedFeedback!
+                                                                .feedback_driving_rating
+                                                        ? Icons.star
+                                                        : Icons.star_border,
+                                                    color: index <
+                                                            selectedFeedback!
+                                                                .feedback_driving_rating
+                                                        ? Color(widget
+                                                            .route.routeColor)
+                                                        : Colors.grey,
+                                                    size: 20,
+                                                  );
+                                                }),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                                width:
+                                                    Constants.defaultPadding *
+                                                        2),
+                                            Expanded(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children:
+                                                    List.generate(5, (index) {
+                                                  return Icon(
+                                                    index <
+                                                            selectedFeedback!
+                                                                .feedback_jeepney_rating
+                                                        ? Icons.star
+                                                        : Icons.star_border,
+                                                    color: index <
+                                                            selectedFeedback!
+                                                                .feedback_jeepney_rating
+                                                        ? Color(widget
+                                                            .route.routeColor)
+                                                        : Colors.grey,
+                                                    size: 20,
+                                                  );
+                                                }),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                            height:
+                                                Constants.defaultPadding / 2),
+                                        const Divider(color: Colors.white),
+                                        const SizedBox(
+                                            height: Constants.defaultPadding),
+                                        RichText(
+                                            textAlign: TextAlign.justify,
+                                            text: TextSpan(
+                                              children: [
+                                                const WidgetSpan(
+                                                    child:
+                                                        SizedBox(width: 40.0)),
+                                                TextSpan(
+                                                    text: selectedFeedback!
+                                                        .feedback_content,
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontStyle:
+                                                            FontStyle.italic,
+                                                        fontWeight:
+                                                            FontWeight.w200)),
+                                              ],
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const Spacer(),
+                                const Divider(color: Colors.white),
+                              ],
+                            ),
+                          );
+                        })
+                    : const SizedBox(
+                        height: 700,
+                        child: Center(
+                          child: Logo(),
+                        )))
           ],
         ));
   }

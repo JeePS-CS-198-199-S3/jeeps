@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:transitrack_web/models/account_model.dart';
 
 class FeedbackData {
   String feedback_sender;
@@ -29,9 +30,19 @@ class FeedbackData {
       feedback_jeepney: data['feedback_jeepney'] ?? '',
       timestamp: data['timestamp'] ?? Timestamp.now(),
       feedback_driving_rating: data['feedback_driving_rating'] ?? 0,
-      feedback_jeepney_rating: data['feedback_rating'] ?? 0,
+      feedback_jeepney_rating: data['feedback_jeepney_rating'] ?? 0,
       feedback_content: data['feedback_content'] ?? '',
       feedback_route: data['feedback_route'] ?? 0,
     );
   }
+}
+
+class FeedbackAdditionalInfo {
+  AccountData senderData;
+  AccountData recepientData;
+
+  FeedbackAdditionalInfo({
+    required this.senderData,
+    required this.recepientData,
+  });
 }
