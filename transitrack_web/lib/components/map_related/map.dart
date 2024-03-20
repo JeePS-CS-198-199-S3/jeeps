@@ -260,7 +260,12 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
             circle, CircleOptions(geometry: animation.value));
       });
     } else {
-      _mapController.updateSymbol(symbol!, SymbolOptions(iconRotate: bearing!));
+      _mapController.updateSymbol(
+          symbol!,
+          SymbolOptions(
+              iconRotate: bearing!,
+              textRotate: bearing + 90,
+              textColor: intToHexColor(_value!.routeColor)));
 
       animation.addListener(() {
         _mapController.updateSymbol(
@@ -555,7 +560,9 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                 onStyleLoadedCallback: () async {
                   await addImageFromAsset();
                   _mapController.setSymbolIconAllowOverlap(true);
+                  _mapController.setSymbolTextAllowOverlap(true);
                   _mapController.setSymbolIconIgnorePlacement(true);
+                  _mapController.setSymbolTextIgnorePlacement(true);
                   widget.mapLoaded(true);
                   _listenToDeviceLocation();
                 },
