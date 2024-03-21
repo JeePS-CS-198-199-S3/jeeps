@@ -118,10 +118,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
       addLine();
 
-      _mapController
-          .removeSymbols(
-              jeepEntities.map((jeepEntity) => jeepEntity.jeepSymbol))
-          .then((value) => jeepEntities.clear());
+      _mapController.clearSymbols().then((value) => jeepEntities.clear());
     }
 
     // jeepney updates
@@ -159,13 +156,16 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
         if (index != -1) {
           JeepEntity? specificJeepEntity = jeepEntities[index];
+          JeepData specificJeep = specificJeepEntity.jeepAndDriver.jeep;
           if (specificJeepEntity.jeepAndDriver.driver != null) {
-            _animateCircleMovement(
-                specificJeepEntity.jeepSymbol.options.geometry!,
-                LatLng(
-                    jeep.jeep.location.latitude, jeep.jeep.location.longitude),
-                symbol: specificJeepEntity.jeepSymbol,
-                bearing: specificJeepEntity.jeepAndDriver.jeep.bearing);
+            _mapController.updateSymbol(
+                specificJeepEntity.jeepSymbol,
+                SymbolOptions(
+                    iconRotate: specificJeep.bearing,
+                    textRotate: specificJeep.bearing + 90,
+                    textColor: intToHexColor(_value!.routeColor),
+                    geometry: LatLng(specificJeep.location.latitude,
+                        specificJeep.location.longitude)));
 
             jeepEntities[index] = JeepEntity(
                 jeepAndDriver: jeep, jeepSymbol: specificJeepEntity.jeepSymbol);
@@ -224,8 +224,8 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       myLocation = latLng;
     });
     if (deviceCircle != null) {
-      _animateCircleMovement(deviceCircle!.options.geometry as LatLng, latLng,
-          circle: deviceCircle!);
+      _animateCircleMovement(
+          deviceCircle!.options.geometry as LatLng, latLng, deviceCircle!);
     } else {
       _mapController
           .addCircle(CircleOptions(
@@ -243,8 +243,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     }
   }
 
-  void _animateCircleMovement(LatLng from, LatLng to,
-      {Circle? circle, Symbol? symbol, double? bearing}) {
+  void _animateCircleMovement(LatLng from, LatLng to, Circle circle) {
     final animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -254,24 +253,10 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       curve: Curves.easeInOut,
     ));
 
-    if (circle != null) {
-      animation.addListener(() {
-        _mapController.updateCircle(
-            circle, CircleOptions(geometry: animation.value));
-      });
-    } else {
-      _mapController.updateSymbol(
-          symbol!,
-          SymbolOptions(
-              iconRotate: bearing!,
-              textRotate: bearing + 90,
-              textColor: intToHexColor(_value!.routeColor)));
-
-      animation.addListener(() {
-        _mapController.updateSymbol(
-            symbol, SymbolOptions(geometry: animation.value));
-      });
-    }
+    animation.addListener(() {
+      _mapController.updateCircle(
+          circle, CircleOptions(geometry: animation.value));
+    });
 
     animation.addStatusListener((status) {
       if (status == AnimationStatus.completed) {

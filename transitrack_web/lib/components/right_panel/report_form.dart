@@ -77,7 +77,9 @@ class _ReportFormState extends State<ReportForm> {
               'timestamp': FieldValue.serverTimestamp(),
               'report_content': reportController.text,
               'report_type': ReportData.reportTypeMap[reportType],
-              'report_location': widget.jeep.jeep.location
+              'report_location': GeoPoint(widget.jeep.jeep.location.latitude,
+                  widget.jeep.jeep.location.longitude),
+              'report_route': widget.route.routeId
             })
             .then((value) => Navigator.pop(context))
             .then((value) => Navigator.pop(context));

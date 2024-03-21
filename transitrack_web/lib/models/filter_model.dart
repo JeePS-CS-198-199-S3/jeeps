@@ -44,6 +44,15 @@ class FilterParameters {
         filterName: 'Feedback Provider Email',
         filterQueryName: "feedback_sender"),
   ];
+
+  static List<FilterName> reportsOrderBy = [
+    FilterName(filterName: "Date", filterQueryName: "timestamp"),
+    FilterName(
+        filterName: 'Reported Jeepney', filterQueryName: "report_jeepney"),
+    FilterName(
+        filterName: 'Reported Driver', filterQueryName: "report_recepient"),
+    FilterName(filterName: 'Report Issuer', filterQueryName: "report_sender")
+  ];
 }
 
 class FilterName {

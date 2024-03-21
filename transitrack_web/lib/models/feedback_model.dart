@@ -37,11 +37,11 @@ class FeedbackData {
   }
 }
 
-class FeedbackAdditionalInfo {
+class UsersAdditionalInfo {
   AccountData senderData;
   AccountData recepientData;
 
-  FeedbackAdditionalInfo({
+  UsersAdditionalInfo({
     required this.senderData,
     required this.recepientData,
   });

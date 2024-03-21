@@ -68,13 +68,13 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
     });
   }
 
-  Future<FeedbackAdditionalInfo?> loadFeedbackDetails(
+  Future<UsersAdditionalInfo?> loadFeedbackDetails(
       String sender, String recepient) async {
     AccountData? senderData = await AccountData.getAccountByEmail(sender);
     AccountData? recepientData = await AccountData.getAccountByEmail(recepient);
 
     if (senderData != null && recepientData != null) {
-      return FeedbackAdditionalInfo(
+      return UsersAdditionalInfo(
           senderData: senderData, recepientData: recepientData);
     } else {
       return null;
@@ -235,7 +235,7 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                             );
                           }
 
-                          FeedbackAdditionalInfo feedbackAdditionalInfo =
+                          UsersAdditionalInfo feedbackAdditionalInfo =
                               snapshot.data!;
 
                           return SizedBox(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/feedbacks_table.dart';
+import 'package:transitrack_web/components/account_related/route_manager/data_visualization/reports_table.dart';
 import 'package:transitrack_web/components/left_drawer/logo.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
@@ -33,7 +34,13 @@ class _DataVisualizationTabState extends State<DataVisualizationTab> {
           },
         )),
     DataVisualizationMenuList(
-        menuName: "Reports", menuWidget: const SizedBox()),
+        menuName: "Reports",
+        menuWidget: ReportsTable(
+            route: widget.route,
+            isDispose: selected == 1,
+            hover: (bool hover) {
+              widget.hover(hover);
+            })),
     DataVisualizationMenuList(
         menuName: "Shared Locations", menuWidget: const SizedBox())
   ];
