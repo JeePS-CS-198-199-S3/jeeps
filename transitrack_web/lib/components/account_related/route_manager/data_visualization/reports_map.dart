@@ -63,7 +63,9 @@ class _ReportsMapState extends State<ReportsMap> {
         reportData = widget.reportData;
       });
 
-      showReportData();
+      if (reportData.isNotEmpty) {
+        showReportData();
+      }
     }
 
     if (widget.selectedReport != selectedReport) {
@@ -99,7 +101,9 @@ class _ReportsMapState extends State<ReportsMap> {
   }
 
   void showReportData() {
-    _mapController.clearCircles().then((value) => reportEntities.clear());
+    if (reportEntities.isNotEmpty) {
+      _mapController.clearCircles().then((value) => reportEntities.clear());
+    }
 
     for (ReportData report
         in reportData.where((report) => report.report_type > 0)) {

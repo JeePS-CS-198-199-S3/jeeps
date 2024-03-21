@@ -173,6 +173,10 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                                     .contains(searchString.toLowerCase())) {
                               return const SizedBox();
                             }
+
+                            Widget trailingWidget = setTrailingWidget(
+                                orderBy.filterSearch, feedback, widget.route);
+
                             return ListTile(
                               onTap: () async {
                                 if (selected == index) {
@@ -186,11 +190,7 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                               selectedTileColor: Color(widget.route.routeColor)
                                   .withOpacity(0.1),
                               hoverColor: Colors.white.withOpacity(0.2),
-                              trailing: Text(
-                                DateFormat('MMM d')
-                                    .format(feedback.timestamp.toDate()),
-                                style: const TextStyle(fontSize: 13),
-                              ),
+                              trailing: trailingWidget,
                               title: Text(
                                 '"${feedback.feedback_content}"',
                                 maxLines: 1,
@@ -276,9 +276,9 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                                'Feedback by ${feedbackAdditionalInfo.senderData.account_name} <${selectedFeedback!.feedback_sender}>'),
+                                                'Feedback by ${feedbackAdditionalInfo.senderData.account_name}'),
                                             Text(
-                                                'reviewing ${feedbackAdditionalInfo.recepientData.account_name} <${feedbackAdditionalInfo.recepientData.account_email}>',
+                                                '<${selectedFeedback!.feedback_sender}>',
                                                 style: TextStyle(
                                                     fontSize: 11,
                                                     color: Colors.white
@@ -417,12 +417,12 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                                                 children:
                                                     List.generate(5, (index) {
                                                   return Icon(
-                                                    index <
+                                                    4 - index <
                                                             selectedFeedback!
                                                                 .feedback_jeepney_rating
                                                         ? Icons.star
                                                         : Icons.star_border,
-                                                    color: index <
+                                                    color: 4 - index <
                                                             selectedFeedback!
                                                                 .feedback_jeepney_rating
                                                         ? Color(widget
@@ -476,5 +476,71 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                         )))
           ],
         ));
+  }
+
+  Widget setTrailingWidget(
+      String argument, FeedbackData feedbackData, RouteData route) {
+    switch (argument) {
+      case 'timestamp':
+        return Text(
+          DateFormat('MMM d').format(feedbackData.timestamp.toDate()),
+          style: const TextStyle(fontSize: 13),
+        );
+      case 'feedback_driving_rating':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: List.generate(5, (index) {
+                return Icon(
+                  4 - index < feedbackData.feedback_driving_rating
+                      ? Icons.star
+                      : Icons.star_border,
+                  color: 4 - index < feedbackData.feedback_driving_rating
+                      ? Color(widget.route.routeColor)
+                      : Colors.grey,
+                  size: 15,
+                );
+              }),
+            ),
+          ],
+        );
+      case 'feedback_recepient':
+        return Text(
+          feedbackData.feedback_recepient,
+          style: const TextStyle(fontSize: 13),
+        );
+      case 'feedback_jeepney_rating':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: List.generate(5, (index) {
+                return Icon(
+                  4 - index < feedbackData.feedback_jeepney_rating
+                      ? Icons.star
+                      : Icons.star_border,
+                  color: 4 - index < feedbackData.feedback_jeepney_rating
+                      ? Color(widget.route.routeColor)
+                      : Colors.grey,
+                  size: 15,
+                );
+              }),
+            ),
+          ],
+        );
+      case 'feedback_jeepney':
+        return Text(
+          feedbackData.feedback_jeepney,
+          style: const TextStyle(fontSize: 13),
+        );
+      case 'feedback_sender':
+        return Text(
+          feedbackData.feedback_sender,
+          style: const TextStyle(fontSize: 13),
+        );
+      default:
+        return const SizedBox();
+    }
   }
 }

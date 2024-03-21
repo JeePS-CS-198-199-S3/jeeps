@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_null_aware_operators
+
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';
