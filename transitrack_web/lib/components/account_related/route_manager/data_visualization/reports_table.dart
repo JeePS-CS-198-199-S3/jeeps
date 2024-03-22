@@ -251,12 +251,43 @@ class _ReportsTableState extends State<ReportsTable> {
                     Positioned(
                         right: Constants.defaultPadding,
                         top: Constants.defaultPadding,
-                        child: ReportContents(reportData: selectedReport!))
+                        child: ReportContents(reportData: selectedReport!)),
+                  const Positioned(
+                      right: Constants.defaultPadding,
+                      bottom: Constants.defaultPadding * 1.2,
+                      child: Legends())
                 ],
               ),
             ))
           ],
         ));
+  }
+}
+
+class Legends extends StatelessWidget {
+  const Legends({super.key});
+
+  Widget legendWidget(String text, Color color) {
+    return Row(
+      children: [
+        const SizedBox(width: Constants.defaultPadding / 3),
+        Icon(Icons.circle, color: color, size: 11),
+        const SizedBox(width: Constants.defaultPadding / 3),
+        Text(text,
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500))
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+        children: List.generate(
+            4,
+            (index) => legendWidget(
+                ReportData.reportDetails[index + 1].reportType,
+                ReportData.reportDetails[index + 1].reportColors
+                    .withOpacity(0.5))));
   }
 }
 
