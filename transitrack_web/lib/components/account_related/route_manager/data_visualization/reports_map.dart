@@ -69,10 +69,7 @@ class _ReportsMapState extends State<ReportsMap> {
     }
 
     if (widget.selectedReport != selectedReport) {
-      if (selectedReport != null &&
-          selectedReport!.report_type > 0 &&
-          (widget.selectedReport == null ||
-              widget.selectedReport!.report_type == 0)) {
+      if (selectedReport != null && selectedReport!.report_type > 0) {
         _mapController.updateCircle(
             reportEntities
                 .firstWhere((reportEntity) =>

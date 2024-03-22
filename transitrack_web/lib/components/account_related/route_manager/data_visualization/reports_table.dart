@@ -59,7 +59,7 @@ class _ReportsTableState extends State<ReportsTable> {
     });
     select(-1, null);
 
-    Query<Map<String, dynamic>> query = await FirebaseFirestore.instance
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
         .collection('reports')
         .where('report_route', isEqualTo: widget.route.routeId);
 
@@ -249,19 +249,47 @@ class _ReportsTableState extends State<ReportsTable> {
                     Positioned(
                         right: Constants.defaultPadding,
                         top: Constants.defaultPadding,
-                        child: Container(
-                          width: 350,
-                          height: 200,
-                          decoration: BoxDecoration(
-                              color: Constants.bgColor,
-                              borderRadius: BorderRadius.circular(
-                                  Constants.defaultPadding / 2)),
-                          child: Text("content"),
-                        ))
+                        child: ReportContents(reportData: selectedReport!))
                 ],
               ),
             ))
           ],
         ));
+  }
+}
+
+class ReportContents extends StatelessWidget {
+  final ReportData reportData;
+  const ReportContents({super.key, required this.reportData});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 350,
+      height: 200,
+      decoration: BoxDecoration(
+          color: Constants.bgColor,
+          borderRadius: BorderRadius.circular(Constants.defaultPadding / 2)),
+      child: FutureBuilder(
+        future: AccountData.loadAccountPairDetails(
+            reportData.report_sender, reportData.report_recepient),
+        builder: (BuildContext context,
+            AsyncSnapshot<UsersAdditionalInfo?> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          UsersAdditionalInfo usersAdditionalInfo = snapshot.data!;
+
+          return Column(
+            children: [],
+          );
+        },
+      ),
+    );
   }
 }

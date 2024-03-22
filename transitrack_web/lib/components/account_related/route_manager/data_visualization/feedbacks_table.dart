@@ -68,19 +68,6 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
     });
   }
 
-  Future<UsersAdditionalInfo?> loadFeedbackDetails(
-      String sender, String recepient) async {
-    AccountData? senderData = await AccountData.getAccountByEmail(sender);
-    AccountData? recepientData = await AccountData.getAccountByEmail(recepient);
-
-    if (senderData != null && recepientData != null) {
-      return UsersAdditionalInfo(
-          senderData: senderData, recepientData: recepientData);
-    } else {
-      return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -210,7 +197,7 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
             Expanded(
                 child: selectedFeedback != null
                     ? FutureBuilder(
-                        future: loadFeedbackDetails(
+                        future: AccountData.loadAccountPairDetails(
                             selectedFeedback!.feedback_sender,
                             selectedFeedback!.feedback_recepient),
                         builder: (context, snapshot) {

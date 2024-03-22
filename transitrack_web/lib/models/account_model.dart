@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:transitrack_web/models/feedback_model.dart';
 
 class AccountData {
   String account_email;
@@ -119,6 +120,19 @@ class AccountData {
       }
     } catch (e) {
       print('Error updating email and password: $e');
+    }
+  }
+
+  static Future<UsersAdditionalInfo?> loadAccountPairDetails(
+      String sender, String recepient) async {
+    AccountData? senderData = await AccountData.getAccountByEmail(sender);
+    AccountData? recepientData = await AccountData.getAccountByEmail(recepient);
+
+    if (senderData != null && recepientData != null) {
+      return UsersAdditionalInfo(
+          senderData: senderData, recepientData: recepientData);
+    } else {
+      return null;
     }
   }
 
