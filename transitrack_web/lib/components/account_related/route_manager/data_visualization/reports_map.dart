@@ -109,7 +109,8 @@ class _ReportsMapState extends State<ReportsMap> {
               circleRadius: 5,
               circleOpacity: 0.5,
               circleStrokeColor: intToHexColor(Colors.white.value),
-              circleColor: intToHexColor(Colors.red.value),
+              circleColor: intToHexColor(ReportData
+                  .reportDetails[report.report_type].reportColors.value),
               geometry: LatLng(report.report_location.latitude,
                   report.report_location.longitude)))
           .then((reportCircle) => reportEntities.add(

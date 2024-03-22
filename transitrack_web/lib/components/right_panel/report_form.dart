@@ -1,9 +1,8 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:transitrack_web/services/find_location.dart';
 
-import '../../config/keys.dart';
 import '../../models/account_model.dart';
 import '../../models/jeep_model.dart';
 import '../../models/report_model.dart';
@@ -12,7 +11,6 @@ import '../../style/constants.dart';
 import '../../style/style.dart';
 import '../button.dart';
 import '../text_field.dart';
-import 'package:http/http.dart' as http;
 
 class ReportForm extends StatefulWidget {
   AccountData? user;
@@ -34,26 +32,15 @@ class _ReportFormState extends State<ReportForm> {
   @override
   void initState() {
     super.initState();
-    findAddress();
+    getAddress();
   }
 
-  Future<void> findAddress() async {
-    String loc =
-        '${widget.jeep.jeep.location.longitude},${widget.jeep.jeep.location.latitude}';
-    String apiUrl =
-        'https://api.mapbox.com/geocoding/v5/mapbox.places/$loc.json?access_token=${Keys.MapBoxKey}';
-
-    final response = await http.get(Uri.parse(apiUrl));
-
-    if (response.statusCode == 200) {
-      final decoded = json.decode(response.body);
-      final features = decoded['features'];
-      setState(() {
-        address = '${features[0]['text']}, ${features[2]['text']}';
-      });
-    } else {
-      print('Error: ${response.statusCode} - ${response.reasonPhrase}');
-    }
+  void getAddress() async {
+    String result = await findAddress(LatLng(widget.jeep.jeep.location.latitude,
+        widget.jeep.jeep.location.longitude));
+    setState(() {
+      address = result;
+    });
   }
 
   void sendReport() async {
@@ -167,8 +154,7 @@ class _ReportFormState extends State<ReportForm> {
             ],
           ),
           const SizedBox(height: Constants.defaultPadding),
-          if (ReportData.reportTypeMap[reportType]! >= 1 &&
-              ReportData.reportTypeMap[reportType]! <= 3)
+          if (ReportData.reportTypeMap[reportType]! > 0)
             Column(children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

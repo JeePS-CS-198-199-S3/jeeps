@@ -377,12 +377,12 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                                                 children:
                                                     List.generate(5, (index) {
                                                   return Icon(
-                                                    index <
+                                                    4 - index <
                                                             selectedFeedback!
                                                                 .feedback_driving_rating
                                                         ? Icons.star
                                                         : Icons.star_border,
-                                                    color: index <
+                                                    color: 4 - index <
                                                             selectedFeedback!
                                                                 .feedback_driving_rating
                                                         ? Color(widget

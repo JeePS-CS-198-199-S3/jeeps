@@ -2,6 +2,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/filters.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/reports_map.dart';
 import 'package:transitrack_web/models/account_model.dart';
@@ -9,6 +10,7 @@ import 'package:transitrack_web/models/feedback_model.dart';
 import 'package:transitrack_web/models/filter_model.dart';
 import 'package:transitrack_web/models/report_model.dart';
 import 'package:transitrack_web/models/route_model.dart';
+import 'package:transitrack_web/services/find_location.dart';
 import 'package:transitrack_web/style/constants.dart';
 
 class ReportsTable extends StatefulWidget {
@@ -206,7 +208,7 @@ class _ReportsTableState extends State<ReportsTable> {
                                     children: [
                                       TextSpan(
                                           text:
-                                              "[${ReportData.reportType[report.report_type]}]",
+                                              "[${ReportData.reportDetails[report.report_type].reportType}]",
                                           style: TextStyle(
                                               color: Color(
                                                   widget.route.routeColor),
@@ -265,18 +267,21 @@ class ReportContents extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.all(Constants.defaultPadding),
       width: 350,
-      height: 200,
       decoration: BoxDecoration(
           color: Constants.bgColor,
           borderRadius: BorderRadius.circular(Constants.defaultPadding / 2)),
       child: FutureBuilder(
         future: AccountData.loadAccountPairDetails(
-            reportData.report_sender, reportData.report_recepient),
+            reportData.report_sender, reportData.report_recepient,
+            location: LatLng(reportData.report_location.latitude,
+                reportData.report_location.longitude)),
         builder: (BuildContext context,
             AsyncSnapshot<UsersAdditionalInfo?> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const SizedBox(
+                height: 200, child: Center(child: CircularProgressIndicator()));
           }
 
           if (snapshot.hasError) {
@@ -286,7 +291,107 @@ class ReportContents extends StatelessWidget {
           UsersAdditionalInfo usersAdditionalInfo = snapshot.data!;
 
           return Column(
-            children: [],
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(ReportData
+                      .reportDetails[reportData.report_type].reportType),
+                  const SizedBox(width: Constants.defaultPadding),
+                  Text(DateFormat('MMM d, y')
+                      .format(reportData.timestamp.toDate())),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (reportData.report_type > 0)
+                    Text(usersAdditionalInfo.locationData!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.white.withOpacity(0.5))),
+                  const SizedBox(width: Constants.defaultPadding),
+                  Text(
+                      DateFormat('hh:mm a')
+                          .format(reportData.timestamp.toDate()),
+                      style: TextStyle(
+                          fontSize: 13, color: Colors.white.withOpacity(0.5))),
+                ],
+              ),
+              const SizedBox(height: Constants.defaultPadding / 2),
+              const Divider(color: Colors.white),
+              const SizedBox(height: Constants.defaultPadding / 2),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RichText(
+                      textAlign: TextAlign.justify,
+                      text: TextSpan(
+                        children: [
+                          const WidgetSpan(child: SizedBox(width: 40.0)),
+                          TextSpan(
+                              text: reportData.report_content,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.w200)),
+                        ],
+                      )),
+                ],
+              ),
+              const SizedBox(height: Constants.defaultPadding / 2),
+              const Divider(color: Colors.white),
+              const SizedBox(height: Constants.defaultPadding / 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Reporter"),
+                  const SizedBox(width: Constants.defaultPadding),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(usersAdditionalInfo.senderData.account_name),
+                      Text("<${reportData.report_sender}>",
+                          style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.white.withOpacity(0.5))),
+                    ],
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Driver"),
+                  const SizedBox(width: Constants.defaultPadding),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(usersAdditionalInfo.recepientData.account_name),
+                      Text("<${reportData.report_recepient}>",
+                          style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.white.withOpacity(0.5))),
+                    ],
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Jeep"),
+                  const SizedBox(width: Constants.defaultPadding),
+                  Text(reportData.report_jeepney)
+                ],
+              ),
+            ],
           );
         },
       ),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 
 class ReportData {
@@ -47,13 +48,21 @@ class ReportData {
     'Other Concerns': 4,
   };
 
-  static List<String> reportType = [
-    'Lost Item',
-    'Crime Incident',
-    'Mechanical Failure',
-    'Accident',
-    'Other Concerns',
+  static List<ReportDetails> reportDetails = [
+    ReportDetails(reportType: 'Lost Item', reportColors: Colors.lightBlue),
+    ReportDetails(reportType: 'Crime Incident', reportColors: Colors.red),
+    ReportDetails(
+        reportType: 'Mechanical Failure', reportColors: Colors.yellow),
+    ReportDetails(reportType: 'Accident', reportColors: Colors.orange),
+    ReportDetails(reportType: 'Other Concerns', reportColors: Colors.lightBlue),
   ];
+}
+
+class ReportDetails {
+  String reportType;
+  Color reportColors;
+
+  ReportDetails({required this.reportType, required this.reportColors});
 }
 
 class ReportEntity {

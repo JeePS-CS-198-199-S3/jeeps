@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:transitrack_web/models/feedback_model.dart';
+import 'package:transitrack_web/services/find_location.dart';
 
 class AccountData {
   String account_email;
@@ -124,13 +126,22 @@ class AccountData {
   }
 
   static Future<UsersAdditionalInfo?> loadAccountPairDetails(
-      String sender, String recepient) async {
+      String sender, String recepient,
+      {LatLng? location}) async {
     AccountData? senderData = await AccountData.getAccountByEmail(sender);
     AccountData? recepientData = await AccountData.getAccountByEmail(recepient);
+    String? address;
+
+    if (location != null) {
+      address =
+          await findAddress(LatLng(location.latitude, location.longitude));
+    }
 
     if (senderData != null && recepientData != null) {
       return UsersAdditionalInfo(
-          senderData: senderData, recepientData: recepientData);
+          senderData: senderData,
+          recepientData: recepientData,
+          locationData: location != null ? address : null);
     } else {
       return null;
     }

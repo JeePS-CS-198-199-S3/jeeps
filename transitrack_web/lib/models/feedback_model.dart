@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:transitrack_web/components/map_related/map.dart';
 import 'package:transitrack_web/models/account_model.dart';
 
 class FeedbackData {
@@ -40,9 +42,10 @@ class FeedbackData {
 class UsersAdditionalInfo {
   AccountData senderData;
   AccountData recepientData;
+  String? locationData;
 
-  UsersAdditionalInfo({
-    required this.senderData,
-    required this.recepientData,
-  });
+  UsersAdditionalInfo(
+      {required this.senderData,
+      required this.recepientData,
+      this.locationData});
 }
