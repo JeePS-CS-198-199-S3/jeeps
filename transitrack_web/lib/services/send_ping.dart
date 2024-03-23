@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 
 import '../models/ping_model.dart';
 
-Future<int> sendPing(PingData pingData) async {
+Future<int> sendPing(String email, LatLng location, int route) async {
   try {
     final pingCollection = FirebaseFirestore.instance.collection('pings');
     await pingCollection.add({
-      'ping_email': pingData.ping_email,
-      'ping_location': GeoPoint(
-          pingData.ping_location.latitude, pingData.ping_location.longitude),
-      'ping_route': pingData.ping_route,
+      'ping_email': email,
+      'ping_location': GeoPoint(location.latitude, location.longitude),
+      'ping_route': route,
       'ping_timestamp': FieldValue.serverTimestamp(),
     });
     return 0;

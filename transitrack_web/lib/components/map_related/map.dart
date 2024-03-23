@@ -269,7 +269,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     animationController.forward();
   }
 
-  void _animateRipple() async {
+  void _animateRipple(LatLng location) async {
     Circle? ripple1;
     Circle? ripple2;
     _mapController
@@ -587,8 +587,9 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                                 CameraUpdate.newLatLngZoom(
                                     myLocation!, mapStartZoom));
 
+                            LatLng pingLoc = myLocation!;
                             for (int i = 0; i < 3; i++) {
-                              _animateRipple();
+                              _animateRipple(pingLoc);
 
                               await Future.delayed(
                                   const Duration(milliseconds: 2000));
@@ -651,8 +652,10 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                             _mapController.animateCamera(
                                 CameraUpdate.newLatLngZoom(
                                     myLocation!, mapStartZoom));
+
+                            LatLng pingLoc = myLocation!;
                             for (int i = 0; i < 3; i++) {
-                              _animateRipple();
+                              _animateRipple(pingLoc);
 
                               await Future.delayed(
                                   const Duration(milliseconds: 2000));

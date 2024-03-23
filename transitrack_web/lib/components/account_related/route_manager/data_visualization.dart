@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/feedbacks_table.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/reports_table.dart';
+import 'package:transitrack_web/components/account_related/route_manager/data_visualization/shared_locations_page.dart';
 import 'package:transitrack_web/components/left_drawer/logo.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
@@ -42,7 +43,8 @@ class _DataVisualizationTabState extends State<DataVisualizationTab> {
               widget.hover(hover);
             })),
     DataVisualizationMenuList(
-        menuName: "Shared Locations", menuWidget: const SizedBox())
+        menuName: "Shared Locations",
+        menuWidget: SharedLocationsPage(routeData: widget.route))
   ];
 
   int selected = -1;

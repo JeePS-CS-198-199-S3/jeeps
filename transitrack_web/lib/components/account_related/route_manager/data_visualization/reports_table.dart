@@ -10,7 +10,6 @@ import 'package:transitrack_web/models/feedback_model.dart';
 import 'package:transitrack_web/models/filter_model.dart';
 import 'package:transitrack_web/models/report_model.dart';
 import 'package:transitrack_web/models/route_model.dart';
-import 'package:transitrack_web/services/find_location.dart';
 import 'package:transitrack_web/style/constants.dart';
 
 class ReportsTable extends StatefulWidget {
@@ -33,6 +32,8 @@ class _ReportsTableState extends State<ReportsTable> {
   bool mapLoaded = false;
   int selected = -1;
   late ReportData? selectedReport;
+
+  bool isHover = false;
 
   List<ReportData>? reports;
 
@@ -138,8 +139,18 @@ class _ReportsTableState extends State<ReportsTable> {
                               context: (context),
                               width: 500,
                               body: MouseRegion(
-                                  onEnter: (_) => widget.hover(true),
-                                  onExit: (_) => widget.hover(false),
+                                  onEnter: (_) {
+                                    widget.hover(true);
+                                    setState(() {
+                                      isHover = true;
+                                    });
+                                  },
+                                  onExit: (_) {
+                                    widget.hover(false);
+                                    setState(() {
+                                      isHover = false;
+                                    });
+                                  },
                                   child: Filters(
                                     route: widget.route,
                                     dropdownList:
@@ -236,7 +247,7 @@ class _ReportsTableState extends State<ReportsTable> {
               child: Stack(
                 children: [
                   ReportsMap(
-                    isHover: false,
+                    isHover: isHover,
                     isDispose: widget.isDispose,
                     reportData: reports ?? [],
                     selectedReport: selectedReport,

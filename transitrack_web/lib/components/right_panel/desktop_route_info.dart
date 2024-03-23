@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
@@ -192,10 +193,10 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
                       const SizedBox(width: Constants.defaultPadding / 3),
                       CooldownButton(
                           onPressed: () async {
-                            int result = await sendPing(PingData(
-                                ping_email: widget.user!.account_email,
-                                ping_location: _myLocation!,
-                                ping_route: _value.routeId));
+                            int result = await sendPing(
+                                widget.user!.account_email,
+                                _myLocation!,
+                                _value.routeId);
                             if (result == 0) {
                               widget.sendPing(true);
                             } else {

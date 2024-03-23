@@ -355,10 +355,8 @@ class _MobileRouteInfoState extends State<MobileRouteInfo> {
               right: Constants.defaultPadding / 2,
               child: CooldownButton(
                   onPressed: () async {
-                    int result = await sendPing(PingData(
-                        ping_email: widget.user!.account_email,
-                        ping_location: widget.myLocation!,
-                        ping_route: _value.routeId));
+                    int result = await sendPing(widget.user!.account_email,
+                        widget.myLocation!, _value.routeId);
                     if (result == 0) {
                       widget.sendPing(true);
                     } else {
