@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 
@@ -26,6 +28,16 @@ class PingData {
       ping_timestamp: data['ping_timestamp'],
     );
   }
+
+  Map<String, dynamic> toGeoJSONFeature() {
+    return {
+      'type': 'Feature',
+      'geometry': {
+        'type': 'Point',
+        'coordinates': [ping_location.longitude, ping_location.latitude]
+      },
+    };
+  }
 }
 
 class PingEntity {
@@ -33,4 +45,16 @@ class PingEntity {
   Circle pingCircle;
 
   PingEntity({required this.pingData, required this.pingCircle});
+}
+
+listToGeoJSON(List<PingData> pings) {
+  List<Map<String, dynamic>> features =
+      pings.map((ping) => ping.toGeoJSONFeature()).toList();
+
+  Map<String, dynamic> featureCollection = {
+    'type': 'FeatureCollection',
+    'features': features,
+  };
+
+  return featureCollection;
 }

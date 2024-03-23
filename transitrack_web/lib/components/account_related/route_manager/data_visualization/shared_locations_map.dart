@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:transitrack_web/components/account_related/route_manager/data_visualization/shared_locations_map_config.dart';
 import 'package:transitrack_web/config/keys.dart';
 import 'package:transitrack_web/config/map_settings.dart';
 import 'package:transitrack_web/models/ping_model.dart';
@@ -24,10 +25,10 @@ class SharedLocationsMap extends StatefulWidget {
 
 class _SharedLocationsMapState extends State<SharedLocationsMap> {
   late List<PingData>? _pings;
+
   late MapboxMapController _mapController;
   late bool _isHover;
-
-  List<PingEntity> pingEntities = [];
+  bool mapLoaded = false;
 
   @override
   void initState() {
@@ -39,6 +40,35 @@ class _SharedLocationsMapState extends State<SharedLocationsMap> {
     });
   }
 
+  Future<void> addGeojsonCluster(MapboxMapController controller) async {
+    await controller.addSource(
+        "pings",
+        GeojsonSourceProperties(
+            data: listToGeoJSON(_pings!), cluster: true, clusterRadius: 50));
+    await controller.addLayer(
+        "pings",
+        "pings-circles",
+        CircleLayerProperties(
+            circleColor: intToHexColor(widget.routeData.routeColor),
+            circleRadius: [
+              Expressions.step,
+              [Expressions.get, 'point_count'],
+              20,
+              100,
+              30,
+              750,
+              40
+            ]));
+    await controller.addLayer(
+        "pings",
+        "pings-count",
+        const SymbolLayerProperties(
+          textField: [Expressions.get, 'point_count_abbreviated'],
+          textFont: ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          textSize: 12,
+        ));
+  }
+
   @override
   void didUpdateWidget(covariant SharedLocationsMap oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -48,8 +78,8 @@ class _SharedLocationsMapState extends State<SharedLocationsMap> {
         _pings = widget.pings;
       });
 
-      if (_pings != null) {
-        updateMap();
+      if (mapLoaded && _pings != null) {
+        _mapController.setGeoJsonSource("pings", listToGeoJSON(_pings!));
       }
     }
 
@@ -60,30 +90,10 @@ class _SharedLocationsMapState extends State<SharedLocationsMap> {
     }
   }
 
-  void updateMap() {
-    if (pingEntities.isNotEmpty) {
-      _mapController
-          .removeCircles(pingEntities
-              .where((pingEntity) => !_pings!
-                  .any((ping) => ping.ping_id == pingEntity.pingData.ping_id))
-              .map((pingEntity) => pingEntity.pingCircle))
-          .then((value) => pingEntities.removeWhere((pingEntity) => !_pings!
-              .any((ping) => ping.ping_id == pingEntity.pingData.ping_id)));
-    }
-    for (PingData ping in _pings!) {
-      if (!pingEntities
-          .any((pingEntity) => pingEntity.pingData.ping_id == ping.ping_id)) {
-        _mapController
-            .addCircle(CircleOptions(
-                circleColor: intToHexColor(widget.routeData.routeColor),
-                circleOpacity: 0.2,
-                circleRadius: 5.0,
-                geometry: LatLng(
-                    ping.ping_location.latitude, ping.ping_location.longitude)))
-            .then((pingCircle) => pingEntities
-                .add(PingEntity(pingData: ping, pingCircle: pingCircle)));
-      }
-    }
+  @override
+  dispose() {
+    super.dispose();
+    _mapController.dispose();
   }
 
   @override
@@ -104,7 +114,11 @@ class _SharedLocationsMapState extends State<SharedLocationsMap> {
       },
       onStyleLoadedCallback: () {
         widget.mapLoaded(true);
-        updateMap();
+        setState(() {
+          mapLoaded = true;
+        });
+        // updateMap();
+        addGeojsonCluster(_mapController);
       },
       initialCameraPosition: CameraPosition(
         target: Keys.MapCenter,

@@ -265,7 +265,7 @@ class _ReportsTableState extends State<ReportsTable> {
                         child: ReportContents(reportData: selectedReport!)),
                   const Positioned(
                       right: Constants.defaultPadding,
-                      bottom: Constants.defaultPadding * 1.2,
+                      bottom: Constants.defaultPadding * 2,
                       child: Legends())
                 ],
               ),
@@ -281,18 +281,18 @@ class Legends extends StatelessWidget {
   Widget legendWidget(String text, Color color) {
     return Row(
       children: [
-        const SizedBox(width: Constants.defaultPadding / 3),
-        Icon(Icons.circle, color: color, size: 11),
-        const SizedBox(width: Constants.defaultPadding / 3),
         Text(text,
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500))
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+        const SizedBox(width: Constants.defaultPadding / 3),
+        Icon(Icons.circle, color: color, size: 11)
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: List.generate(
             4,
             (index) => legendWidget(
