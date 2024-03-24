@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/services/format_time.dart';
 
 import '../../../models/route_model.dart';
@@ -9,8 +10,7 @@ import '../../text_field.dart';
 
 class PropertiesSettings extends StatefulWidget {
   RouteData route;
-  final ValueChanged<bool> hover;
-  PropertiesSettings({super.key, required this.route, required this.hover});
+  PropertiesSettings({super.key, required this.route});
 
   @override
   State<PropertiesSettings> createState() => _PropertiesSettingsState();
@@ -120,9 +120,7 @@ class _PropertiesSettingsState extends State<PropertiesSettings> {
 
   void pickColor(BuildContext context) => showDialog(
       context: context,
-      builder: (context) => MouseRegion(
-            onEnter: (_) => widget.hover(true),
-            onExit: (_) => widget.hover(false),
+      builder: (context) => PointerInterceptor(
             child: AlertDialog(
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,5 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/right_panel/report_form.dart';
 
 import '../../models/account_model.dart';
@@ -16,14 +17,12 @@ class SelectedJeepInfo extends StatefulWidget {
   final String? eta;
   final AccountData? user;
   final RouteData route;
-  final ValueChanged<bool> isHover;
   const SelectedJeepInfo(
       {super.key,
       required this.jeep,
       required this.eta,
       required this.user,
-      required this.route,
-      required this.isHover});
+      required this.route});
 
   @override
   State<SelectedJeepInfo> createState() => _SelectedJeepInfoState();
@@ -224,18 +223,17 @@ class _SelectedJeepInfoState extends State<SelectedJeepInfo> {
                                 Button(
                                     isMobile: true,
                                     onTap: () {
-                                      widget.isHover(true);
                                       AwesomeDialog(
                                         dialogType: DialogType.noHeader,
                                         context: (context),
                                         width: 500,
-                                        body: FeedbackForm(
-                                            jeep: _jeep,
-                                            route: _route,
-                                            user: _user),
-                                      )
-                                          .show()
-                                          .then((_) => widget.isHover(false));
+                                        body: PointerInterceptor(
+                                          child: FeedbackForm(
+                                              jeep: _jeep,
+                                              route: _route,
+                                              user: _user),
+                                        ),
+                                      ).show();
                                     },
                                     text: 'Feedback',
                                     color: Color(widget.route.routeColor)),
@@ -244,18 +242,17 @@ class _SelectedJeepInfoState extends State<SelectedJeepInfo> {
                                 Button(
                                     isMobile: true,
                                     onTap: () {
-                                      widget.isHover(true);
                                       AwesomeDialog(
                                         dialogType: DialogType.noHeader,
                                         context: (context),
                                         width: 500,
-                                        body: ReportForm(
-                                            jeep: _jeep,
-                                            route: _route,
-                                            user: _user),
-                                      )
-                                          .show()
-                                          .then((_) => widget.isHover(false));
+                                        body: PointerInterceptor(
+                                          child: ReportForm(
+                                              jeep: _jeep,
+                                              route: _route,
+                                              user: _user),
+                                        ),
+                                      ).show();
                                     },
                                     text: 'Report',
                                     color: Colors.red[700]!)

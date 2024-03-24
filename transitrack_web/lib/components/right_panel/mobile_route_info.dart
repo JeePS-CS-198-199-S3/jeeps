@@ -20,7 +20,6 @@ class MobileRouteInfo extends StatefulWidget {
   final List<JeepsAndDrivers> jeeps;
   final JeepsAndDrivers? selectedJeep;
   final AccountData? user;
-  final ValueChanged<bool> isHover;
   final ValueChanged<bool> sendPing;
   final ValueChanged<List<LatLng>> etaCoordinates;
   final LatLng? myLocation;
@@ -30,7 +29,6 @@ class MobileRouteInfo extends StatefulWidget {
       required this.jeeps,
       required this.selectedJeep,
       required this.user,
-      required this.isHover,
       required this.sendPing,
       required this.etaCoordinates,
       required this.myLocation});
@@ -337,13 +335,11 @@ class _MobileRouteInfoState extends State<MobileRouteInfo> {
                       Column(children: [
                         const SizedBox(height: Constants.defaultPadding),
                         SelectedJeepInfo(
-                            jeep: _selectedJeep!,
-                            eta: _eta,
-                            user: widget.user,
-                            route: _value,
-                            isHover: (bool value) {
-                              widget.isHover(value);
-                            })
+                          jeep: _selectedJeep!,
+                          eta: _eta,
+                          user: widget.user,
+                          route: _value,
+                        )
                       ]),
                   ]),
             )),

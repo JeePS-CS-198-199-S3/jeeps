@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/account_related/route_manager/delete_jeep.dart';
 import 'package:transitrack_web/components/account_related/route_manager/edit_jeep.dart';
 
@@ -12,15 +13,13 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 class VehiclesSettings extends StatefulWidget {
   final RouteData route;
   final List<JeepsAndDrivers> jeeps;
-  final ValueChanged<bool> isHover;
   final ValueChanged<JeepsAndDrivers> pressedJeep;
 
   const VehiclesSettings(
       {super.key,
       required this.route,
       required this.jeeps,
-      required this.pressedJeep,
-      required this.isHover});
+      required this.pressedJeep});
 
   @override
   State<VehiclesSettings> createState() => _VehiclesSettingsState();
@@ -101,11 +100,7 @@ class _VehiclesSettingsState extends State<VehiclesSettings> {
                                               dialogType: DialogType.noHeader,
                                               context: (context),
                                               width: 500,
-                                              body: MouseRegion(
-                                                onEnter: (_) =>
-                                                    widget.isHover(true),
-                                                onExit: (_) =>
-                                                    widget.isHover(false),
+                                              body: PointerInterceptor(
                                                 child: EditJeep(
                                                   route: widget.route,
                                                   jeepData: _jeeps![index].jeep,
@@ -131,11 +126,7 @@ class _VehiclesSettingsState extends State<VehiclesSettings> {
                                               dialogType: DialogType.noHeader,
                                               context: (context),
                                               width: 500,
-                                              body: MouseRegion(
-                                                onEnter: (_) =>
-                                                    widget.isHover(true),
-                                                onExit: (_) =>
-                                                    widget.isHover(false),
+                                              body: PointerInterceptor(
                                                 child: DeleteJeep(
                                                   jeepData: _jeeps![index].jeep,
                                                 ),
@@ -187,9 +178,7 @@ class _VehiclesSettingsState extends State<VehiclesSettings> {
                 dialogType: DialogType.noHeader,
                 context: (context),
                 width: 500,
-                body: MouseRegion(
-                  onEnter: (_) => widget.isHover(true),
-                  onExit: (_) => widget.isHover(false),
+                body: PointerInterceptor(
                   child: RegisterJeep(
                     route: widget.route,
                   ),

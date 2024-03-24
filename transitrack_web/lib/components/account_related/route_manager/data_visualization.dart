@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/feedbacks_table.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/reports_table.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/shared_locations_page.dart';
@@ -9,9 +10,7 @@ import 'package:transitrack_web/style/style.dart';
 
 class DataVisualizationTab extends StatefulWidget {
   final RouteData route;
-  final ValueChanged<bool> hover;
-  const DataVisualizationTab(
-      {super.key, required this.route, required this.hover});
+  const DataVisualizationTab({super.key, required this.route});
 
   @override
   State<DataVisualizationTab> createState() => _DataVisualizationTabState();
@@ -19,32 +18,32 @@ class DataVisualizationTab extends StatefulWidget {
 
 class DataVisualizationMenuList {
   String menuName;
+  String? menuSubtitle;
   Widget menuWidget;
 
-  DataVisualizationMenuList({required this.menuName, required this.menuWidget});
+  DataVisualizationMenuList(
+      {required this.menuName, required this.menuWidget, this.menuSubtitle});
 }
 
 class _DataVisualizationTabState extends State<DataVisualizationTab> {
   late List<DataVisualizationMenuList> menuList = [
     DataVisualizationMenuList(
         menuName: "Feedbacks",
-        menuWidget: FeedbacksTable(
-          route: widget.route,
-          hover: (bool hover) {
-            widget.hover(hover);
-          },
+        menuWidget: PointerInterceptor(
+          child: FeedbacksTable(
+            route: widget.route,
+          ),
         )),
     DataVisualizationMenuList(
         menuName: "Reports",
-        menuWidget: ReportsTable(
-            route: widget.route,
-            isDispose: selected == 1,
-            hover: (bool hover) {
-              widget.hover(hover);
-            })),
+        menuWidget: PointerInterceptor(
+          child: ReportsTable(route: widget.route, isDispose: selected == 1),
+        )),
     DataVisualizationMenuList(
         menuName: "Shared Locations",
-        menuWidget: SharedLocationsPage(routeData: widget.route))
+        menuWidget: SharedLocationsPage(routeData: widget.route)),
+    DataVisualizationMenuList(
+        menuName: "PUV Locations", menuWidget: const SizedBox()),
   ];
 
   int selected = -1;
@@ -92,6 +91,9 @@ class _DataVisualizationTabState extends State<DataVisualizationTab> {
                       selectedColor: Constants.bgColor,
                       selectedTileColor: Color(widget.route.routeColor),
                       hoverColor: Colors.white.withOpacity(0.2),
+                      subtitle: menuList[index].menuSubtitle != null
+                          ? Text(menuList[index].menuSubtitle!)
+                          : null,
                       title: Text(menuList[index].menuName),
                       onTap: () {
                         if (selected == index) {

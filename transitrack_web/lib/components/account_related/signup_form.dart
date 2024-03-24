@@ -53,7 +53,6 @@ class _SignupFormState extends State<SignupForm> {
           account_email: emailController.text,
           account_name: nameController.text,
           account_type: AccountData.accountTypeMap[accountType]!,
-          is_operating: false,
           is_verified: false,
           route_id: -1
         );

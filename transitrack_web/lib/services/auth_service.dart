@@ -36,7 +36,6 @@ class AuthService {
         await userDocRef.set({
           'account_name': account.account_name,
           'account_email': user.email,
-          'is_operating': account.is_operating,
           'is_verified': account.is_verified,
           'account_type': account.account_type, // 0 - commuter acc, 1 - driver acc, 2 - operator acc
           'route_id': account.route_id

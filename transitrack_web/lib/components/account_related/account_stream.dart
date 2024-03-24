@@ -2,6 +2,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/account_related/account_settings.dart';
 import 'package:transitrack_web/style/style.dart';
 
@@ -11,20 +12,18 @@ import '../../style/constants.dart';
 import 'login_signup_form.dart';
 
 class AccountStream extends StatefulWidget {
-  final Function() hoverToggle;
   User? currentUser;
   AccountData? user;
   LatLng? deviceLoc;
   String? admin;
   int route;
-  AccountStream({super.key,
-    required this.hoverToggle,
-    required this.currentUser,
-    required this.user,
-    required this.deviceLoc,
-    this.admin,
-    required this.route
-  });
+  AccountStream(
+      {super.key,
+      required this.currentUser,
+      required this.user,
+      required this.deviceLoc,
+      this.admin,
+      required this.route});
 
   @override
   State<AccountStream> createState() => _AccountStreamState();
@@ -39,13 +38,12 @@ class _AccountStreamState extends State<AccountStream> {
         return Container(
             width: double.maxFinite,
             padding: const EdgeInsets.all(Constants.defaultPadding),
-            margin:  const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
+            margin: const EdgeInsets.symmetric(
+                horizontal: Constants.defaultPadding),
             decoration: BoxDecoration(
-              border: Border.all(
-                  width: 2,
-                  color: Colors.white
-              ),
-              borderRadius: const BorderRadius.all(Radius.circular(Constants.defaultPadding)),
+              border: Border.all(width: 2, color: Colors.white),
+              borderRadius: const BorderRadius.all(
+                  Radius.circular(Constants.defaultPadding)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,50 +53,42 @@ class _AccountStreamState extends State<AccountStream> {
                   children: [
                     Row(
                       children: [
-                        PrimaryText(text: widget.user!.account_name,
+                        PrimaryText(
+                            text: widget.user!.account_name,
                             color: Colors.white,
                             fontWeight: FontWeight.w700),
                         const SizedBox(width: Constants.defaultPadding / 2),
-
                         Icon(
-                          widget.user!.is_verified
-                            ? Icons.verified_user
-                            : Icons.remove_moderator,
-                          color: widget.user!.is_verified
-                            ? Colors.blue
-                            : Colors.grey,
-                            size: 15
-                        )
+                            widget.user!.is_verified
+                                ? Icons.verified_user
+                                : Icons.remove_moderator,
+                            color: widget.user!.is_verified
+                                ? Colors.blue
+                                : Colors.grey,
+                            size: 15)
                       ],
                     ),
                     GestureDetector(
                         onTap: () async {
-                          if (Responsive.isDesktop(context)) {widget.hoverToggle();}
                           AwesomeDialog(
                             width: 500,
                             context: context,
                             dialogType: DialogType.noHeader,
-                            body: AccountSettings(
-                                user: widget.currentUser!, account: widget.user!
+                            body: PointerInterceptor(
+                              child: AccountSettings(
+                                  user: widget.currentUser!,
+                                  account: widget.user!),
                             ),
-                          ).show().then((value) {
-                            if (Responsive.isDesktop(context)) {widget.hoverToggle();}
-                          }
-                          );
+                          ).show();
                         },
-                        child: const Icon(Icons.settings, color: Colors.white)
-                    )
+                        child: const Icon(Icons.settings, color: Colors.white))
                   ],
                 ),
-                Text("${widget.admin}${AccountData.accountType[widget.user!.account_type]}", maxLines: 1, overflow: TextOverflow.ellipsis),
-
-                if (widget.user!.account_type == 1)
-                  Text(widget.user!.is_operating
-                      ? 'Operating'
-                      : 'Not Operating'),
-
+                Text(
+                    "${widget.admin}${AccountData.accountType[widget.user!.account_type]}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
                 const SizedBox(height: Constants.defaultPadding),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -113,18 +103,18 @@ class _AccountStreamState extends State<AccountStream> {
                           children: [
                             Icon(Icons.logout, color: Colors.white),
                             SizedBox(width: Constants.defaultPadding),
-                            Text('Logout',
+                            Text(
+                              'Logout',
                               style: TextStyle(color: Colors.white),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,)
-                          ]
-                      ),
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          ]),
                     ),
                   ],
                 ),
               ],
-            )
-        );
+            ));
       } else {
         return const Center(child: CircularProgressIndicator());
       }
@@ -135,49 +125,52 @@ class _AccountStreamState extends State<AccountStream> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Expanded(
-            child: GestureDetector(
-              onTap: () async {
-                setState(() {
-                  AwesomeDialog(
-                    width: 500,
-                    context: context,
-                    dialogType: DialogType.noHeader,
-                    body: const LoginSignupForm()
-                  ).show();
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.all(Constants.defaultPadding),
-                margin:  const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      width: 2,
-                      color: Colors.white
-                  ),
-                  borderRadius: const BorderRadius.all(Radius.circular(Constants.defaultPadding)),
-                ),
-                child: const Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: GestureDetector(
+                  onTap: () async {
+                    setState(() {
+                      AwesomeDialog(
+                              width: 500,
+                              context: context,
+                              dialogType: DialogType.noHeader,
+                              body: PointerInterceptor(
+                                  child: const LoginSignupForm()))
+                          .show();
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(Constants.defaultPadding),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: Constants.defaultPadding),
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 2, color: Colors.white),
+                      borderRadius: const BorderRadius.all(
+                          Radius.circular(Constants.defaultPadding)),
+                    ),
+                    child: const Column(
                       children: [
-                        Expanded(
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Icon(Icons.account_box, color: Colors.white),
-                                SizedBox(width: Constants.defaultPadding),
-                                Text('Login/Sign Up', style: TextStyle(color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis,)
-                              ]
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Icon(Icons.account_box,
+                                        color: Colors.white),
+                                    SizedBox(width: Constants.defaultPadding),
+                                    Text(
+                                      'Login/Sign Up',
+                                      style: TextStyle(color: Colors.white),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    )
+                                  ]),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-              )
-            )
-          )
+                  )))
         ],
       );
     }

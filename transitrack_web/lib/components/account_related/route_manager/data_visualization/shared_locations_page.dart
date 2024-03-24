@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/scroller_widget.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/shared_locations_map.dart';
 import 'package:transitrack_web/models/ping_model.dart';
@@ -42,7 +43,6 @@ class _SharedLocationsPageState extends State<SharedLocationsPage> {
   late int hourBoundEnd;
   late List<int> selectedDays;
 
-  bool isHover = false;
   bool mapLoaded = false;
 
   List<DayWidgetClass> dayWidgetClass = [
@@ -70,12 +70,6 @@ class _SharedLocationsPageState extends State<SharedLocationsPage> {
     });
     scanDays();
     fetchPingData();
-  }
-
-  void hover(bool value) {
-    setState(() {
-      isHover = value;
-    });
   }
 
   void boundPings() {
@@ -137,7 +131,6 @@ class _SharedLocationsPageState extends State<SharedLocationsPage> {
             SharedLocationsMap(
                 routeData: widget.routeData,
                 pings: boundedPings,
-                isHover: isHover,
                 mapLoaded: (bool value) {
                   setState(() {
                     mapLoaded = value;
@@ -146,9 +139,7 @@ class _SharedLocationsPageState extends State<SharedLocationsPage> {
             Positioned(
               top: Constants.defaultPadding,
               right: Constants.defaultPadding,
-              child: MouseRegion(
-                onEnter: (_) => hover(true),
-                onExit: (_) => hover(false),
+              child: PointerInterceptor(
                 child: Container(
                   padding: const EdgeInsets.all(Constants.defaultPadding),
                   width: 350,

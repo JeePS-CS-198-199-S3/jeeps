@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/filters.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/reports_map.dart';
 import 'package:transitrack_web/models/account_model.dart';
@@ -15,12 +16,7 @@ import 'package:transitrack_web/style/constants.dart';
 class ReportsTable extends StatefulWidget {
   final RouteData route;
   final bool isDispose;
-  final ValueChanged<bool> hover;
-  const ReportsTable(
-      {super.key,
-      required this.route,
-      required this.hover,
-      required this.isDispose});
+  const ReportsTable({super.key, required this.route, required this.isDispose});
 
   @override
   State<ReportsTable> createState() => _ReportsTableState();
@@ -138,31 +134,18 @@ class _ReportsTableState extends State<ReportsTable> {
                               dialogType: DialogType.noHeader,
                               context: (context),
                               width: 500,
-                              body: MouseRegion(
-                                  onEnter: (_) {
-                                    widget.hover(true);
-                                    setState(() {
-                                      isHover = true;
-                                    });
-                                  },
-                                  onExit: (_) {
-                                    widget.hover(false);
-                                    setState(() {
-                                      isHover = false;
-                                    });
-                                  },
+                              body: PointerInterceptor(
                                   child: Filters(
-                                    route: widget.route,
-                                    dropdownList:
-                                        FilterParameters.reportsOrderBy,
-                                    oldFilter: orderBy,
-                                    newFilter: (FilterParameters newFilter) {
-                                      setState(() {
-                                        orderBy = newFilter;
-                                      });
-                                      loadReports();
-                                    },
-                                  )),
+                                route: widget.route,
+                                dropdownList: FilterParameters.reportsOrderBy,
+                                oldFilter: orderBy,
+                                newFilter: (FilterParameters newFilter) {
+                                  setState(() {
+                                    orderBy = newFilter;
+                                  });
+                                  loadReports();
+                                },
+                              )),
                             ).show(),
                             icon: const Icon(Icons.filter_list),
                           )

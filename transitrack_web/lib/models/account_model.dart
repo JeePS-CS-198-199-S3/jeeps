@@ -8,7 +8,6 @@ class AccountData {
   String account_email;
   String account_name;
   int account_type;
-  bool is_operating;
   bool is_verified;
   int route_id;
   String? jeep_driving;
@@ -17,7 +16,6 @@ class AccountData {
       {required this.account_email,
       required this.account_name,
       required this.account_type,
-      required this.is_operating,
       required this.is_verified,
       required this.route_id,
       this.jeep_driving});
@@ -28,7 +26,6 @@ class AccountData {
     String account_email = data['account_email'];
     String account_name = data['account_name'];
     int account_type = data['account_type'];
-    bool is_operating = data['is_operating'] as bool;
     bool is_verified = data['is_verified'] as bool;
     int route_id = data['route_id'];
     String? jeep_driving = data['jeep_driving'] ?? null;
@@ -37,7 +34,6 @@ class AccountData {
         account_email: account_email,
         account_name: account_name,
         account_type: account_type,
-        is_operating: is_operating,
         is_verified: is_verified,
         route_id: route_id,
         jeep_driving: jeep_driving);

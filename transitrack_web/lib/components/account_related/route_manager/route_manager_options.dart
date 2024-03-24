@@ -1,5 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization.dart';
 import 'package:transitrack_web/components/account_related/route_manager/route_coordinates_settings.dart';
 import 'package:transitrack_web/components/account_related/route_manager/route_properties_settings.dart';
@@ -11,14 +12,12 @@ import '../../../models/jeep_model.dart';
 class RouteManagerOptions extends StatefulWidget {
   final RouteData route;
   final List<JeepsAndDrivers> jeeps;
-  final ValueChanged<bool> hover;
   final ValueChanged<int> coordConfig;
   final ValueChanged<JeepsAndDrivers> pressedJeep;
   RouteManagerOptions(
       {super.key,
       required this.route,
       required this.jeeps,
-      required this.hover,
       required this.pressedJeep,
       required this.coordConfig});
 
@@ -32,9 +31,7 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => widget.hover(true),
-      onExit: (_) => widget.hover(false),
+    return PointerInterceptor(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -67,15 +64,8 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
                         AwesomeDialog(
                           dialogType: DialogType.noHeader,
                           context: (context),
-                          body: MouseRegion(
-                            onEnter: (_) => widget.hover(true),
-                            onExit: (_) => widget.hover(false),
-                            child: DataVisualizationTab(
-                              route: widget.route,
-                              hover: (bool hover) {
-                                widget.hover(hover);
-                              },
-                            ),
+                          body: PointerInterceptor(
+                            child: DataVisualizationTab(route: widget.route),
                           ),
                         ).show();
                       },
@@ -188,11 +178,9 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
           if (selected == 0)
             SizedBox(
               height: 250,
-              child: PropertiesSettings(
-                  route: widget.route,
-                  hover: (bool value) {
-                    widget.hover(value);
-                  }),
+              child: PointerInterceptor(
+                child: PropertiesSettings(route: widget.route),
+              ),
             ),
           if (selected == 1)
             CoordinatesSettings(
@@ -215,9 +203,6 @@ class _RouteManagerOptionsState extends State<RouteManagerOptions> {
                     jeeps: widget.jeeps,
                     pressedJeep: (JeepsAndDrivers jeep) {
                       widget.pressedJeep(jeep);
-                    },
-                    isHover: (bool value) {
-                      widget.hover(value);
                     }),
               ),
             )

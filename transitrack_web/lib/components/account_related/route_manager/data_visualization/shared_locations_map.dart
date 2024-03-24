@@ -9,13 +9,11 @@ import 'package:transitrack_web/services/int_to_hex.dart';
 class SharedLocationsMap extends StatefulWidget {
   final RouteData routeData;
   final List<PingData>? pings;
-  final bool isHover;
   final ValueChanged<bool> mapLoaded;
   const SharedLocationsMap(
       {super.key,
       required this.routeData,
       required this.pings,
-      required this.isHover,
       required this.mapLoaded});
 
   @override
@@ -26,7 +24,6 @@ class _SharedLocationsMapState extends State<SharedLocationsMap> {
   late List<PingData>? _pings;
 
   late MapboxMapController _mapController;
-  late bool _isHover;
   bool mapLoaded = false;
 
   @override
@@ -35,7 +32,6 @@ class _SharedLocationsMapState extends State<SharedLocationsMap> {
 
     setState(() {
       _pings = widget.pings;
-      _isHover = widget.isHover;
     });
   }
 
@@ -104,12 +100,6 @@ class _SharedLocationsMapState extends State<SharedLocationsMap> {
         _mapController.setGeoJsonSource("pings", listToGeoJSON(_pings ?? []));
       }
     }
-
-    if (_isHover != widget.isHover) {
-      setState(() {
-        _isHover = widget.isHover;
-      });
-    }
   }
 
   @override
@@ -126,10 +116,6 @@ class _SharedLocationsMapState extends State<SharedLocationsMap> {
       doubleClickZoomEnabled: false,
       minMaxZoomPreference: MinMaxZoomPreference(mapMinZoom, mapMaxZoom),
       compassEnabled: true,
-      scrollGesturesEnabled: !_isHover,
-      zoomGesturesEnabled: !_isHover,
-      rotateGesturesEnabled: !_isHover,
-      tiltGesturesEnabled: !_isHover,
       compassViewPosition: CompassViewPosition.TopLeft,
       onMapCreated: (controller) {
         _mapController = controller;

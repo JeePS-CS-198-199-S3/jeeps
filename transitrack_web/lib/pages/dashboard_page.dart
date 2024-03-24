@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:provider/provider.dart';
 import '../MenuController.dart';
 
@@ -220,55 +221,56 @@ class _DashboardState extends State<Dashboard> {
         });
       },
       key: context.read<MenuControllers>().scaffoldKey,
-      drawer: Drawer(
-          shape: const Border(),
-          elevation: 0.0,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const DrawerHeader(child: Logo()),
-                if (!mapLoaded || _routes.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(
-                        vertical: Constants.defaultPadding),
-                    child: Center(
-                      child: CircularProgressIndicator(),
+      drawer: PointerInterceptor(
+        child: Drawer(
+            shape: const Border(),
+            elevation: 0.0,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const DrawerHeader(child: Logo()),
+                  if (!mapLoaded || _routes.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: Constants.defaultPadding),
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
+                  if (mapLoaded && _routes.isNotEmpty)
+                    RouteList(
+                        routeChoice: routeChoice,
+                        routes: _routes,
+                        user: currentUserFirestore,
+                        newRouteChoice: (int choice) {
+                          if (routeChoice == choice) {
+                            switchRoute(-1);
+                          } else {
+                            switchRoute(choice);
+                          }
+                        },
+                        hoverToggle: hovering),
+                  Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: Constants.defaultPadding),
+                      child: const Divider()),
+                  const SizedBox(height: Constants.defaultPadding),
+                  AccountStream(
+                    currentUser: currentUserAuth,
+                    user: currentUserFirestore,
+                    deviceLoc: deviceLoc,
+                    admin: currentUserFirestore != null &&
+                            currentUserFirestore!.is_verified &&
+                            currentUserFirestore!.route_id >= 0
+                        ? "${_routes[currentUserFirestore!.route_id].routeName} "
+                        : "",
+                    route: routeChoice,
                   ),
-                if (mapLoaded && _routes.isNotEmpty)
-                  RouteList(
-                      routeChoice: routeChoice,
-                      routes: _routes,
-                      user: currentUserFirestore,
-                      newRouteChoice: (int choice) {
-                        if (routeChoice == choice) {
-                          switchRoute(-1);
-                        } else {
-                          switchRoute(choice);
-                        }
-                      },
-                      hoverToggle: hovering),
-                Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: Constants.defaultPadding),
-                    child: const Divider()),
-                const SizedBox(height: Constants.defaultPadding),
-                AccountStream(
-                  hoverToggle: hovering,
-                  currentUser: currentUserAuth,
-                  user: currentUserFirestore,
-                  deviceLoc: deviceLoc,
-                  admin: currentUserFirestore != null &&
-                          currentUserFirestore!.is_verified &&
-                          currentUserFirestore!.route_id >= 0
-                      ? "${_routes[currentUserFirestore!.route_id].routeName} "
-                      : "",
-                  route: routeChoice,
-                ),
-                const SizedBox(height: Constants.defaultPadding)
-              ],
-            ),
-          )),
+                  const SizedBox(height: Constants.defaultPadding)
+                ],
+              ),
+            )),
+      ),
       body: SafeArea(
         child: Row(
           children: [
@@ -311,7 +313,6 @@ class _DashboardState extends State<Dashboard> {
                             child: const Divider()),
                         const SizedBox(height: Constants.defaultPadding),
                         AccountStream(
-                          hoverToggle: hovering,
                           currentUser: currentUserAuth,
                           user: currentUserFirestore,
                           deviceLoc: deviceLoc,
@@ -331,7 +332,6 @@ class _DashboardState extends State<Dashboard> {
               flex: 5,
               child: Stack(children: [
                 MapWidget(
-                  isDrawer: drawerOpen,
                   route: routeChoice == -1 ? null : _routes[routeChoice],
                   jeeps: routeChoice == -1 ? null : jeeps,
                   foundDeviceLocation: (LatLng newDeviceLocation) {

@@ -163,7 +163,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
                     color: index < _drivingRating
                         ? Color(widget.route.routeColor)
                         : Colors.grey,
-                    size: 40,
+                    size: 30,
                   ),
                   onPressed: () {
                     if (_drivingRating == index + 1) {
@@ -187,7 +187,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
                   icon: const Icon(
                     Icons.star_border,
                     color: Colors.grey,
-                    size: 40,
+                    size: 30,
                   ),
                   onPressed: () {
                     setState(() {
@@ -209,7 +209,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
                     color: index < _jeepRating
                         ? Color(widget.route.routeColor)
                         : Colors.grey,
-                    size: 40,
+                    size: 30,
                   ),
                   onPressed: () {
                     if (_jeepRating == index + 1) {
@@ -233,7 +233,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
                   icon: const Icon(
                     Icons.star_border,
                     color: Colors.grey,
-                    size: 40,
+                    size: 30,
                   ),
                   onPressed: () {
                     setState(() {

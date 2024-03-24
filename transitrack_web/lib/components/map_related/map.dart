@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/services/int_to_hex.dart';
 
 import '../../config/keys.dart';
@@ -25,7 +26,6 @@ import '../right_panel/mobile_dashboard_unselected.dart';
 import '../right_panel/mobile_route_info.dart';
 
 class MapWidget extends StatefulWidget {
-  final bool isDrawer;
   final RouteData? route;
   final List<JeepsAndDrivers>? jeeps;
   final AccountData? currentUserFirestore;
@@ -33,7 +33,6 @@ class MapWidget extends StatefulWidget {
   final ValueChanged<bool> mapLoaded;
   const MapWidget(
       {Key? key,
-      required this.isDrawer,
       required this.route,
       required this.jeeps,
       required this.currentUserFirestore,
@@ -79,8 +78,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   List<Circle> circles = [];
   List<Line> lines = [];
   List<JeepEntity> jeepEntities = [];
-
-  bool isHover = false;
 
   JeepEntity? selectedJeep;
 
@@ -533,10 +530,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                 doubleClickZoomEnabled: false,
                 minMaxZoomPreference:
                     MinMaxZoomPreference(mapMinZoom, mapMaxZoom),
-                scrollGesturesEnabled: !widget.isDrawer && !isHover,
-                zoomGesturesEnabled: !widget.isDrawer && !isHover,
-                rotateGesturesEnabled: !widget.isDrawer && !isHover,
-                tiltGesturesEnabled: !widget.isDrawer && !isHover,
                 compassEnabled: true,
                 compassViewPosition: Responsive.isDesktop(context)
                     ? CompassViewPosition.BottomLeft
@@ -558,7 +551,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                   zoom: mapStartZoom,
                 ),
                 onMapClick: (point, latLng) {
-                  if (_configRoute == 1 && !widget.isDrawer && !isHover) {
+                  if (_configRoute == 1) {
                     setRoute.add(latLng);
 
                     addPoints();
@@ -610,11 +603,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                               ]).then((value) => etaCoords = value);
                             }
                           },
-                          isHover: (bool value) {
-                            setState(() {
-                              isHover = value;
-                            });
-                          },
                           myLocation: myLocation))
           ]),
           if (Responsive.isDesktop(context))
@@ -624,23 +612,11 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                 child: Column(
                   children: [
                     if (widget.route == null)
-                      MouseRegion(
-                          onEnter: (_) => setState(() {
-                                isHover = true;
-                              }),
-                          onExit: (_) => setState(() {
-                                isHover = false;
-                              }),
+                      PointerInterceptor(
                           child: const UnselectedDesktopRouteInfo()),
 
                     if (widget.route != null)
-                      MouseRegion(
-                        onEnter: (_) => setState(() {
-                          isHover = true;
-                        }),
-                        onExit: (_) => setState(() {
-                          isHover = false;
-                        }),
+                      PointerInterceptor(
                         child: DesktopRouteInfo(
                           route: _value!,
                           jeeps: jeeps!,
@@ -675,11 +651,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                                     lineWidth: 2.0)
                               ]).then((value) => etaCoords = value);
                             }
-                          },
-                          isHover: (bool value) {
-                            setState(() {
-                              isHover = value;
-                            });
                           },
                           myLocation: myLocation,
                         ),
@@ -718,11 +689,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                                           searchedJeep.jeep.location.latitude,
                                           searchedJeep.jeep.location.longitude),
                                       mapStartZoom));
-                            },
-                            hover: (bool hover) {
-                              setState(() {
-                                isHover = hover;
-                              });
                             },
                             coordConfig: (int coordConfig) {
                               int prev = _configRoute;

@@ -13,14 +13,12 @@ import '../../services/eta.dart';
 import '../select_jeep_prompt.dart';
 import '../../components/cooldown_button.dart';
 import '../../services/send_ping.dart';
-import '../../models/ping_model.dart';
 
 class DesktopRouteInfo extends StatefulWidget {
   final RouteData route;
   final List<JeepsAndDrivers> jeeps;
   final JeepsAndDrivers? selectedJeep;
   final AccountData? user;
-  final ValueChanged<bool> isHover;
   final ValueChanged<bool> sendPing;
   final ValueChanged<List<LatLng>> etaCoordinates;
   final LatLng? myLocation;
@@ -30,7 +28,6 @@ class DesktopRouteInfo extends StatefulWidget {
       required this.user,
       required this.jeeps,
       required this.selectedJeep,
-      required this.isHover,
       required this.etaCoordinates,
       required this.sendPing,
       required this.myLocation});
@@ -314,10 +311,7 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
                     jeep: _selectedJeep!,
                     eta: _eta,
                     user: widget.user,
-                    route: _value,
-                    isHover: (bool value) {
-                      widget.isHover(value);
-                    }),
+                    route: _value),
             ])
           ])
         ],

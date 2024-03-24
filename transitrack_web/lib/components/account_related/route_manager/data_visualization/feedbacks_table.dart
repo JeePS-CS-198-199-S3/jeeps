@@ -2,6 +2,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/filters.dart';
 import 'package:transitrack_web/components/left_drawer/logo.dart';
 import 'package:transitrack_web/models/account_model.dart';
@@ -12,8 +13,7 @@ import 'package:transitrack_web/style/constants.dart';
 
 class FeedbacksTable extends StatefulWidget {
   final RouteData route;
-  final ValueChanged<bool> hover;
-  const FeedbacksTable({super.key, required this.route, required this.hover});
+  const FeedbacksTable({super.key, required this.route});
 
   @override
   State<FeedbacksTable> createState() => _FeedbacksTableState();
@@ -115,21 +115,18 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                               dialogType: DialogType.noHeader,
                               context: (context),
                               width: 500,
-                              body: MouseRegion(
-                                  onEnter: (_) => widget.hover(true),
-                                  onExit: (_) => widget.hover(false),
+                              body: PointerInterceptor(
                                   child: Filters(
-                                    route: widget.route,
-                                    dropdownList:
-                                        FilterParameters.feedbacksOrderBy,
-                                    oldFilter: orderBy,
-                                    newFilter: (FilterParameters newFilter) {
-                                      setState(() {
-                                        orderBy = newFilter;
-                                      });
-                                      loadFeedbacks();
-                                    },
-                                  )),
+                                route: widget.route,
+                                dropdownList: FilterParameters.feedbacksOrderBy,
+                                oldFilter: orderBy,
+                                newFilter: (FilterParameters newFilter) {
+                                  setState(() {
+                                    orderBy = newFilter;
+                                  });
+                                  loadFeedbacks();
+                                },
+                              )),
                             ).show(),
                             icon: const Icon(Icons.filter_list),
                           )
