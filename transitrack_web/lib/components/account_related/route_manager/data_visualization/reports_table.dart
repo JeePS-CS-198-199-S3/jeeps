@@ -251,6 +251,12 @@ class _ReportsTableState extends State<ReportsTable> {
                     isDispose: widget.isDispose,
                     reportData: reports ?? [],
                     selectedReport: selectedReport,
+                    selectedFromMap: (ReportData selectedReportFromMap) =>
+                        select(
+                            reports!.indexWhere((element) =>
+                                element.report_id ==
+                                selectedReportFromMap.report_id),
+                            selectedReportFromMap),
                     mapLoaded: (bool value) {
                       setState(() {
                         mapLoaded = value;

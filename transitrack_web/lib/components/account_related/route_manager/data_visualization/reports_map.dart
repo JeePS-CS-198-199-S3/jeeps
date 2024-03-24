@@ -12,6 +12,7 @@ class ReportsMap extends StatefulWidget {
   final List<ReportData> reportData;
   final ReportData? selectedReport;
   final VoidCallback deselect;
+  final ValueChanged<ReportData> selectedFromMap;
   const ReportsMap(
       {super.key,
       required this.isHover,
@@ -19,6 +20,7 @@ class ReportsMap extends StatefulWidget {
       required this.mapLoaded,
       required this.selectedReport,
       required this.deselect,
+      required this.selectedFromMap,
       required this.reportData});
 
   @override
@@ -97,6 +99,38 @@ class _ReportsMapState extends State<ReportsMap> {
     }
   }
 
+  void onCircleTapped(Circle pressedCircle) {
+    if (selectedReport != null && selectedReport!.report_type > 0) {
+      if (pressedCircle ==
+          reportEntities
+              .firstWhere((element) =>
+                  element.reportData.report_id == selectedReport!.report_id)
+              .reportCircle) {
+        widget.deselect();
+        _mapController.updateCircle(
+            pressedCircle, const CircleOptions(circleStrokeWidth: 0));
+      } else {
+        _mapController.updateCircle(
+            reportEntities
+                .firstWhere((element) =>
+                    element.reportData.report_id == selectedReport!.report_id)
+                .reportCircle,
+            const CircleOptions(circleStrokeWidth: 0));
+        _mapController.updateCircle(
+            pressedCircle, const CircleOptions(circleStrokeWidth: 2));
+        widget.selectedFromMap(reportEntities
+            .firstWhere((element) => element.reportCircle == pressedCircle)
+            .reportData);
+      }
+    } else {
+      _mapController.updateCircle(
+          pressedCircle, const CircleOptions(circleStrokeWidth: 2));
+      widget.selectedFromMap(reportEntities
+          .firstWhere((element) => element.reportCircle == pressedCircle)
+          .reportData);
+    }
+  }
+
   void showReportData() {
     if (reportEntities.isNotEmpty) {
       _mapController.clearCircles().then((value) => reportEntities.clear());
@@ -139,6 +173,7 @@ class _ReportsMapState extends State<ReportsMap> {
       compassViewPosition: CompassViewPosition.TopLeft,
       onMapCreated: (controller) {
         _mapController = controller;
+        _mapController.onCircleTapped.add(onCircleTapped);
       },
       onStyleLoadedCallback: () async {
         widget.mapLoaded(true);
