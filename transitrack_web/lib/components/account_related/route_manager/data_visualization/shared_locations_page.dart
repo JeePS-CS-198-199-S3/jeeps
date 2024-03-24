@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:transitrack_web/components/account_related/route_manager/data_visualization/scroller_widget.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/shared_locations_map.dart';
 import 'package:transitrack_web/models/ping_model.dart';
 import 'package:transitrack_web/models/route_model.dart';
@@ -14,6 +15,21 @@ class SharedLocationsPage extends StatefulWidget {
   State<SharedLocationsPage> createState() => _SharedLocationsPageState();
 }
 
+class DayWidgetClass {
+  String day;
+  bool enabled;
+
+  DayWidgetClass({required this.day, required this.enabled});
+
+  toggle() {
+    enabled = !enabled;
+  }
+
+  reset() {
+    enabled = true;
+  }
+}
+
 class _SharedLocationsPageState extends State<SharedLocationsPage> {
   late List<PingData>? pings;
   late List<PingData>? boundedPings;
@@ -22,9 +38,22 @@ class _SharedLocationsPageState extends State<SharedLocationsPage> {
 
   late Timestamp? startBound;
   late Timestamp? endBound;
+  late int hourBoundStart;
+  late int hourBoundEnd;
+  late List<int> selectedDays;
 
   bool isHover = false;
   bool mapLoaded = false;
+
+  List<DayWidgetClass> dayWidgetClass = [
+    DayWidgetClass(day: "M", enabled: true),
+    DayWidgetClass(day: "T", enabled: true),
+    DayWidgetClass(day: "W", enabled: true),
+    DayWidgetClass(day: "Th", enabled: true),
+    DayWidgetClass(day: "F", enabled: true),
+    DayWidgetClass(day: "Sa", enabled: true),
+    DayWidgetClass(day: "Su", enabled: true),
+  ];
 
   @override
   void initState() {
@@ -36,7 +65,10 @@ class _SharedLocationsPageState extends State<SharedLocationsPage> {
       latest = null;
       startBound = null;
       endBound = null;
+      hourBoundStart = 0;
+      hourBoundEnd = 24;
     });
+    scanDays();
     fetchPingData();
   }
 
@@ -44,6 +76,33 @@ class _SharedLocationsPageState extends State<SharedLocationsPage> {
     setState(() {
       isHover = value;
     });
+  }
+
+  void boundPings() {
+    setState(() {
+      boundedPings = pings!
+          .where((ping) =>
+              ping.ping_timestamp.seconds >= startBound!.seconds &&
+              ping.ping_timestamp.seconds <= endBound!.seconds &&
+              ping.ping_timestamp.toDate().hour >= hourBoundStart &&
+              ping.ping_timestamp.toDate().hour <= hourBoundEnd &&
+              selectedDays.contains(ping.ping_timestamp.toDate().weekday))
+          .toList();
+    });
+  }
+
+  void scanDays() {
+    selectedDays = dayWidgetClass
+        .asMap()
+        .entries
+        .where((day) => day.value.enabled)
+        .map((entry) => entry.key + 1)
+        .toList();
+  }
+
+  void toggleDays(int index) {
+    dayWidgetClass[index].toggle();
+    scanDays();
   }
 
   void fetchPingData() async {
@@ -59,13 +118,14 @@ class _SharedLocationsPageState extends State<SharedLocationsPage> {
       pings = querySnapshot.docs.map((DocumentSnapshot document) {
         return PingData.fromFirestore(document);
       }).toList();
-      boundedPings = pings;
       earliest = pings!.last.ping_timestamp;
       latest = pings!.first.ping_timestamp;
 
       startBound = earliest!;
       endBound = latest!;
     });
+
+    boundPings();
   }
 
   @override
@@ -96,24 +156,61 @@ class _SharedLocationsPageState extends State<SharedLocationsPage> {
                       color: Constants.bgColor,
                       borderRadius:
                           BorderRadius.circular(Constants.defaultPadding / 2)),
-                  child: (mapLoaded && earliest != null && latest != null)
+                  child: (mapLoaded &&
+                          pings != null &&
+                          earliest != null &&
+                          latest != null)
                       ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SharedLocationsDateScrollerWidget(
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: List.generate(
+                                    dayWidgetClass.length,
+                                    (index) => IconButton(
+                                        onPressed: () {
+                                          toggleDays(index);
+                                          boundPings();
+                                        },
+                                        icon: Container(
+                                          width: 29,
+                                          height: 29,
+                                          decoration: BoxDecoration(
+                                              color:
+                                                  dayWidgetClass[index].enabled
+                                                      ? Color(widget
+                                                          .routeData.routeColor)
+                                                      : Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(50)),
+                                          child: Center(
+                                              child: Text(
+                                                  dayWidgetClass[index].day,
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color:
+                                                          dayWidgetClass[index]
+                                                                  .enabled
+                                                              ? Colors.black
+                                                              : Colors.white))),
+                                        )))),
+                            const SizedBox(height: Constants.defaultPadding),
+                            ScrollerWidget(
                               routeData: widget.routeData,
-                              earliest: earliest!,
-                              latest: latest!,
-                              bounds: (List<Timestamp> bounds) {
+                              earliest: earliest!.millisecondsSinceEpoch,
+                              latest: latest!.millisecondsSinceEpoch,
+                              divisions: -1,
+                              bounds: (List<int> bounds) {
                                 setState(() {
-                                  startBound = bounds[0];
-                                  endBound = bounds[1];
-                                  boundedPings = pings!
-                                      .where((ping) =>
-                                          ping.ping_timestamp.seconds >=
-                                              startBound!.seconds &&
-                                          ping.ping_timestamp.seconds <=
-                                              endBound!.seconds)
-                                      .toList();
+                                  startBound =
+                                      Timestamp.fromMillisecondsSinceEpoch(
+                                          bounds[0]);
+                                  endBound =
+                                      Timestamp.fromMillisecondsSinceEpoch(
+                                          bounds[1]);
+                                  boundPings();
                                 });
                               },
                             ),
@@ -125,7 +222,72 @@ class _SharedLocationsPageState extends State<SharedLocationsPage> {
                                 Text(DateFormat('MMM d')
                                     .format(endBound!.toDate())),
                               ],
-                            )
+                            ),
+                            const SizedBox(height: Constants.defaultPadding),
+                            ScrollerWidget(
+                              routeData: widget.routeData,
+                              earliest: 0,
+                              latest: 24,
+                              divisions: 24,
+                              bounds: (List<int> bounds) {
+                                setState(() {
+                                  hourBoundStart = bounds[0];
+                                  hourBoundEnd = bounds[1];
+                                });
+
+                                boundPings();
+                              },
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                    "${hourBoundStart == 0 ? 12 : (hourBoundStart > 12 ? hourBoundStart % 12 : hourBoundStart)}:00 ${hourBoundStart >= 12 ? "PM" : "AM"}"),
+                                Text(
+                                    "${hourBoundEnd == 24 ? 12 : (hourBoundEnd > 12 ? hourBoundEnd % 12 : hourBoundEnd)}:00 ${hourBoundEnd >= 12 && hourBoundEnd != 24 ? "PM" : "AM"}"),
+                              ],
+                            ),
+                            const Divider(color: Colors.white),
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                          onPressed: () =>
+                                              downloadPingDataAsCSV(
+                                                  boundedPings!,
+                                                  widget.routeData),
+                                          icon: const Icon(Icons.download)),
+                                      const SizedBox(
+                                          width: Constants.defaultPadding / 2),
+                                      Text(
+                                          "Showing ${boundedPings!.length} results."),
+                                    ],
+                                  ),
+                                  IconButton(
+                                      onPressed: () {
+                                        for (DayWidgetClass day
+                                            in dayWidgetClass) {
+                                          day.reset();
+                                        }
+
+                                        scanDays();
+                                        setState(() {
+                                          pings = null;
+                                          boundedPings = null;
+                                          earliest = null;
+                                          latest = null;
+                                          startBound = null;
+                                          endBound = null;
+                                          hourBoundStart = 0;
+                                          hourBoundEnd = 24;
+                                        });
+                                        fetchPingData();
+                                      },
+                                      icon: const Icon(Icons.refresh))
+                                ]),
                           ],
                         )
                       : Center(
@@ -137,73 +299,5 @@ class _SharedLocationsPageState extends State<SharedLocationsPage> {
             )
           ],
         ));
-  }
-}
-
-class SharedLocationsDateScrollerWidget extends StatefulWidget {
-  final RouteData routeData;
-  final Timestamp earliest;
-  final Timestamp latest;
-  final ValueChanged<List<Timestamp>> bounds;
-  const SharedLocationsDateScrollerWidget(
-      {super.key,
-      required this.routeData,
-      required this.earliest,
-      required this.latest,
-      required this.bounds});
-
-  @override
-  State<SharedLocationsDateScrollerWidget> createState() =>
-      _SharedLocationsDateScrollerWidgetState();
-}
-
-class _SharedLocationsDateScrollerWidgetState
-    extends State<SharedLocationsDateScrollerWidget> {
-  late int _startValue;
-  late int _endValue;
-
-  @override
-  void initState() {
-    super.initState();
-    setState(() {
-      _startValue = widget.earliest.millisecondsSinceEpoch;
-      _endValue = widget.latest.millisecondsSinceEpoch;
-    });
-  }
-
-  int _calculateDaysDifference(Timestamp timestamp1, Timestamp timestamp2) {
-    DateTime dateTime1 =
-        DateTime.fromMillisecondsSinceEpoch(timestamp1.seconds * 1000);
-    DateTime dateTime2 =
-        DateTime.fromMillisecondsSinceEpoch(timestamp2.seconds * 1000);
-
-    Duration difference = dateTime2.difference(dateTime1);
-
-    return difference.inDays;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return RangeSlider(
-      values: RangeValues(_startValue.toDouble(), _endValue.toDouble()),
-      min: widget.earliest.millisecondsSinceEpoch.toDouble(),
-      max: widget.latest.millisecondsSinceEpoch.toDouble(),
-      divisions: _calculateDaysDifference(widget.earliest, widget.latest),
-      activeColor: Color(widget.routeData.routeColor),
-      inactiveColor: Color(widget.routeData.routeColor).withOpacity(0.2),
-      onChanged: (RangeValues values) {
-        setState(() {
-          if (values.start.toInt() < values.end.toInt() - 86400) {
-            _startValue = values.start.toInt();
-            _endValue = values.end.toInt();
-          }
-
-          widget.bounds([
-            Timestamp.fromMillisecondsSinceEpoch(_startValue),
-            Timestamp.fromMillisecondsSinceEpoch(_endValue)
-          ]);
-        });
-      },
-    );
   }
 }
