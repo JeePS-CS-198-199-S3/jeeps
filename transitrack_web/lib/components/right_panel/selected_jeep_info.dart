@@ -98,8 +98,14 @@ class _SelectedJeepInfoState extends State<SelectedJeepInfo> {
               ),
               Row(
                 children: [
+                  if (_jeep.jeep.passenger_count != -2)
                   Text(
-                      "${_jeep.jeep.passenger_count}/${_jeep.jeep.max_capacity}"),
+                      _jeep.jeep.passenger_count == -1
+                      ? "Available"
+                      : _jeep.jeep.passenger_count == _jeep.jeep.max_capacity
+                        ? "Full"
+                        : "${_jeep.jeep.passenger_count}/${_jeep.jeep.max_capacity}"),
+                  if (_jeep.jeep.passenger_count != -2)
                   const SizedBox(width: Constants.defaultPadding / 2),
                   GestureDetector(
                       onTap: () {

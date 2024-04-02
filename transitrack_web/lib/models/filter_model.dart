@@ -45,6 +45,15 @@ class FilterParameters {
         filterQueryName: "feedback_sender"),
   ];
 
+  static List<FilterName> driversOrderBy = [
+    FilterName(filterName: "Name", filterQueryName: "account_name"),
+    FilterName(filterName: "Email", filterQueryName: "account_email"),
+    FilterName(filterName: 'Verified Status', filterQueryName: "is_verified"),
+    FilterName(
+        filterName: 'PUV Plate Number (Driving)',
+        filterQueryName: "jeep_driving"),
+  ];
+
   static List<FilterName> reportsOrderBy = [
     FilterName(filterName: "Date", filterQueryName: "timestamp"),
     FilterName(

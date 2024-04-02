@@ -260,7 +260,7 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                                'Feedback by ${feedbackAdditionalInfo.senderData.account_name}'),
+                                                'Feedback by ${feedbackAdditionalInfo.senderData != null? feedbackAdditionalInfo.senderData!.account_name:"No Data"}'),
                                             Text(
                                                 '<${selectedFeedback!.feedback_sender}>',
                                                 style: TextStyle(
@@ -321,9 +321,11 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                                                         TextOverflow.ellipsis,
                                                   ),
                                                   Text(
-                                                    feedbackAdditionalInfo
-                                                        .recepientData
-                                                        .account_name,
+                                                    feedbackAdditionalInfo.recepientData != null
+                                                    ? feedbackAdditionalInfo
+                                                        .recepientData!
+                                                        .account_name
+                                                    : "No Data",
                                                     textAlign: TextAlign.right,
                                                     maxLines: 1,
                                                     overflow:

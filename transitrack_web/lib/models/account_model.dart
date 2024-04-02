@@ -133,14 +133,12 @@ class AccountData {
           await findAddress(LatLng(location.latitude, location.longitude));
     }
 
-    if (senderData != null && recepientData != null) {
-      return UsersAdditionalInfo(
-          senderData: senderData,
-          recepientData: recepientData,
-          locationData: location != null ? address : null);
-    } else {
-      return null;
-    }
+
+    return UsersAdditionalInfo(
+        senderData: senderData,
+        recepientData: recepientData,
+        locationData: location != null ? address : null);
+
   }
 
   static Map<String, int> accountTypeMap = {

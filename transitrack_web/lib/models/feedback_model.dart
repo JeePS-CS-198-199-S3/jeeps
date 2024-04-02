@@ -40,8 +40,8 @@ class FeedbackData {
 }
 
 class UsersAdditionalInfo {
-  AccountData senderData;
-  AccountData recepientData;
+  AccountData? senderData;
+  AccountData? recepientData;
   String? locationData;
 
   UsersAdditionalInfo(

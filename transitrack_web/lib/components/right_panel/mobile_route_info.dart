@@ -12,7 +12,6 @@ import '../../services/format_time.dart';
 import '../select_jeep_prompt.dart';
 import 'selected_jeep_info.dart';
 import '../cooldown_button.dart';
-import '../../models/ping_model.dart';
 import '../../services/send_ping.dart';
 
 class MobileRouteInfo extends StatefulWidget {

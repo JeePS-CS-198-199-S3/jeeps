@@ -65,7 +65,7 @@ class _ReportsTableState extends State<ReportsTable> {
     query = query.orderBy(orderBy.filterSearch,
         descending: orderBy.filterDescending);
 
-    QuerySnapshot querySnapshot = await query.limit(20).get();
+    QuerySnapshot querySnapshot = await query.get();
 
     setState(() {
       reports = querySnapshot.docs.map((DocumentSnapshot document) {
@@ -283,7 +283,7 @@ class Legends extends StatelessWidget {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: List.generate(
-            4,
+            3,
             (index) => legendWidget(
                 ReportData.reportDetails[index + 1].reportType,
                 ReportData.reportDetails[index + 1].reportColors
@@ -336,7 +336,7 @@ class ReportContents extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (reportData.report_type > 0)
+                  if (reportData.report_type > 0 && reportData.report_type < 4)
                     Text(usersAdditionalInfo.locationData!,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -385,7 +385,7 @@ class ReportContents extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(usersAdditionalInfo.senderData.account_name),
+                      Text(usersAdditionalInfo.senderData != null?usersAdditionalInfo.senderData!.account_name:"No Data"),
                       Text("<${reportData.report_sender}>",
                           style: TextStyle(
                               fontSize: 13,
@@ -404,7 +404,7 @@ class ReportContents extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(usersAdditionalInfo.recepientData.account_name),
+                      Text(usersAdditionalInfo.recepientData != null?usersAdditionalInfo.recepientData!.account_name:"No Data"),
                       Text("<${reportData.report_recepient}>",
                           style: TextStyle(
                               fontSize: 13,

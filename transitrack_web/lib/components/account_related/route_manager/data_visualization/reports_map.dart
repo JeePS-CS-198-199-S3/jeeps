@@ -71,7 +71,7 @@ class _ReportsMapState extends State<ReportsMap> {
     }
 
     if (widget.selectedReport != selectedReport) {
-      if (selectedReport != null && selectedReport!.report_type > 0) {
+      if (selectedReport != null && selectedReport!.report_type > 0 && selectedReport!.report_type < 4) {
         _mapController.updateCircle(
             reportEntities
                 .firstWhere((reportEntity) =>
@@ -84,7 +84,7 @@ class _ReportsMapState extends State<ReportsMap> {
         selectedReport = widget.selectedReport;
       });
 
-      if (selectedReport != null && selectedReport!.report_type > 0) {
+      if (selectedReport != null && selectedReport!.report_type > 0 && selectedReport!.report_type < 4) {
         _mapController.updateCircle(
             reportEntities
                 .firstWhere((element) =>
@@ -100,7 +100,7 @@ class _ReportsMapState extends State<ReportsMap> {
   }
 
   void onCircleTapped(Circle pressedCircle) {
-    if (selectedReport != null && selectedReport!.report_type > 0) {
+    if (selectedReport != null && selectedReport!.report_type > 0 && selectedReport!.report_type < 4) {
       if (pressedCircle ==
           reportEntities
               .firstWhere((element) =>
@@ -137,7 +137,7 @@ class _ReportsMapState extends State<ReportsMap> {
     }
 
     for (ReportData report
-        in reportData.where((report) => report.report_type > 0)) {
+        in reportData.where((report) => report.report_type > 0 && report.report_type < 4)) {
       _mapController
           .addCircle(CircleOptions(
               circleRadius: 5,
@@ -185,7 +185,7 @@ class _ReportsMapState extends State<ReportsMap> {
       ),
       onMapClick: (point, latLng) {
         if (selectedReport != null) {
-          if (selectedReport!.report_type > 0) {
+          if (selectedReport!.report_type > 0 && selectedReport!.report_type < 4) {
             _mapController.updateCircle(
                 reportEntities
                     .firstWhere((report) =>

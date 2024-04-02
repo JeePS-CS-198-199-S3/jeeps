@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/feedbacks_table.dart';
+import 'package:transitrack_web/components/account_related/route_manager/data_visualization/manage_drivers_table.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/reports_table.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/shared_locations_page.dart';
 import 'package:transitrack_web/components/left_drawer/logo.dart';
@@ -44,6 +45,11 @@ class _DataVisualizationTabState extends State<DataVisualizationTab> {
         menuWidget: SharedLocationsPage(routeData: widget.route)),
     DataVisualizationMenuList(
         menuName: "PUV Locations", menuWidget: const SizedBox()),
+    DataVisualizationMenuList(
+        menuName: "Manage Drivers",
+        menuWidget: ManageDriversTable(
+          route: widget.route,
+        )),
   ];
 
   int selected = -1;

@@ -6,7 +6,6 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/account_related/account_settings.dart';
 import 'package:transitrack_web/style/style.dart';
 
-import '../../config/responsive.dart';
 import '../../models/account_model.dart';
 import '../../style/constants.dart';
 import 'login_signup_form.dart';
