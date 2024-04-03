@@ -1,16 +1,18 @@
 // ignore_for_file: prefer_null_aware_operators
 
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/services/int_to_hex.dart';
+import 'package:transitrack_web/services/mapbox/add_eta_line.dart';
+import 'package:transitrack_web/services/mapbox/add_image_from_asset.dart';
+import 'package:transitrack_web/services/mapbox/animate_circle.dart';
+import 'package:transitrack_web/services/mapbox/animate_ripple.dart';
 
 import '../../config/keys.dart';
 import '../../config/map_settings.dart';
@@ -44,25 +46,6 @@ class MapWidget extends StatefulWidget {
   State<MapWidget> createState() => _MapWidgetState();
 }
 
-class LatLngTween extends Tween<LatLng> {
-  LatLngTween({required LatLng begin, required LatLng end})
-      : super(begin: begin, end: end);
-
-  @override
-  LatLng lerp(double t) => LatLng(
-        lerpDouble(begin!.latitude, end!.latitude, t)!,
-        lerpDouble(begin!.longitude, end!.longitude, t)!,
-      );
-}
-
-class RippleTween extends Tween<double> {
-  RippleTween({required double begin, required double end})
-      : super(begin: begin, end: end);
-
-  @override
-  double lerp(double t) => lerpDouble(begin!, end!, t)!;
-}
-
 class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   late RouteData? _value;
   late List<JeepsAndDrivers>? jeeps;
@@ -80,8 +63,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   List<JeepEntity> jeepEntities = [];
 
   JeepEntity? selectedJeep;
-
-  List<Line> etaCoords = [];
 
   @override
   void initState() {
@@ -102,6 +83,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     // if route choice changed
     if (widget.route != _value) {
       selectedJeep = null;
+      _mapController.setGeoJsonSource("eta", etaListToGeoJSON([]));
 
       if (_value == null) {
         _mapController.onSymbolTapped.add(onJeepTapped);
@@ -197,17 +179,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     _mapController = controller;
   }
 
-  Future<void> addImageFromAsset() async {
-    final ByteData bytes1 = await rootBundle.load("assets/jeep.png");
-    final Uint8List list1 = bytes1.buffer.asUint8List();
-
-    final ByteData bytes2 = await rootBundle.load("assets/jeepSelected.png");
-    final Uint8List list2 = bytes2.buffer.asUint8List();
-
-    await _mapController.addImage("jeepTop", list1);
-    await _mapController.addImage("jeepTopSelected", list2);
-  }
-
   void _listenToDeviceLocation() {
     _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
@@ -223,8 +194,8 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       myLocation = latLng;
     });
     if (deviceCircle != null) {
-      _animateCircleMovement(
-          deviceCircle!.options.geometry as LatLng, latLng, deviceCircle!);
+      animateCircleMovement(deviceCircle!.options.geometry as LatLng, latLng,
+          deviceCircle!, this, _mapController);
     } else {
       _mapController
           .addCircle(CircleOptions(
@@ -240,101 +211,6 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
           .animateCamera(CameraUpdate.newLatLngZoom(myLocation!, mapStartZoom));
       widget.foundDeviceLocation(latLng);
     }
-  }
-
-  void _animateCircleMovement(LatLng from, LatLng to, Circle circle) {
-    final animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-    final animation = LatLngTween(begin: from, end: to).animate(CurvedAnimation(
-      parent: animationController,
-      curve: Curves.easeInOut,
-    ));
-
-    animation.addListener(() {
-      _mapController.updateCircle(
-          circle, CircleOptions(geometry: animation.value));
-    });
-
-    animation.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        animationController.dispose();
-      }
-    });
-
-    animationController.forward();
-  }
-
-  void _animateRipple(LatLng location) async {
-    Circle? ripple1;
-    Circle? ripple2;
-    _mapController
-        .addCircle(CircleOptions(
-            geometry: myLocation,
-            circleColor: intToHexColor(_value!.routeColor),
-            circleOpacity: 1,
-            circleRadius: 0))
-        .then((value) => ripple1 = value);
-    _mapController
-        .addCircle(CircleOptions(
-            geometry: myLocation,
-            circleColor: intToHexColor(_value!.routeColor),
-            circleOpacity: 1,
-            circleRadius: 0))
-        .then((value) => ripple2 = value);
-
-    final animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 700),
-    );
-    final animation = RippleTween(begin: 0, end: 1).animate(CurvedAnimation(
-      parent: animationController,
-      curve: Curves.easeInOut,
-    ));
-    final animationController2 = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1400),
-    );
-    final animation2 = RippleTween(begin: 0, end: 1).animate(CurvedAnimation(
-      parent: animationController2,
-      curve: Curves.easeInOut,
-    ));
-
-    animation.addListener(() {
-      _mapController.updateCircle(
-          ripple1!,
-          CircleOptions(
-              circleRadius: (animation.value * 70),
-              circleOpacity: 1 - animation.value));
-    });
-
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    animation2.addListener(() {
-      _mapController.updateCircle(
-          ripple2!,
-          CircleOptions(
-              circleRadius: (animation2.value * 70),
-              circleOpacity: 1 - animation2.value));
-    });
-
-    animation.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        animationController.dispose();
-        _mapController.removeCircle(ripple1!);
-      }
-    });
-
-    animation2.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        animationController2.dispose();
-        _mapController.removeCircle(ripple2!);
-      }
-    });
-
-    animationController.forward();
-    animationController2.forward();
   }
 
   void errorMessage(String message) {
@@ -483,11 +359,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
           selectedJeep = null;
         });
 
-        if (etaCoords.isNotEmpty) {
-          _mapController
-              .removeLines(etaCoords)
-              .then((value) => etaCoords.clear());
-        }
+        _mapController.setGeoJsonSource("eta", etaListToGeoJSON([]));
       }
     } else {
       if (jeepEntities
@@ -537,8 +409,9 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                 onMapCreated: (controller) {
                   _onMapCreated(controller);
                 },
-                onStyleLoadedCallback: () async {
-                  await addImageFromAsset();
+                onStyleLoadedCallback: () {
+                  addETALayer(_mapController);
+                  addImageFromAsset(_mapController);
                   _mapController.setSymbolIconAllowOverlap(true);
                   _mapController.setSymbolTextAllowOverlap(true);
                   _mapController.setSymbolIconIgnorePlacement(true);
@@ -582,25 +455,17 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
                             LatLng pingLoc = myLocation!;
                             for (int i = 0; i < 3; i++) {
-                              _animateRipple(pingLoc);
+                              animateRipple(
+                                  _mapController, _value, this, pingLoc);
 
                               await Future.delayed(
                                   const Duration(milliseconds: 2000));
                             }
                           },
-                          etaCoordinates: (List<LatLng> etaCoordinates) {
+                          etaCoordinates: (List<LatLng> etaCoordinates) async {
                             if (selectedJeep != null) {
-                              if (etaCoords.isNotEmpty) {
-                                _mapController
-                                    .removeLines(etaCoords)
-                                    .then((value) => etaCoords.clear());
-                              }
-                              _mapController.addLines([
-                                LineOptions(
-                                    geometry: etaCoordinates,
-                                    lineColor: deviceCircleColor,
-                                    lineWidth: 2.0)
-                              ]).then((value) => etaCoords = value);
+                              await _mapController.setGeoJsonSource(
+                                  "eta", etaListToGeoJSON(etaCoordinates));
                             }
                           },
                           myLocation: myLocation))
@@ -631,25 +496,17 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
 
                             LatLng pingLoc = myLocation!;
                             for (int i = 0; i < 3; i++) {
-                              _animateRipple(pingLoc);
+                              animateRipple(
+                                  _mapController, _value, this, pingLoc);
 
                               await Future.delayed(
                                   const Duration(milliseconds: 2000));
                             }
                           },
-                          etaCoordinates: (List<LatLng> etaCoordinates) {
+                          etaCoordinates: (List<LatLng> etaCoordinates) async {
                             if (selectedJeep != null) {
-                              if (etaCoords.isNotEmpty) {
-                                _mapController
-                                    .removeLines(etaCoords)
-                                    .then((value) => etaCoords.clear());
-                              }
-                              _mapController.addLines([
-                                LineOptions(
-                                    geometry: etaCoordinates,
-                                    lineColor: deviceCircleColor,
-                                    lineWidth: 2.0)
-                              ]).then((value) => etaCoords = value);
+                              await _mapController.setGeoJsonSource(
+                                  "eta", etaListToGeoJSON(etaCoordinates));
                             }
                           },
                           myLocation: myLocation,
@@ -758,4 +615,40 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       ),
     );
   }
+}
+
+class LatLngTween extends Tween<LatLng> {
+  LatLngTween({required LatLng begin, required LatLng end})
+      : super(begin: begin, end: end);
+
+  @override
+  LatLng lerp(double t) => LatLng(
+        lerpDouble(begin!.latitude, end!.latitude, t)!,
+        lerpDouble(begin!.longitude, end!.longitude, t)!,
+      );
+}
+
+void animateCircleMovement(LatLng from, LatLng to, Circle circle,
+    TickerProvider tick, MapboxMapController mapController) {
+  final animationController = AnimationController(
+    vsync: tick,
+    duration: const Duration(milliseconds: 500),
+  );
+  final animation = LatLngTween(begin: from, end: to).animate(CurvedAnimation(
+    parent: animationController,
+    curve: Curves.easeInOut,
+  ));
+
+  animation.addListener(() {
+    mapController.updateCircle(
+        circle, CircleOptions(geometry: animation.value));
+  });
+
+  animation.addStatusListener((status) {
+    if (status == AnimationStatus.completed) {
+      animationController.dispose();
+    }
+  });
+
+  animationController.forward();
 }

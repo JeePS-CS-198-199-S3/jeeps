@@ -218,8 +218,8 @@ class _SelectedDriverDetailsState extends State<SelectedDriverDetails> {
                                   dialogType: widget.driver.is_verified
                                       ? DialogType.error
                                       : DialogType.success,
-                                  padding: const EdgeInsets.only(
-                                      top: Constants.defaultPadding),
+                                  padding: const EdgeInsets.all(
+                                      Constants.defaultPadding),
                                   desc:
                                       "You are about to ${widget.driver.is_verified ? "unverify" : "verify"} ${widget.driver.account_name}.",
                                   btnOkText: widget.driver.is_verified
@@ -255,18 +255,16 @@ class _SelectedDriverDetailsState extends State<SelectedDriverDetails> {
                                         dialogType: success
                                             ? DialogType.success
                                             : DialogType.error,
-                                        padding: const EdgeInsets.only(
-                                            top: Constants.defaultPadding,
-                                            left: Constants.defaultPadding,
-                                            right: Constants.defaultPadding,
-                                            bottom: Constants.defaultPadding),
+                                        padding: const EdgeInsets.all(
+                                          Constants.defaultPadding,
+                                        ),
                                         desc: success
                                             ? "Successfully ${widget.driver.is_verified ? "unverified" : "verified"} ${widget.driver.account_name}. Reloading."
                                             : "Unable to ${widget.driver.is_verified ? "unverify" : "verify"} ${widget.driver.account_name}. Check your connection!",
                                         autoHide:
                                             const Duration(milliseconds: 3000),
                                         onDismissCallback: (_) =>
-                                            widget.loadDrivers).show());
+                                            widget.loadDrivers()).show());
                                   }).show(),
                             ),
                           ),
