@@ -62,9 +62,10 @@ class _RegisterJeepState extends State<RegisterJeep> {
                   'timestamp': FieldValue.serverTimestamp(),
                   'passenger_count': 0,
                   'max_capacity': int.parse(jeepCapacityController.text),
-                  'location': GeoPoint(0, 0),
+                  'location': const GeoPoint(0, 0),
                   'is_active': false,
-                  'route_id': widget.route.routeId
+                  'route_id': widget.route.routeId,
+                  'bearing': 0.0,
                 })
                 .then((value) => Navigator.pop(context))
                 .then((value) => Navigator.pop(context));

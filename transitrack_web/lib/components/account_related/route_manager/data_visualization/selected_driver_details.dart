@@ -29,7 +29,7 @@ class SelectedDriverDetails extends StatefulWidget {
 class _SelectedDriverDetailsState extends State<SelectedDriverDetails> {
   Future<JeepDataRatingAndAddress?> getAddress(
       String email, String jeep) async {
-    List<FeedbackData>? ratings = await getRating(email);
+    List<FeedbackData>? ratings = await getRating(email, 'feedback_recepient');
 
     if (jeep == "") {
       return JeepDataRatingAndAddress(

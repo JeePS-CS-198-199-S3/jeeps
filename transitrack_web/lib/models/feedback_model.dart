@@ -51,11 +51,11 @@ class UsersAdditionalInfo {
       this.locationData});
 }
 
-Future<List<FeedbackData>?> getRating(String email) async {
+Future<List<FeedbackData>?> getRating(String email, String field) async {
   try {
     QuerySnapshot ratingSnapshot = await FirebaseFirestore.instance
         .collection('feedbacks')
-        .where('feedback_recepient', isEqualTo: email)
+        .where(field, isEqualTo: email)
         .get();
     if (ratingSnapshot.docs.isNotEmpty) {
       return ratingSnapshot.docs
