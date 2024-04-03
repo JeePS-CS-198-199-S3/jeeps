@@ -76,7 +76,7 @@ class AccountData {
     }
   }
 
-  static Future<void> updateAccountFirestore(
+  static Future<bool> updateAccountFirestore(
       String email, Map<String, dynamic> dataToUpdate) async {
     try {
       CollectionReference accountsCollection =
@@ -88,11 +88,14 @@ class AccountData {
       if (querySnapshot.docs.isNotEmpty) {
         String docId = querySnapshot.docs.first.id;
         await accountsCollection.doc(docId).update(dataToUpdate);
+        return true;
       } else {
         print('No document found with the given email: $email');
+        return false;
       }
     } catch (e) {
       print('Error updating account data: $e');
+      return false;
     }
   }
 
@@ -133,12 +136,10 @@ class AccountData {
           await findAddress(LatLng(location.latitude, location.longitude));
     }
 
-
     return UsersAdditionalInfo(
         senderData: senderData,
         recepientData: recepientData,
         locationData: location != null ? address : null);
-
   }
 
   static Map<String, int> accountTypeMap = {

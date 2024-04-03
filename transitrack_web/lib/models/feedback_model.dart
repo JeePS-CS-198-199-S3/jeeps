@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:transitrack_web/components/map_related/map.dart';
 import 'package:transitrack_web/models/account_model.dart';
@@ -48,4 +49,24 @@ class UsersAdditionalInfo {
       {required this.senderData,
       required this.recepientData,
       this.locationData});
+}
+
+Future<List<FeedbackData>?> getRating(String email) async {
+  try {
+    QuerySnapshot ratingSnapshot = await FirebaseFirestore.instance
+        .collection('feedbacks')
+        .where('feedback_recepient', isEqualTo: email)
+        .get();
+    if (ratingSnapshot.docs.isNotEmpty) {
+      return ratingSnapshot.docs
+          .map((e) => FeedbackData.fromFirestore(e))
+          .toList();
+    } else {
+      print("Error: No Ratings found");
+      return [];
+    }
+  } catch (e) {
+    print(e.toString());
+    return null;
+  }
 }

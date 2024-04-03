@@ -1,13 +1,17 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/filters.dart';
+import 'package:transitrack_web/components/account_related/route_manager/data_visualization/selected_driver_details.dart';
 import 'package:transitrack_web/components/left_drawer/logo.dart';
 import 'package:transitrack_web/models/account_model.dart';
+import 'package:transitrack_web/models/feedback_model.dart';
 import 'package:transitrack_web/models/filter_model.dart';
 import 'package:transitrack_web/models/jeep_model.dart';
 import 'package:transitrack_web/models/route_model.dart';
+import 'package:transitrack_web/services/find_location.dart';
 import 'package:transitrack_web/style/constants.dart';
 
 class ManageDriversTable extends StatefulWidget {
@@ -18,11 +22,21 @@ class ManageDriversTable extends StatefulWidget {
   State<ManageDriversTable> createState() => _ManageDriversTableState();
 }
 
+class JeepDataRatingAndAddress {
+  List<FeedbackData>? rating;
+  JeepData? jeepData;
+  String? address;
+
+  JeepDataRatingAndAddress(
+      {required this.rating, required this.jeepData, required this.address});
+}
+
 class _ManageDriversTableState extends State<ManageDriversTable> {
   TextEditingController searchController = TextEditingController();
 
   int selected = -1;
   late AccountData? selectedDriver;
+  List<RouteData> routes = [];
 
   List<AccountData>? drivers;
 
@@ -35,6 +49,7 @@ class _ManageDriversTableState extends State<ManageDriversTable> {
   void initState() {
     super.initState();
 
+    loadRoutes();
     loadDrivers();
   }
 
@@ -42,6 +57,21 @@ class _ManageDriversTableState extends State<ManageDriversTable> {
     setState(() {
       selected = index;
       selectedDriver = account;
+    });
+  }
+
+  Future<void> loadRoutes() async {
+    routes.clear();
+
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection('routes').orderBy("route_id");
+
+    QuerySnapshot querySnapshot = await query.get();
+
+    setState(() {
+      routes = querySnapshot.docs.map((DocumentSnapshot document) {
+        return RouteData.fromFirestore(document);
+      }).toList();
     });
   }
 
@@ -236,115 +266,16 @@ class _ManageDriversTableState extends State<ManageDriversTable> {
             ),
             const SizedBox(width: Constants.defaultPadding),
             Expanded(
-              child: SizedBox(
-                  height: 700,
-                  child: Center(
-                    child: selectedDriver != null
-                        ? Container(
-                            width: 500,
-                            padding: const EdgeInsets.all(
-                                Constants.defaultPadding * 2),
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: 2,
-                                    color: Colors.white.withOpacity(0.5)),
-                                borderRadius: BorderRadius.circular(
-                                    Constants.defaultPadding / 2)),
-                            child: FutureBuilder(
-                                future: FirebaseFirestore.instance
-                                    .collection('jeeps_realtime')
-                                    .where('device_id',
-                                        isEqualTo: selectedDriver!.jeep_driving)
-                                    .where('route_id',
-                                        isEqualTo: widget.route.routeId)
-                                    .get(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return Center(
-                                        child: CircularProgressIndicator(
-                                      color: Color(widget.route.routeColor),
-                                    ));
-                                  }
-
-                                  if (snapshot.hasError) {
-                                    return Text(snapshot.error.toString());
-                                  }
-
-                                  JeepData? jeep;
-
-                                  if (snapshot.hasData) {
-                                    jeep = JeepData.fromSnapshot(
-                                        snapshot.data!.docs.first);
-                                  }
-
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Center(
-                                            child: Container(
-                                              width: 34,
-                                              height: 34,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: Color(widget.route
-                                                    .routeColor), // Circle color
-                                              ),
-                                              child: const Center(
-                                                child: Icon(
-                                                  Icons.person,
-                                                  size: 22,
-                                                  color: Constants
-                                                      .bgColor, // Icon color
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                              width: Constants.defaultPadding),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text(selectedDriver!
-                                                      .account_name),
-                                                  const SizedBox(
-                                                      width: Constants
-                                                              .defaultPadding /
-                                                          2),
-                                                  Icon(
-                                                    selectedDriver!.is_verified
-                                                        ? Icons.verified_user
-                                                        : Icons
-                                                            .remove_moderator,
-                                                    color: selectedDriver!
-                                                            .is_verified
-                                                        ? Colors.blue
-                                                        : Colors.grey,
-                                                    size: 13,
-                                                  ),
-                                                ],
-                                              ),
-                                              Text(
-                                                  '<${selectedDriver!.account_email}>',
-                                                  style: TextStyle(
-                                                      fontSize: 11,
-                                                      color: Colors.white
-                                                          .withOpacity(0.5))),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                }))
-                        : const Logo(),
-                  )),
+              child: Center(
+                child: selectedDriver != null
+                    ? SelectedDriverDetails(
+                        driver: selectedDriver!,
+                        routes: routes,
+                        route: widget.route,
+                        loadDrivers: () => loadDrivers(),
+                      )
+                    : const Logo(),
+              ),
             )
           ],
         ));
