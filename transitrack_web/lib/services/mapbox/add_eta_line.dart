@@ -31,5 +31,5 @@ Future<void> addETALayer(MapboxMapController mapController) async {
           lineOpacity: 0.5,
           lineCap: "round",
           lineJoin: "round",
-          lineDasharray: [2, 4]));
+          lineDasharray: [3, 2]));
 }

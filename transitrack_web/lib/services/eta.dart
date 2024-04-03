@@ -54,8 +54,7 @@ Future<EtaData?> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter,
     downsample = reduced;
   }
 
-  downsample.add(commuter);
-  reduced.add(commuter);
+  // downsample.add(commuter);
 
   String query = "";
 
@@ -68,14 +67,34 @@ Future<EtaData?> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter,
   String apiUrl =
       'https://api.mapbox.com/directions/v5/mapbox/driving-traffic/$query?geometries=geojson&access_token=${Keys.MapBoxKey}';
 
+  String apiUrl2 =
+      'https://api.mapbox.com/directions/v5/mapbox/walking/${commuter.longitude},${commuter.latitude};${downsample.last.longitude},${downsample.last.latitude}?geometries=geojson&access_token=${Keys.MapBoxKey}';
+
   final response = await http.get(Uri.parse(apiUrl));
 
   if (response.statusCode == 200) {
     final decoded = json.decode(response.body);
     final routes = decoded['routes'] as List<dynamic>;
-    return EtaData(
-        etaTime: formatSeconds(routes[0]['duration'] as double),
-        etaCoordinates: reduced);
+    double duration1 = routes[0]['duration'] as double;
+
+    List<LatLng> coords1 = extractCoordinates(decoded);
+
+    final response2 = await http.get(Uri.parse(apiUrl2));
+
+    if (response2.statusCode == 200) {
+      final decoded2 = json.decode(response2.body);
+      final routes2 = decoded2['routes'] as List<dynamic>;
+      double duration2 = routes2[0]['duration'] as double;
+
+      List<LatLng> coords2 = extractCoordinates(decoded2);
+
+      coords1.addAll(coords2.reversed.toList());
+      return EtaData(
+          etaTime: formatSeconds(duration1 + duration2),
+          etaCoordinates: coords1);
+    } else {
+      return null;
+    }
   } else {
     return null;
   }
