@@ -52,6 +52,8 @@ class _DashboardState extends State<Dashboard> {
 
   JeepData? selectedJeepMobile;
 
+  bool gpsPermission = false;
+
   @override
   void initState() {
     super.initState();

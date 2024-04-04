@@ -15,6 +15,7 @@ import '../../components/cooldown_button.dart';
 import '../../services/send_ping.dart';
 
 class DesktopRouteInfo extends StatefulWidget {
+  final bool gpsPermission;
   final RouteData route;
   final List<JeepsAndDrivers> jeeps;
   final JeepsAndDrivers? selectedJeep;
@@ -24,6 +25,7 @@ class DesktopRouteInfo extends StatefulWidget {
   final LatLng? myLocation;
   const DesktopRouteInfo(
       {super.key,
+      required this.gpsPermission,
       required this.route,
       required this.user,
       required this.jeeps,
@@ -308,6 +310,7 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
               if (_selectedJeep == null) const SelectJeepPrompt(),
               if (_selectedJeep != null)
                 SelectedJeepInfo(
+                    gpsPermission: widget.gpsPermission,
                     jeep: _selectedJeep!,
                     eta: _eta,
                     user: widget.user,

@@ -61,6 +61,7 @@ dependencies:
   shimmer_effect: ^1.0.4
   shimmer: ^3.0.0
   pointer_interceptor: ^0.10.1
+  permission_handler: ^11.3.1
 
 
 

@@ -15,6 +15,7 @@ import '../cooldown_button.dart';
 import '../../services/send_ping.dart';
 
 class MobileRouteInfo extends StatefulWidget {
+  final bool gpsPermission;
   final RouteData route;
   final List<JeepsAndDrivers> jeeps;
   final JeepsAndDrivers? selectedJeep;
@@ -24,6 +25,7 @@ class MobileRouteInfo extends StatefulWidget {
   final LatLng? myLocation;
   const MobileRouteInfo(
       {super.key,
+      required this.gpsPermission,
       required this.route,
       required this.jeeps,
       required this.selectedJeep,
@@ -334,6 +336,7 @@ class _MobileRouteInfoState extends State<MobileRouteInfo> {
                       Column(children: [
                         const SizedBox(height: Constants.defaultPadding),
                         SelectedJeepInfo(
+                          gpsPermission: widget.gpsPermission,
                           jeep: _selectedJeep!,
                           eta: _eta,
                           user: widget.user,

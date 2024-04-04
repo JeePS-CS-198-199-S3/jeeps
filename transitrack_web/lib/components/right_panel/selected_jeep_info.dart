@@ -10,17 +10,17 @@ import '../../models/jeep_model.dart';
 import '../../models/route_model.dart';
 import '../../config/responsive.dart';
 import '../../style/constants.dart';
-import '../button.dart';
 import 'feedback_form.dart';
-import '../text_loader.dart';
 
 class SelectedJeepInfo extends StatefulWidget {
+  final bool gpsPermission;
   final JeepsAndDrivers jeep;
   final String? eta;
   final AccountData? user;
   final RouteData route;
   const SelectedJeepInfo(
       {super.key,
+      required this.gpsPermission,
       required this.jeep,
       required this.eta,
       required this.user,
@@ -113,131 +113,35 @@ class _SelectedJeepInfoState extends State<SelectedJeepInfo> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(Constants.defaultPadding),
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.white, width: 2),
-          borderRadius: BorderRadius.circular(Constants.defaultPadding)),
-      child: Column(
-        children: [
-          if (_jeep.jeep.passenger_count == -2)
-            const SelectedJeepInfoRow(
-                left: Text("Driver disabled passenger counting.",
-                    style: TextStyle(fontSize: 12)),
-                right: SizedBox()),
-          if (_jeep.jeep.passenger_count != -2)
-            SelectedJeepInfoRow(
-                left: Row(
-                  children: [
-                    Icon(Icons.supervisor_account,
-                        color: Color(widget.route.routeColor), size: 15),
-                    const SizedBox(width: Constants.defaultPadding / 2),
-                    const Text("Occupancy"),
-                  ],
+        padding: const EdgeInsets.all(Constants.defaultPadding),
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.white, width: 2),
+            borderRadius: BorderRadius.circular(Constants.defaultPadding)),
+        child: Responsive.isDesktop(context)
+            ? SelectedJeepInfoBox(
+                gpsPermission: widget.gpsPermission,
+                user: widget.user,
+                jeep: _jeep.jeep,
+                driver: _jeep.driver,
+                route: widget.route,
+                jeepRating: jeepRating,
+                driverRating: driverRating,
+                eta: _eta)
+            : SizedBox(
+                height: 106,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SelectedJeepInfoBox(
+                      gpsPermission: widget.gpsPermission,
+                      user: widget.user,
+                      jeep: _jeep.jeep,
+                      driver: _jeep.driver,
+                      route: widget.route,
+                      jeepRating: jeepRating,
+                      driverRating: driverRating,
+                      eta: _eta),
                 ),
-                right: Text(_jeep.jeep.passenger_count == -1
-                    ? "Available"
-                    : _jeep.jeep.passenger_count == _jeep.jeep.max_capacity
-                        ? "Full"
-                        : "${_jeep.jeep.passenger_count}/${_jeep.jeep.max_capacity}")),
-          const Divider(color: Colors.white),
-          SelectedJeepInfoRow(
-              left: Row(children: [
-                Text(jeepRating != null
-                    ? double.parse(jeepRating.toString()).toStringAsFixed(1)
-                    : "..."),
-                const SizedBox(
-                  width: Constants.defaultPadding / 2,
-                ),
-                Icon(Icons.star,
-                    color: Color(widget.route.routeColor), size: 15),
-                const SizedBox(
-                  width: Constants.defaultPadding / 2,
-                ),
-                const Text("Plate Number")
-              ]),
-              right: Text(_jeep.jeep.device_id)),
-          const Divider(color: Colors.white),
-          SelectedJeepInfoRow(
-              left: Row(children: [
-                Text(driverRating != null
-                    ? double.parse(driverRating.toString()).toStringAsFixed(1)
-                    : "..."),
-                const SizedBox(
-                  width: Constants.defaultPadding / 2,
-                ),
-                Icon(Icons.star,
-                    color: Color(widget.route.routeColor), size: 15),
-                const SizedBox(
-                  width: Constants.defaultPadding / 2,
-                ),
-                const Text("Driver"),
-                const SizedBox(width: Constants.defaultPadding / 2),
-              ]),
-              right: Text(_jeep.driver!.account_name,
-                  maxLines: 1, overflow: TextOverflow.ellipsis)),
-          const Divider(color: Colors.white),
-          SelectedJeepInfoRow(
-              left: Row(children: [
-                Icon(Icons.timelapse_rounded,
-                    color: Color(widget.route.routeColor), size: 15),
-                const SizedBox(
-                  width: Constants.defaultPadding / 2,
-                ),
-                const Text("ETA")
-              ]),
-              right: Text(_eta ?? "...")),
-          const Divider(color: Colors.white),
-          if (_user != null && _user!.is_verified && _jeep.driver != null)
-            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              IconButtonBig(
-                  color: Color(widget.route.routeColor),
-                  function: () => AwesomeDialog(
-                        dialogType: DialogType.noHeader,
-                        context: (context),
-                        width: 500,
-                        body: PointerInterceptor(
-                            child: FeedbackForm(
-                                jeep: _jeep, route: _route, user: _user)),
-                      ).show(),
-                  icon: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.star, color: Constants.bgColor, size: 20),
-                      SizedBox(width: Constants.defaultPadding / 5),
-                      Text(
-                        "Feedback",
-                        style: TextStyle(color: Constants.bgColor),
-                      )
-                    ],
-                  )),
-              const SizedBox(width: Constants.defaultPadding / 2),
-              IconButtonBig(
-                  inverted: true,
-                  color: Color(widget.route.routeColor),
-                  function: () => AwesomeDialog(
-                        dialogType: DialogType.noHeader,
-                        context: (context),
-                        width: 500,
-                        body: PointerInterceptor(
-                            child: ReportForm(
-                                jeep: _jeep, route: _route, user: _user)),
-                      ).show(),
-                  icon: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.report_outlined,
-                          color: Color(widget.route.routeColor), size: 20),
-                      const SizedBox(width: Constants.defaultPadding / 5),
-                      Text(
-                        "Report",
-                        style: TextStyle(color: Color(widget.route.routeColor)),
-                      )
-                    ],
-                  ))
-            ])
-        ],
-      ),
-    );
+              ));
   }
 }
 
@@ -252,5 +156,178 @@ class SelectedJeepInfoRow extends StatelessWidget {
     return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [left, right]);
+  }
+}
+
+class SelectedJeepInfoBox extends StatefulWidget {
+  final bool gpsPermission;
+  final AccountData? user;
+  final JeepData jeep;
+  final AccountData? driver;
+  final RouteData route;
+  final double? jeepRating;
+  final double? driverRating;
+  final String? eta;
+  const SelectedJeepInfoBox(
+      {super.key,
+      required this.gpsPermission,
+      required this.user,
+      required this.jeep,
+      required this.driver,
+      required this.route,
+      required this.jeepRating,
+      required this.driverRating,
+      required this.eta});
+
+  @override
+  State<SelectedJeepInfoBox> createState() => _SelectedJeepInfoBoxState();
+}
+
+class _SelectedJeepInfoBoxState extends State<SelectedJeepInfoBox> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        if (widget.jeep.passenger_count == -2)
+          const SelectedJeepInfoRow(
+              left: Text("Driver disabled passenger counting.",
+                  style: TextStyle(fontSize: 12)),
+              right: SizedBox()),
+        if (widget.jeep.passenger_count != -2)
+          SelectedJeepInfoRow(
+              left: Row(
+                children: [
+                  Icon(Icons.supervisor_account,
+                      color: Color(widget.route.routeColor), size: 15),
+                  const SizedBox(width: Constants.defaultPadding / 2),
+                  const Text("Occupancy"),
+                ],
+              ),
+              right: Text(widget.jeep.passenger_count == -1
+                  ? "Available"
+                  : widget.jeep.passenger_count == widget.jeep.max_capacity
+                      ? "Full"
+                      : "${widget.jeep.passenger_count}/${widget.jeep.max_capacity}")),
+        const Divider(color: Colors.white),
+        SelectedJeepInfoRow(
+            left: Row(children: [
+              Icon(Icons.timelapse_rounded,
+                  color: Color(widget.route.routeColor), size: 15),
+              const SizedBox(
+                width: Constants.defaultPadding / 2,
+              ),
+              const Text("ETA")
+            ]),
+            right: widget.gpsPermission
+                ? Text(widget.eta ?? "...")
+                : Row(
+                    children: [
+                      Icon(
+                        Icons.location_off,
+                        color: Colors.red[600],
+                        size: 15,
+                      ),
+                      const SizedBox(width: Constants.defaultPadding / 4),
+                      const Text("GPS Disabled")
+                    ],
+                  )),
+        const Divider(color: Colors.white),
+        SelectedJeepInfoRow(
+            left: Row(children: [
+              Text(widget.jeepRating != null
+                  ? double.parse(widget.jeepRating.toString())
+                      .toStringAsFixed(1)
+                  : "..."),
+              const SizedBox(
+                width: Constants.defaultPadding / 5,
+              ),
+              Icon(Icons.star, color: Color(widget.route.routeColor), size: 15),
+              const SizedBox(
+                width: Constants.defaultPadding / 2,
+              ),
+              const Text("Plate Number")
+            ]),
+            right: Text(widget.jeep.device_id)),
+        const Divider(color: Colors.white),
+        SelectedJeepInfoRow(
+            left: Row(children: [
+              Text(widget.driverRating != null
+                  ? double.parse(widget.driverRating.toString())
+                      .toStringAsFixed(1)
+                  : "..."),
+              const SizedBox(
+                width: Constants.defaultPadding / 5,
+              ),
+              Icon(Icons.star, color: Color(widget.route.routeColor), size: 15),
+              const SizedBox(
+                width: Constants.defaultPadding / 2,
+              ),
+              const Text("Driver"),
+              const SizedBox(width: Constants.defaultPadding / 2),
+            ]),
+            right: Text(widget.driver!.account_name,
+                maxLines: 1, overflow: TextOverflow.ellipsis)),
+        if (widget.user != null &&
+            widget.user!.is_verified &&
+            widget.driver != null)
+          const Divider(color: Colors.white),
+        if (widget.user != null &&
+            widget.user!.is_verified &&
+            widget.driver != null)
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            IconButtonBig(
+                color: Color(widget.route.routeColor),
+                function: () => AwesomeDialog(
+                      dialogType: DialogType.noHeader,
+                      context: (context),
+                      width: 500,
+                      body: PointerInterceptor(
+                          child: FeedbackForm(
+                              jeep: JeepsAndDrivers(
+                                  jeep: widget.jeep, driver: widget.driver),
+                              route: widget.route,
+                              user: widget.user)),
+                    ).show(),
+                icon: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.star, color: Constants.bgColor, size: 20),
+                    SizedBox(width: Constants.defaultPadding / 5),
+                    Text(
+                      "Feedback",
+                      style: TextStyle(color: Constants.bgColor),
+                    )
+                  ],
+                )),
+            const SizedBox(width: Constants.defaultPadding / 2),
+            IconButtonBig(
+                inverted: true,
+                color: Color(widget.route.routeColor),
+                function: () => AwesomeDialog(
+                      dialogType: DialogType.noHeader,
+                      context: (context),
+                      width: 500,
+                      body: PointerInterceptor(
+                          child: ReportForm(
+                              jeep: JeepsAndDrivers(
+                                  jeep: widget.jeep, driver: widget.driver),
+                              route: widget.route,
+                              user: widget.user)),
+                    ).show(),
+                icon: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.report_outlined,
+                        color: Color(widget.route.routeColor), size: 20),
+                    const SizedBox(width: Constants.defaultPadding / 5),
+                    Text(
+                      "Report",
+                      style: TextStyle(color: Color(widget.route.routeColor)),
+                    )
+                  ],
+                ))
+          ])
+      ],
+    );
   }
 }

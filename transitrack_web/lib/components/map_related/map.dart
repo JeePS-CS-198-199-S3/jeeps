@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_null_aware_operators
 
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ import 'package:transitrack_web/services/mapbox/add_eta_line.dart';
 import 'package:transitrack_web/services/mapbox/add_image_from_asset.dart';
 import 'package:transitrack_web/services/mapbox/animate_circle.dart';
 import 'package:transitrack_web/services/mapbox/animate_ripple.dart';
+import 'package:transitrack_web/services/mapbox/request_location.dart';
 
 import '../../config/keys.dart';
 import '../../config/map_settings.dart';
@@ -62,6 +62,8 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
   List<Line> lines = [];
   List<JeepEntity> jeepEntities = [];
 
+  bool gpsTracking = false;
+
   JeepEntity? selectedJeep;
 
   @override
@@ -75,6 +77,18 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       myLocation = null;
       deviceCircle = null;
     });
+  }
+
+  void startListening() async {
+    var permission = await requestLocationPermission(context);
+
+    setState(() {
+      gpsTracking = permission;
+    });
+
+    if (gpsTracking) {
+      _listenToDeviceLocation();
+    }
   }
 
   @override
@@ -207,8 +221,8 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
           .then((circle) {
         deviceCircle = circle;
       });
-      _mapController
-          .animateCamera(CameraUpdate.newLatLngZoom(myLocation!, mapStartZoom));
+      // _mapController
+      //     .animateCamera(CameraUpdate.newLatLngZoom(myLocation!, mapStartZoom));
       widget.foundDeviceLocation(latLng);
     }
   }
@@ -417,7 +431,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                   _mapController.setSymbolIconIgnorePlacement(true);
                   _mapController.setSymbolTextIgnorePlacement(true);
                   widget.mapLoaded(true);
-                  _listenToDeviceLocation();
+                  startListening();
                 },
                 initialCameraPosition: CameraPosition(
                   target: Keys.MapCenter,
@@ -442,6 +456,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                   child: widget.route == null
                       ? const MobileDashboardUnselected()
                       : MobileRouteInfo(
+                          gpsPermission: gpsTracking,
                           route: _value!,
                           jeeps: jeeps!,
                           selectedJeep: selectedJeep != null
@@ -483,6 +498,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                     if (widget.route != null)
                       PointerInterceptor(
                         child: DesktopRouteInfo(
+                          gpsPermission: gpsTracking,
                           route: _value!,
                           jeeps: jeeps!,
                           selectedJeep: selectedJeep != null
