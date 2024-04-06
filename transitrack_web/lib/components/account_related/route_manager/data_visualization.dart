@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/feedbacks_table.dart';
+import 'package:transitrack_web/components/account_related/route_manager/data_visualization/jeep_historical.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/manage_drivers_table.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/reports_table.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/shared_locations_page.dart';
@@ -44,7 +45,10 @@ class _DataVisualizationTabState extends State<DataVisualizationTab> {
         menuName: "Shared Locations",
         menuWidget: SharedLocationsPage(routeData: widget.route)),
     DataVisualizationMenuList(
-        menuName: "PUV Locations", menuWidget: const SizedBox()),
+        menuName: "PUV Locations",
+        menuWidget: JeepHistoricalPage(
+          routeData: widget.route,
+        )),
     DataVisualizationMenuList(
         menuName: "Manage Drivers",
         menuWidget: ManageDriversTable(
