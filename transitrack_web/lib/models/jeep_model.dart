@@ -10,7 +10,6 @@ class JeepData {
   GeoPoint location;
   int route_id;
   double bearing;
-  bool? is_operating;
 
   JeepData(
       {required this.device_id,
@@ -19,8 +18,7 @@ class JeepData {
       required this.max_capacity,
       required this.location,
       required this.route_id,
-      required this.bearing,
-      this.is_operating});
+      required this.bearing});
 
   factory JeepData.fromSnapshot(QueryDocumentSnapshot<Object?> snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
@@ -32,7 +30,6 @@ class JeepData {
     GeoPoint location = data['location'];
     int route_id = data['route_id'];
     double bearing = data['bearing'];
-    bool? is_operating = data['is_operating'];
 
     return JeepData(
         device_id: device_id,
@@ -41,8 +38,7 @@ class JeepData {
         max_capacity: max_capacity,
         location: location,
         route_id: route_id,
-        bearing: bearing,
-        is_operating: is_operating);
+        bearing: bearing);
   }
 
   Map<String, dynamic> toGeoJSONFeature() {
@@ -86,20 +82,49 @@ class JeepsAndDrivers {
 }
 
 class JeepHistoricalData {
-  String jeepPlateNumber;
-  List<JeepData> data;
+  JeepData jeepData;
+  String driverName;
+  bool isOperating;
 
-  JeepHistoricalData({required this.jeepPlateNumber, required this.data});
+  JeepHistoricalData(
+      {required this.jeepData,
+      required this.driverName,
+      required this.isOperating});
+
+  factory JeepHistoricalData.fromSnapshot(
+      QueryDocumentSnapshot<Object?> snapshot) {
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+
+    return JeepHistoricalData(
+        jeepData: JeepData(
+          device_id: data['device_id'],
+          timestamp: data['timestamp'],
+          passenger_count: data['passenger_count'],
+          max_capacity: data['max_capacity'],
+          location: data['location'],
+          route_id: data['route_id'],
+          bearing: data['bearing'],
+        ),
+        driverName: data['driver'],
+        isOperating: data['is_operating']);
+  }
 }
 
-Future<List<JeepHistoricalData>?> getJeepHistoricalData(
+class PerJeepHistoricalData {
+  String jeepPlateNumber;
+  List<JeepHistoricalData> data;
+
+  PerJeepHistoricalData({required this.jeepPlateNumber, required this.data});
+}
+
+Future<List<PerJeepHistoricalData>?> getJeepHistoricalData(
     int routeId, DateTime day) async {
   // Reference to the Firestore collection
   CollectionReference collectionReference =
       FirebaseFirestore.instance.collection('jeeps_historical');
 
-  DateTime start = day.subtract(const Duration(hours: 1));
-  DateTime end = day;
+  DateTime start = day;
+  DateTime end = day.add(const Duration(hours: 1));
 
   // Query all documents in the collection
   QuerySnapshot querySnapshot = await collectionReference
@@ -112,17 +137,20 @@ Future<List<JeepHistoricalData>?> getJeepHistoricalData(
   // Initialize a Set to store unique device IDs
   Set<String> uniqueDeviceIds = Set();
 
-  List<JeepData> entireJeepHistoricalData =
-      querySnapshot.docs.map((e) => JeepData.fromSnapshot(e)).toList();
+  List<JeepHistoricalData> entireJeepHistoricalData = querySnapshot.docs
+      .map((e) => JeepHistoricalData.fromSnapshot(e))
+      .toList();
 
-  uniqueDeviceIds = entireJeepHistoricalData.map((e) => e.device_id).toSet();
-  List<JeepHistoricalData> jeepHistoricalData =
+  uniqueDeviceIds =
+      entireJeepHistoricalData.map((e) => e.jeepData.device_id).toSet();
+  List<PerJeepHistoricalData> jeepHistoricalData =
       uniqueDeviceIds.map((plateNumber) {
-    List<JeepData> historicalJeepDataForSpecificJeep = entireJeepHistoricalData
-        .where((element) => element.device_id == plateNumber)
-        .toList();
+    List<JeepHistoricalData> historicalJeepDataForSpecificJeep =
+        entireJeepHistoricalData
+            .where((element) => element.jeepData.device_id == plateNumber)
+            .toList();
 
-    return JeepHistoricalData(
+    return PerJeepHistoricalData(
         jeepPlateNumber: plateNumber, data: historicalJeepDataForSpecificJeep);
   }).toList();
 

@@ -9,12 +9,14 @@ import 'package:transitrack_web/services/mapbox/add_image_from_asset.dart';
 
 class JeepHistoricalMap extends StatefulWidget {
   final ValueChanged<bool> mapLoaded;
-  final List<JeepData>? jeepHistoricalData;
+  final List<JeepHistoricalData>? jeepHistoricalData;
   final RouteData routeData;
+  final ValueChanged<JeepHistoricalData?> selectedJeep;
   const JeepHistoricalMap(
       {super.key,
       required this.mapLoaded,
       required this.jeepHistoricalData,
+      required this.selectedJeep,
       required this.routeData});
 
   @override
@@ -22,18 +24,24 @@ class JeepHistoricalMap extends StatefulWidget {
 }
 
 class JeepHistoricalAndIcon {
-  JeepData jeepHistorical;
+  JeepHistoricalData jeepHistorical;
   Symbol jeepSymbol;
 
   JeepHistoricalAndIcon(
       {required this.jeepHistorical, required this.jeepSymbol});
+
+  void setJeepHistorical(JeepHistoricalData newData) {
+    jeepHistorical = newData;
+  }
 }
 
 class JeepHistoricalMapState extends State<JeepHistoricalMap> {
   late MapboxMapController _mapController;
-  late List<JeepData>? _jeepHistoricalData;
+  late List<JeepHistoricalData>? _jeepHistoricalData;
 
   List<JeepHistoricalAndIcon> data = [];
+
+  JeepHistoricalAndIcon? tapped;
 
   @override
   void initState() {
@@ -42,6 +50,52 @@ class JeepHistoricalMapState extends State<JeepHistoricalMap> {
     setState(() {
       _jeepHistoricalData = widget.jeepHistoricalData;
     });
+  }
+
+  void onSymbolTapped(Symbol symbol) {
+    JeepHistoricalAndIcon jeepHistorical =
+        data.firstWhere((element) => element.jeepSymbol == symbol);
+    if (tapped != null) {
+      if (symbol == tapped!.jeepSymbol) {
+        _mapController.updateSymbol(
+            symbol, const SymbolOptions(iconImage: 'jeepTop'));
+        setState(() {
+          tapped = null;
+        });
+      } else {
+        _mapController.updateSymbol(
+            tapped!.jeepSymbol, const SymbolOptions(iconImage: 'jeepTop'));
+        setState(() {
+          tapped = JeepHistoricalAndIcon(
+              jeepHistorical: jeepHistorical.jeepHistorical,
+              jeepSymbol: symbol);
+        });
+        _mapController.updateSymbol(tapped!.jeepSymbol,
+            const SymbolOptions(iconImage: 'jeepTopSelected'));
+      }
+    } else {
+      setState(() {
+        tapped = JeepHistoricalAndIcon(
+            jeepHistorical: jeepHistorical.jeepHistorical, jeepSymbol: symbol);
+      });
+
+      _mapController.updateSymbol(
+          symbol, const SymbolOptions(iconImage: 'jeepTopSelected'));
+    }
+
+    widget.selectedJeep(tapped?.jeepHistorical);
+  }
+
+  void addRoute() {
+    var geometry = widget.routeData.routeCoordinates;
+    geometry.add(widget.routeData.routeCoordinates.first);
+    _mapController.addLines([
+      LineOptions(
+          lineWidth: 4.0,
+          lineColor: intToHexColor(widget.routeData.routeColor),
+          lineOpacity: 0.5,
+          geometry: geometry)
+    ]);
   }
 
   @override
@@ -54,10 +108,79 @@ class JeepHistoricalMapState extends State<JeepHistoricalMap> {
       });
 
       if (_jeepHistoricalData != null && _jeepHistoricalData!.isNotEmpty) {
-        _mapController.setGeoJsonSource(
-            'jeep-historical', jeepListToGeoJSON(_jeepHistoricalData!));
+        if (tapped != null) {
+          if (_jeepHistoricalData!.any((element) =>
+              element.jeepData.device_id ==
+                  tapped!.jeepHistorical.jeepData.device_id &&
+              element.isOperating)) {
+            JeepHistoricalData jeep = _jeepHistoricalData!.firstWhere(
+                (element) =>
+                    element.jeepData.device_id ==
+                    tapped!.jeepHistorical.jeepData.device_id);
+            tapped!.setJeepHistorical(jeep);
+            widget.selectedJeep(tapped!.jeepHistorical);
+          } else {
+            _mapController.updateSymbol(
+                tapped!.jeepSymbol,
+                const SymbolOptions(
+                    iconSize: 0, textSize: 0, iconImage: 'jeepTop'));
+            tapped = null;
+            widget.selectedJeep(null);
+          }
+        }
+
+        for (var device_id in data
+            .map((e) => e.jeepHistorical.jeepData.device_id)
+            .toSet()
+            .difference(_jeepHistoricalData!
+                .map((e) => e.jeepData.device_id)
+                .toSet())) {
+          int index = data.indexWhere((element) =>
+              element.jeepHistorical.jeepData.device_id == device_id);
+          _mapController.removeSymbol(data[index].jeepSymbol);
+          data.removeAt(index);
+        }
+
+        for (JeepHistoricalData jeep in _jeepHistoricalData!) {
+          if (data.any((element) =>
+              element.jeepHistorical.jeepData.device_id ==
+              jeep.jeepData.device_id)) {
+            int index = data.indexWhere((element) =>
+                element.jeepHistorical.jeepData.device_id ==
+                jeep.jeepData.device_id);
+            _mapController.updateSymbol(
+                data[index].jeepSymbol,
+                SymbolOptions(
+                    geometry: LatLng(jeep.jeepData.location.latitude,
+                        jeep.jeepData.location.longitude),
+                    iconRotate: jeep.jeepData.bearing,
+                    iconSize: jeep.isOperating ? 1 : 0,
+                    textSize: jeep.isOperating ? 50 : 0,
+                    textRotate: jeep.jeepData.bearing + 90));
+            data[index].setJeepHistorical(jeep);
+          } else {
+            _mapController
+                .addSymbol(SymbolOptions(
+                    geometry: LatLng(jeep.jeepData.location.latitude,
+                        jeep.jeepData.location.longitude),
+                    iconImage: "jeepTop",
+                    textField: "▬▬",
+                    textLetterSpacing: -0.35,
+                    textSize: 50,
+                    textColor: intToHexColor(widget.routeData.routeColor),
+                    textRotate: jeep.jeepData.bearing + 90,
+                    iconRotate: jeep.jeepData.bearing,
+                    iconOpacity: jeep.isOperating ? 1 : 0,
+                    textOpacity: jeep.isOperating ? 1 : 0,
+                    iconSize: 1))
+                .then((value) => data.add(JeepHistoricalAndIcon(
+                    jeepHistorical: jeep, jeepSymbol: value)));
+          }
+        }
       } else {
-        _mapController.setGeoJsonSource('jeep-historical', {});
+        tapped = null;
+        _mapController.clearSymbols();
+        data.clear();
       }
     }
   }
@@ -73,14 +196,15 @@ class JeepHistoricalMapState extends State<JeepHistoricalMap> {
       compassViewPosition: CompassViewPosition.TopLeft,
       onMapCreated: (controller) {
         _mapController = controller;
+        _mapController.onSymbolTapped.add(onSymbolTapped);
       },
       onStyleLoadedCallback: () {
         addImageFromAsset(_mapController);
+        addRoute();
         _mapController.setSymbolIconAllowOverlap(true);
         _mapController.setSymbolTextAllowOverlap(true);
         _mapController.setSymbolIconIgnorePlacement(true);
         _mapController.setSymbolTextIgnorePlacement(true);
-        addJeepSymbolLayer(_mapController, widget.routeData.routeColor);
         widget.mapLoaded(true);
       },
       initialCameraPosition: CameraPosition(
@@ -89,14 +213,4 @@ class JeepHistoricalMapState extends State<JeepHistoricalMap> {
       ),
     );
   }
-}
-
-void addJeepSymbolLayer(MapboxMapController mapController, int color) {
-  mapController.addSource(
-      "jeep-historical", const GeojsonSourceProperties(data: []));
-  mapController.addLayer(
-      "jeep-historical",
-      "jeep-historical-symbols",
-      CircleLayerProperties(
-          circleRadius: 5, circleColor: intToHexColor(color)));
 }

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/calendar_selector.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/jeep_historical_map.dart';
+import 'package:transitrack_web/components/account_related/route_manager/data_visualization/jeep_historical_route_info.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/minute_slider.dart';
 import 'package:transitrack_web/models/jeep_model.dart';
 import 'package:transitrack_web/models/route_model.dart';
@@ -22,20 +23,20 @@ class _JeepHistoricalPageState extends State<JeepHistoricalPage> {
 
   bool mapLoaded = false;
 
-  List<JeepHistoricalData>? jeepHistoricalData = [];
+  List<PerJeepHistoricalData>? jeepHistoricalData = [];
 
   int _second = 0;
 
-  List<JeepData>? processedJeeps;
+  JeepHistoricalData? selectedJeep;
+
+  List<JeepHistoricalData>? processedJeeps;
 
   void processHistoricalData() {
     setState(() {
       processedJeeps = jeepHistoricalData!
-          .map((e) => e.data.firstWhere((element) => element.timestamp
+          .map((e) => e.data.firstWhere((element) => element.jeepData.timestamp
               .toDate()
-              .isBefore(_selectedDate!
-                  .subtract(const Duration(hours: 1))
-                  .add(Duration(seconds: _second)))))
+              .isBefore(_selectedDate!.add(Duration(seconds: _second)))))
           .toList();
     });
   }
@@ -46,7 +47,7 @@ class _JeepHistoricalPageState extends State<JeepHistoricalPage> {
       processedJeeps = null;
     });
 
-    List<JeepHistoricalData>? data =
+    List<PerJeepHistoricalData>? data =
         await getJeepHistoricalData(widget.routeData.routeId, _selectedDate!);
 
     if (data != null) {
@@ -64,6 +65,7 @@ class _JeepHistoricalPageState extends State<JeepHistoricalPage> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
+        width: double.maxFinite,
         height: 700,
         child: Stack(
           children: [
@@ -75,28 +77,30 @@ class _JeepHistoricalPageState extends State<JeepHistoricalPage> {
               },
               jeepHistoricalData: processedJeeps,
               routeData: widget.routeData,
+              selectedJeep: (JeepHistoricalData? value) => setState(() {
+                selectedJeep = value;
+              }),
             ),
             Positioned(
-              top: Constants.defaultPadding,
               right: Constants.defaultPadding,
-              child: PointerInterceptor(
-                child: Container(
-                  padding: const EdgeInsets.all(Constants.defaultPadding),
-                  width: 350,
-                  decoration: BoxDecoration(
-                      color: Constants.bgColor,
-                      borderRadius:
-                          BorderRadius.circular(Constants.defaultPadding / 2)),
-                  child: (mapLoaded)
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                                mainAxisAlignment: _selectedDate == null
-                                    ? MainAxisAlignment.center
-                                    : MainAxisAlignment.spaceBetween,
-                                children: [
-                                  IconButton(
+              top: Constants.defaultPadding,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  PointerInterceptor(
+                    child: Container(
+                      padding: const EdgeInsets.all(Constants.defaultPadding),
+                      width: 300,
+                      decoration: BoxDecoration(
+                          color: Constants.bgColor,
+                          borderRadius: BorderRadius.circular(
+                              Constants.defaultPadding / 2)),
+                      child: (mapLoaded)
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: IconButton(
                                     onPressed: () => AwesomeDialog(
                                         context: context,
                                         dialogType: DialogType.noHeader,
@@ -121,53 +125,62 @@ class _JeepHistoricalPageState extends State<JeepHistoricalPage> {
                                             fetchHistoricalData();
                                           },
                                         ))).show(),
-                                    icon: const Text("Select Date"),
+                                    icon: Text(_selectedDate == null
+                                        ? "Select Date"
+                                        : '${DateFormat('MMM d, yyyy').format(_selectedDate!)} (${formatSliderValue(_selectedDate!.hour.toDouble())} - ${formatSliderValue(_selectedDate!.hour.toDouble() + 1)})'),
                                   ),
-                                  if (_selectedDate != null &&
-                                      jeepHistoricalData != null)
-                                    Text(
-                                        '${DateFormat('MMM d, yyyy').format(_selectedDate!)} - ${formatSliderValue(_selectedDate!.hour.toDouble())}')
-                                ]),
-                            if (jeepHistoricalData != null &&
-                                _selectedDate != null)
-                              Column(
-                                children: [
-                                  const Divider(color: Colors.white),
-                                  SecondSlider(
-                                      routeData: widget.routeData,
-                                      second: _second.toDouble(),
-                                      newSecond: (double newSecond) {
-                                        setState(() {
-                                          _second = newSecond.toInt();
-                                        });
-                                        processHistoricalData();
-                                      }),
-                                  Center(
-                                      child: Text(DateFormat('hh:mm:ss a')
-                                          .format(DateTime(
-                                              _selectedDate!.year,
-                                              _selectedDate!.month,
-                                              _selectedDate!.day,
-                                              _selectedDate!.hour,
-                                              _second ~/ 60,
-                                              _second % 60))))
-                                ],
-                              ),
-                            if (jeepHistoricalData == null)
-                              Center(
-                                child: CircularProgressIndicator(
-                                  color: Color(widget.routeData.routeColor),
                                 ),
-                              )
-                          ],
-                        )
-                      : Center(
-                          child: CircularProgressIndicator(
-                          color: Color(widget.routeData.routeColor),
-                        )),
-                ),
+                                if (jeepHistoricalData != null &&
+                                    _selectedDate != null)
+                                  Column(
+                                    children: [
+                                      const Divider(color: Colors.white),
+                                      SecondSlider(
+                                          routeData: widget.routeData,
+                                          second: _second.toDouble(),
+                                          newSecond: (double newSecond) {
+                                            setState(() {
+                                              _second = newSecond.toInt();
+                                            });
+                                            processHistoricalData();
+                                          }),
+                                      Center(
+                                          child: Text(DateFormat('hh:mm:ss a')
+                                              .format(DateTime(
+                                                  _selectedDate!.year,
+                                                  _selectedDate!.month,
+                                                  _selectedDate!.day,
+                                                  _selectedDate!.hour,
+                                                  _second ~/ 60,
+                                                  _second % 60))))
+                                    ],
+                                  ),
+                                if (jeepHistoricalData == null)
+                                  Center(
+                                    child: CircularProgressIndicator(
+                                      color: Color(widget.routeData.routeColor),
+                                    ),
+                                  )
+                              ],
+                            )
+                          : Center(
+                              child: CircularProgressIndicator(
+                              color: Color(widget.routeData.routeColor),
+                            )),
+                    ),
+                  ),
+                  if (processedJeeps != null)
+                    PointerInterceptor(
+                        child: JeepHistoricalRouteInfo(
+                            operatingJeeps: processedJeeps!
+                                .where((element) => element.isOperating)
+                                .length,
+                            totalJeeps: processedJeeps!.length,
+                            routeData: widget.routeData,
+                            selectedJeep: selectedJeep))
+                ],
               ),
-            )
+            ),
           ],
         ));
   }

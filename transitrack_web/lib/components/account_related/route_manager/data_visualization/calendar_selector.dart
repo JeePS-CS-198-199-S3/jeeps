@@ -66,7 +66,7 @@ class _CalendarSelectorState extends State<CalendarSelector> {
                     _selectedDate.month, _selectedDate.day, hour));
               },
               icon: Text(
-                  "Show Historical PUV Data on ${DateFormat('MMM d, yyyy').format(_selectedDate)} - ${formatSliderValue(hour.toDouble())}"))
+                  "Show Historical PUV Data on ${DateFormat('MMM d, yyyy').format(_selectedDate)} (${formatSliderValue(hour.toDouble())} - ${formatSliderValue(hour.toDouble() + 1)})"))
         ],
       ),
     );

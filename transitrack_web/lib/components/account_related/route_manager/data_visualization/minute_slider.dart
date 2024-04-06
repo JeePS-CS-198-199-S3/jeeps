@@ -31,24 +31,20 @@ class _SecondSliderState extends State<SecondSlider> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding:
-            const EdgeInsets.symmetric(horizontal: Constants.defaultPadding),
-        child: Slider(
-          value: _second, // Initial value
-          min: 0,
-          max: 3599,
-          divisions: 3599.toInt(),
-          activeColor: Color(widget.routeData.routeColor).withOpacity(0.25),
-          thumbColor: Color(widget.routeData.routeColor),
-          inactiveColor: Color(widget.routeData.routeColor).withOpacity(0.25),
-          onChanged: (value) {
-            setState(() {
-              _second = value;
-            });
-            widget.newSecond(_second);
-          },
-        ),
+      child: Slider(
+        value: _second, // Initial value
+        min: 0,
+        max: 3599,
+        divisions: 3599.toInt(),
+        activeColor: Color(widget.routeData.routeColor).withOpacity(0.25),
+        thumbColor: Color(widget.routeData.routeColor),
+        inactiveColor: Color(widget.routeData.routeColor).withOpacity(0.25),
+        onChanged: (value) {
+          setState(() {
+            _second = value;
+          });
+          widget.newSecond(_second);
+        },
       ),
     );
   }
