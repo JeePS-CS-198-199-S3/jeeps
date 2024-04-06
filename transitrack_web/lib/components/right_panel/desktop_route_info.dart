@@ -46,6 +46,7 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
   late int operating;
   late int not_operating;
   late LatLng? _myLocation;
+  late bool _gpsPermission;
 
   late Timer etaFetcher;
 
@@ -57,6 +58,7 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
     super.initState();
 
     setState(() {
+      _gpsPermission = widget.gpsPermission;
       _value = widget.route;
       _jeeps = widget.jeeps;
       _selectedJeep = widget.selectedJeep;
@@ -104,6 +106,13 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
   @override
   void didUpdateWidget(covariant DesktopRouteInfo oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    if (widget.gpsPermission != _gpsPermission) {
+      setState(() {
+        _gpsPermission = widget.gpsPermission;
+      });
+    }
+
     // if route choice changed
     if (widget.route != _value) {
       setState(() {
@@ -177,7 +186,9 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
             const SizedBox(width: Constants.defaultPadding / 2),
             if (widget.user != null)
               Container(
-                padding: const EdgeInsets.all(Constants.defaultPadding / 3),
+                padding: const EdgeInsets.symmetric(
+                    vertical: Constants.defaultPadding / 3,
+                    horizontal: Constants.defaultPadding / 2),
                 decoration: BoxDecoration(
                     border: Border.all(color: Colors.white, width: 2),
                     borderRadius:
@@ -185,35 +196,51 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text("SendLoc",
+                      const Text("Wait a Ride",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 12)),
                       const SizedBox(width: Constants.defaultPadding / 3),
-                      CooldownButton(
-                          onPressed: () async {
-                            int result = await sendPing(
-                                widget.user!.account_email,
-                                _myLocation!,
-                                _value.routeId);
-                            if (result == 0) {
-                              widget.sendPing(true);
-                            } else {
-                              errorMessage(
-                                  "Failed to send your current location");
-                            }
-                          },
-                          alert: "Broadcasting your location...",
-                          verified:
-                              widget.user!.is_verified && _myLocation != null,
-                          child: _myLocation != null
-                              ? const Icon(Icons.location_on, size: 15)
-                              : const SizedBox(
-                                  width: 15,
-                                  height: 15,
-                                  child: CircularProgressIndicator(
-                                    color: Constants.bgColor,
-                                  )))
+                      if (_gpsPermission)
+                        CooldownButton(
+                            onPressed: () async {
+                              int result = await sendPing(
+                                  widget.user!.account_email,
+                                  _myLocation!,
+                                  _value.routeId);
+                              if (result == 0) {
+                                widget.sendPing(true);
+                              } else {
+                                errorMessage(
+                                    "Failed to send your current location");
+                              }
+                            },
+                            alert: "Broadcasting your location...",
+                            verified:
+                                widget.user!.is_verified && _myLocation != null,
+                            child: _myLocation != null
+                                ? const Icon(Icons.location_on, size: 15)
+                                : const SizedBox(
+                                    width: 15,
+                                    height: 15,
+                                    child: CircularProgressIndicator(
+                                      color: Constants.bgColor,
+                                    ))),
+                      if (!_gpsPermission)
+                        Container(
+                          width: 25,
+                          height: 25,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Center(
+                              child: Icon(
+                            Icons.location_off,
+                            size: 15,
+                            color: Colors.red[600],
+                          )),
+                        ),
                     ]),
               )
           ]),
