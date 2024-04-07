@@ -1,9 +1,13 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/components/icon_button_big.dart';
+import 'package:transitrack_web/components/right_panel/feedback_tab.dart';
+import 'package:transitrack_web/components/right_panel/feedback_viewer.dart';
 import 'package:transitrack_web/components/right_panel/report_form.dart';
 import 'package:transitrack_web/models/feedback_model.dart';
+import 'package:transitrack_web/style/style.dart';
 
 import '../../models/account_model.dart';
 import '../../models/jeep_model.dart';
@@ -36,8 +40,8 @@ class _SelectedJeepInfoState extends State<SelectedJeepInfo> {
   late AccountData? _user;
   late RouteData _route;
 
-  double? jeepRating;
-  double? driverRating;
+  List<FeedbackData>? jeepRating;
+  List<FeedbackData>? driverRating;
 
   bool isTapped = false;
 
@@ -97,16 +101,8 @@ class _SelectedJeepInfoState extends State<SelectedJeepInfo> {
     var data2 = await getRating(_jeep.jeep.device_id, 'feedback_jeepney');
 
     setState(() {
-      driverRating = (data1!
-              .map((e) => e.feedback_driving_rating)
-              .toList()
-              .reduce((value, element) => value + element) /
-          data1.length);
-      jeepRating = (data2!
-              .map((e) => e.feedback_jeepney_rating)
-              .toList()
-              .reduce((value, element) => value + element) /
-          data2.length);
+      driverRating = data1;
+      jeepRating = data2;
     });
   }
 
@@ -153,9 +149,16 @@ class SelectedJeepInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [left, right]);
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      SizedBox(
+        height: Constants.defaultPadding * 1.5,
+        child: left,
+      ),
+      SizedBox(
+        height: Constants.defaultPadding * 1.5,
+        child: right,
+      )
+    ]);
   }
 }
 
@@ -165,8 +168,8 @@ class SelectedJeepInfoBox extends StatefulWidget {
   final JeepData jeep;
   final AccountData? driver;
   final RouteData route;
-  final double? jeepRating;
-  final double? driverRating;
+  final List<FeedbackData>? jeepRating;
+  final List<FeedbackData>? driverRating;
   final String? eta;
   const SelectedJeepInfoBox(
       {super.key,
@@ -233,38 +236,96 @@ class _SelectedJeepInfoBoxState extends State<SelectedJeepInfoBox> {
                   )),
         const Divider(color: Colors.white),
         SelectedJeepInfoRow(
-            left: Row(children: [
-              Text(widget.jeepRating != null
-                  ? double.parse(widget.jeepRating.toString())
-                      .toStringAsFixed(1)
-                  : "..."),
-              const SizedBox(
-                width: Constants.defaultPadding / 5,
-              ),
-              Icon(Icons.star, color: Color(widget.route.routeColor), size: 15),
-              const SizedBox(
-                width: Constants.defaultPadding / 2,
-              ),
-              const Text("Plate Number")
-            ]),
+            left: IconButton(
+              onPressed: () => widget.driverRating != null
+                  ? AwesomeDialog(
+                          context: context,
+                          dialogType: DialogType.noHeader,
+                          padding: const EdgeInsets.only(
+                              left: Constants.defaultPadding,
+                              right: Constants.defaultPadding,
+                              bottom: Constants.defaultPadding),
+                          width: 600,
+                          body: PointerInterceptor(
+                              child: FeedBackViewer(
+                                  routeData: widget.route,
+                                  isDriver: false,
+                                  feedbackRecepient: widget.jeep.device_id,
+                                  feedbacks: widget.jeepRating!)))
+                      .show()
+                  : null,
+              padding: EdgeInsets.zero,
+              visualDensity: VisualDensity.compact,
+              icon: Row(children: [
+                Text(widget.driverRating != null
+                    ? double.parse((widget.jeepRating!
+                                    .map((e) => e.feedback_jeepney_rating)
+                                    .toList()
+                                    .reduce(
+                                        (value, element) => value + element) /
+                                widget.jeepRating!.length)
+                            .toString())
+                        .toStringAsFixed(1)
+                    : "..."),
+                const SizedBox(
+                  width: Constants.defaultPadding / 5,
+                ),
+                Icon(Icons.star,
+                    color: Color(widget.route.routeColor), size: 15),
+                const SizedBox(
+                  width: Constants.defaultPadding / 2,
+                ),
+                const Text("Plate Number"),
+                const SizedBox(width: Constants.defaultPadding / 2),
+              ]),
+            ),
             right: Text(widget.jeep.device_id)),
         const Divider(color: Colors.white),
         SelectedJeepInfoRow(
-            left: Row(children: [
-              Text(widget.driverRating != null
-                  ? double.parse(widget.driverRating.toString())
-                      .toStringAsFixed(1)
-                  : "..."),
-              const SizedBox(
-                width: Constants.defaultPadding / 5,
-              ),
-              Icon(Icons.star, color: Color(widget.route.routeColor), size: 15),
-              const SizedBox(
-                width: Constants.defaultPadding / 2,
-              ),
-              const Text("Driver"),
-              const SizedBox(width: Constants.defaultPadding / 2),
-            ]),
+            left: IconButton(
+              onPressed: () => widget.driverRating != null
+                  ? AwesomeDialog(
+                          context: context,
+                          dialogType: DialogType.noHeader,
+                          padding: const EdgeInsets.only(
+                              left: Constants.defaultPadding,
+                              right: Constants.defaultPadding,
+                              bottom: Constants.defaultPadding),
+                          width: 600,
+                          body: PointerInterceptor(
+                              child: FeedBackViewer(
+                                  routeData: widget.route,
+                                  isDriver: true,
+                                  feedbackRecepient:
+                                      widget.driver!.account_name,
+                                  feedbacks: widget.driverRating!)))
+                      .show()
+                  : null,
+              padding: EdgeInsets.zero,
+              visualDensity: VisualDensity.compact,
+              icon: Row(children: [
+                Text(widget.driverRating != null
+                    ? double.parse((widget.driverRating!
+                                    .map((e) => e.feedback_driving_rating)
+                                    .toList()
+                                    .reduce(
+                                        (value, element) => value + element) /
+                                widget.driverRating!.length)
+                            .toString())
+                        .toStringAsFixed(1)
+                    : "..."),
+                const SizedBox(
+                  width: Constants.defaultPadding / 5,
+                ),
+                Icon(Icons.star,
+                    color: Color(widget.route.routeColor), size: 15),
+                const SizedBox(
+                  width: Constants.defaultPadding / 2,
+                ),
+                const Text("Driver"),
+                const SizedBox(width: Constants.defaultPadding / 2),
+              ]),
+            ),
             right: Text(widget.driver!.account_name,
                 maxLines: 1, overflow: TextOverflow.ellipsis)),
         if (widget.user != null &&

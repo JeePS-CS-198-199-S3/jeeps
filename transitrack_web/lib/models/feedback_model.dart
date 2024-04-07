@@ -56,6 +56,12 @@ Future<List<FeedbackData>?> getRating(String email, String field) async {
     QuerySnapshot ratingSnapshot = await FirebaseFirestore.instance
         .collection('feedbacks')
         .where(field, isEqualTo: email)
+        .where(
+            field == 'feedback_recepient'
+                ? 'feedback_driving_rating'
+                : 'feedback_jeepney_rating',
+            isGreaterThan: 0)
+        .limit(50)
         .get();
     if (ratingSnapshot.docs.isNotEmpty) {
       return ratingSnapshot.docs

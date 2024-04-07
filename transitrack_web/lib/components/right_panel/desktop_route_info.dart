@@ -284,7 +284,7 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
                           child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(height: Constants.defaultPadding * 3),
+                          const SizedBox(height: Constants.defaultPadding * 3),
                           RichText(
                             textAlign: TextAlign.center,
                             text: TextSpan(
