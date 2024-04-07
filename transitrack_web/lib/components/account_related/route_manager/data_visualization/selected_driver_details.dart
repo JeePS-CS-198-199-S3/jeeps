@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:transitrack_web/components/account_related/route_manager/data_visualization/manage_drivers_table.dart';
+import 'package:transitrack_web/components/right_panel/feedback_tab.dart';
 import 'package:transitrack_web/models/account_model.dart';
 import 'package:transitrack_web/models/feedback_model.dart';
 import 'package:transitrack_web/models/jeep_model.dart';
@@ -52,7 +53,7 @@ class _SelectedDriverDetailsState extends State<SelectedDriverDetails> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: 500,
+        width: 600,
         padding: const EdgeInsets.all(Constants.defaultPadding * 2),
         decoration: BoxDecoration(
             border: Border.all(width: 2, color: Colors.white.withOpacity(0.5)),
@@ -168,6 +169,7 @@ class _SelectedDriverDetailsState extends State<SelectedDriverDetails> {
                       ),
                     ]),
                     const Divider(color: Colors.white),
+                    const SizedBox(height: Constants.defaultPadding),
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       Text(
                           "Average Rating: ${ratingAve != null ? double.parse(ratingAve.toString()).toStringAsFixed(1) : "No Rating Found."}"),
@@ -186,9 +188,19 @@ class _SelectedDriverDetailsState extends State<SelectedDriverDetails> {
                               size: 20,
                             );
                           }),
-                        )
+                        ),
+                      if (ratingAve != null)
+                        Text(" (${jeep.rating!.length} results)")
                     ]),
+                    const SizedBox(height: Constants.defaultPadding),
                     const Divider(color: Colors.white),
+                    if (jeep.rating!.isNotEmpty)
+                      const SizedBox(height: Constants.defaultPadding),
+                    if (jeep.rating!.isNotEmpty)
+                      FeedBack(feedbacks: jeep.rating!, routes: widget.routes),
+                    const SizedBox(height: Constants.defaultPadding),
+                    if (jeep.rating!.isNotEmpty)
+                      const Divider(color: Colors.white),
                     Row(
                       children: [
                         Expanded(
@@ -273,5 +285,58 @@ class _SelectedDriverDetailsState extends State<SelectedDriverDetails> {
                     ),
                   ]);
             }));
+  }
+}
+
+class FeedBack extends StatefulWidget {
+  final List<RouteData> routes;
+  final List<FeedbackData> feedbacks;
+  const FeedBack({super.key, required this.routes, required this.feedbacks});
+
+  @override
+  State<FeedBack> createState() => FeedBackState();
+}
+
+class FeedBackState extends State<FeedBack> {
+  int index = 0;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+                onPressed: () {
+                  if (index > 0) {
+                    setState(() {
+                      index--;
+                    });
+                  }
+                },
+                icon: const Icon(Icons.arrow_left)),
+            Expanded(
+              child: FeedbackTab(
+                  route: widget.routes[widget.feedbacks[index].feedback_route],
+                  isDriver: true,
+                  feedBack: widget.feedbacks[index]),
+            ),
+            IconButton(
+                onPressed: () {
+                  if (index < widget.feedbacks.length - 1) {
+                    setState(() {
+                      index++;
+                    });
+                  }
+                },
+                icon: const Icon(Icons.arrow_right)),
+          ],
+        ),
+        const SizedBox(height: Constants.defaultPadding),
+        Text("${index + 1}/${widget.feedbacks.length}")
+      ],
+    );
   }
 }

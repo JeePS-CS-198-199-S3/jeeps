@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:transitrack_web/models/route_model.dart';
 
 import '../../models/account_model.dart';
 import '../../services/auth_service.dart';
@@ -10,16 +12,17 @@ import '../text_field.dart';
 
 class SignupForm extends StatefulWidget {
   final Function()? onTap;
-  const SignupForm({
-    super.key,
-    required this.onTap
-  });
+  const SignupForm({super.key, required this.onTap});
 
   @override
   State<SignupForm> createState() => _SignupFormState();
 }
 
 class _SignupFormState extends State<SignupForm> {
+  List<RouteData>? routes;
+  List<String>? names;
+  String? chosenRoute;
+
   // text editing controllers
   final nameController = TextEditingController();
   final emailController = TextEditingController();
@@ -27,6 +30,22 @@ class _SignupFormState extends State<SignupForm> {
   final confirmPasswordController = TextEditingController();
   String accountType = "Commuter";
 
+  @override
+  void initState() {
+    super.initState();
+
+    fetchRoutes();
+  }
+
+  void fetchRoutes() async {
+    List<RouteData>? data = await RouteData.fetchRoutes();
+
+    setState(() {
+      routes = data;
+      names = routes!.map((e) => e.routeName).toList();
+      chosenRoute = names!.first;
+    });
+  }
 
   // sign user in method
   void signUserUp() async {
@@ -34,40 +53,51 @@ class _SignupFormState extends State<SignupForm> {
     showDialog(
         context: context,
         builder: (context) {
-          return const Center(
-              child: CircularProgressIndicator()
-          );
-        }
-    );
+          return const Center(child: CircularProgressIndicator());
+        });
 
     // try sign up
     try {
-      // check if password is confirmed
-      if (passwordController.text == confirmPasswordController.text) {
-        UserCredential? userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: emailController.text,
-            password: passwordController.text
-        );
+      if (nameController.text.isNotEmpty) {
+        // check if password is confirmed
+        if (passwordController.text == confirmPasswordController.text) {
+          if (routes != null && chosenRoute != null) {
+            await FirebaseAuth.instance
+                .createUserWithEmailAndPassword(
+                    email: emailController.text,
+                    password: passwordController.text)
+                .then((value) async {
+              await FirebaseFirestore.instance.collection('accounts').add({
+                'account_name': nameController.text,
+                'account_email': emailController.text,
+                'account_type': AccountData.accountTypeMap[accountType],
+                'jeep_driving': "",
+                'is_verified': false,
+                'route_id': routes!
+                    .firstWhere((element) => element.routeName == chosenRoute!)
+                    .routeId,
+              });
 
-        AccountData newAccount = AccountData(
-          account_email: emailController.text,
-          account_name: nameController.text,
-          account_type: AccountData.accountTypeMap[accountType]!,
-          is_verified: false,
-          route_id: -1
-        );
+              // pop loading circle
+              Navigator.pop(context);
+            });
+          } else {
+            // password dont match
+            errorMessage("Select a route you wish to associate to.");
+          }
+        } else {
+          // pop loading circle
+          Navigator.pop(context);
 
-        AuthService().createUserDocument(userCredential.user, newAccount);
-        // pop loading circle
-        Navigator.pop(context);
-        Navigator.pop(context);
-
+          // password dont match
+          errorMessage("Passwords don't match!");
+        }
       } else {
         // pop loading circle
         Navigator.pop(context);
 
         // password dont match
-        errorMessage("Passwords don't match!");
+        errorMessage("Name is required!");
       }
     } on FirebaseAuthException catch (e) {
       // pop loading circle
@@ -84,51 +114,55 @@ class _SignupFormState extends State<SignupForm> {
               backgroundColor: Constants.bgColor,
               title: Center(
                   child: Text(
-                    message,
-                    style: const TextStyle(
-                        color: Colors.white
-                    ),
-                  )
-              )
-          );
-        }
-    );
+                message,
+                style: const TextStyle(color: Colors.white),
+              )));
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: Constants.defaultPadding, right: Constants.defaultPadding, bottom: Constants.defaultPadding),
+      padding: const EdgeInsets.only(
+          left: Constants.defaultPadding,
+          right: Constants.defaultPadding,
+          bottom: Constants.defaultPadding),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-           const Row(
+          const Row(
             children: [
-              PrimaryText(text: "Sign Up", color: Colors.white, size: 40, fontWeight: FontWeight.w700,)
+              PrimaryText(
+                text: "Sign Up",
+                color: Colors.white,
+                size: 40,
+                fontWeight: FontWeight.w700,
+              )
             ],
           ),
-
           const SizedBox(height: Constants.defaultPadding),
-
-          InputTextField(controller: emailController, hintText: "Email", obscureText: false),
-
+          InputTextField(
+              controller: emailController,
+              hintText: "Email",
+              obscureText: false),
           const SizedBox(height: Constants.defaultPadding),
-
-          InputTextField(controller: nameController, hintText: "Name", obscureText: false),
-
+          InputTextField(
+              controller: nameController, hintText: "Name", obscureText: false),
           const SizedBox(height: Constants.defaultPadding),
-
-          InputTextField(controller: passwordController, hintText: "Password", obscureText: true),
-
+          InputTextField(
+              controller: passwordController,
+              hintText: "Password",
+              obscureText: true),
           const SizedBox(height: Constants.defaultPadding),
-
-          InputTextField(controller: confirmPasswordController, hintText: "Confirm Password", obscureText: true),
-
+          InputTextField(
+              controller: confirmPasswordController,
+              hintText: "Confirm Password",
+              obscureText: true),
           const SizedBox(height: Constants.defaultPadding),
-
           Container(
             width: double.maxFinite,
-            padding: const EdgeInsets.symmetric(horizontal: Constants.defaultPadding/2, vertical: 4),
+            padding: const EdgeInsets.symmetric(
+                horizontal: Constants.defaultPadding / 2, vertical: 4),
             decoration: BoxDecoration(
               color: Constants.secondaryColor,
               borderRadius: BorderRadius.circular(3),
@@ -148,7 +182,8 @@ class _SignupFormState extends State<SignupForm> {
                     });
                   }
                 },
-                items: AccountData.accountTypeMap.keys.map<DropdownMenuItem<String>>((String value) {
+                items: AccountData.accountTypeMap.keys
+                    .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -157,15 +192,65 @@ class _SignupFormState extends State<SignupForm> {
               ),
             ),
           ),
-
-          const SizedBox(height: Constants.defaultPadding/2),
-
-          const SizedBox(height: Constants.defaultPadding*2),
-
-          Button(onTap: signUserUp, text: "Sign Up",),
-
-          const SizedBox(height: Constants.defaultPadding*2.5),
-
+          const SizedBox(height: Constants.defaultPadding),
+          if (accountType != 'Commuter' && names == null)
+            Container(
+              width: double.maxFinite,
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Constants.defaultPadding / 2,
+                  vertical: Constants.defaultPadding + 2.5),
+              decoration: BoxDecoration(
+                color: Constants.secondaryColor,
+                borderRadius: BorderRadius.circular(3),
+                border: Border.all(
+                  color: Colors.white, // Set border color here
+                  width: 1, // Set border width here
+                ),
+              ),
+              child: const Text(
+                "Loading Routes...",
+                style: TextStyle(fontSize: 15),
+              ),
+            ),
+          if (accountType != 'Commuter' && names != null)
+            Container(
+              width: double.maxFinite,
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Constants.defaultPadding / 2, vertical: 4),
+              decoration: BoxDecoration(
+                color: Constants.secondaryColor,
+                borderRadius: BorderRadius.circular(3),
+                border: Border.all(
+                  color: Colors.white, // Set border color here
+                  width: 1, // Set border width here
+                ),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: chosenRoute, // Initial value
+                  onChanged: (String? newValue) {
+                    // Handle dropdown value change
+                    if (newValue != null) {
+                      setState(() {
+                        chosenRoute = newValue;
+                      });
+                    }
+                  },
+                  items: names!.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          const SizedBox(height: Constants.defaultPadding * 2),
+          Button(
+            onTap: signUserUp,
+            text: "Sign Up",
+          ),
+          const SizedBox(height: Constants.defaultPadding * 2.5),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -178,7 +263,9 @@ class _SignupFormState extends State<SignupForm> {
                 onTap: widget.onTap,
                 child: const Text(
                   'Login now',
-                  style: TextStyle(color: Constants.primaryColor, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Constants.primaryColor,
+                      fontWeight: FontWeight.bold),
                 ),
               )
             ],

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:transitrack_web/models/feedback_model.dart';
 import 'package:transitrack_web/models/route_model.dart';
@@ -42,8 +43,13 @@ class FeedbackTab extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                  "Feedback by ${replaceWithAsterisks(feedBack.feedback_sender, 0.6)}"),
+              Expanded(
+                child: Text(
+                    "Feedback by ${replaceWithAsterisks(feedBack.feedback_sender, 0.6)}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
+              ),
+              const SizedBox(width: Constants.defaultPadding),
               Row(
                   children: List.generate(5, (index) {
                 bool enabled = index <
@@ -69,7 +75,12 @@ class FeedbackTab extends StatelessWidget {
           ),
           const Divider(color: Colors.white),
           const SizedBox(height: Constants.defaultPadding),
-          Text(feedBack.feedback_content)
+          SizedBox(
+            height: Constants.defaultPadding * 1.5,
+            child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Text(feedBack.feedback_content)),
+          )
         ],
       ),
     );

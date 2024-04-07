@@ -104,36 +104,40 @@ class _FeedBackViewerState extends State<FeedBackViewer> {
         const Divider(color: Colors.white),
         const SizedBox(height: Constants.defaultPadding),
         if (routes != null)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
+          Column(
             children: [
-              IconButton(
-                  onPressed: () {
-                    if (index > 0) {
-                      setState(() {
-                        index--;
-                      });
-                    }
-                  },
-                  icon: const Icon(Icons.arrow_left)),
-              Expanded(
-                child: SizedBox(
-                    height: 200,
-                    child: FeedbackTab(
-                        route: routes![widget.feedbacks[index].feedback_route],
-                        isDriver: widget.isDriver,
-                        feedBack: widget.feedbacks[index])),
+              SizedBox(
+                  height: 200,
+                  child: FeedbackTab(
+                      route: routes![widget.feedbacks[index].feedback_route],
+                      isDriver: widget.isDriver,
+                      feedBack: widget.feedbacks[index])),
+              Row(
+                children: [
+                  Expanded(
+                    child: IconButton(
+                        onPressed: () {
+                          if (index > 0) {
+                            setState(() {
+                              index--;
+                            });
+                          }
+                        },
+                        icon: const Icon(Icons.arrow_left)),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                        onPressed: () {
+                          if (index < widget.feedbacks.length - 1) {
+                            setState(() {
+                              index++;
+                            });
+                          }
+                        },
+                        icon: const Icon(Icons.arrow_right)),
+                  )
+                ],
               ),
-              IconButton(
-                  onPressed: () {
-                    if (index < widget.feedbacks.length - 1) {
-                      setState(() {
-                        index++;
-                      });
-                    }
-                  },
-                  icon: const Icon(Icons.arrow_right))
             ],
           ),
       ],

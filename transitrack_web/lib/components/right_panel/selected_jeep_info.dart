@@ -257,15 +257,17 @@ class _SelectedJeepInfoBoxState extends State<SelectedJeepInfoBox> {
               padding: EdgeInsets.zero,
               visualDensity: VisualDensity.compact,
               icon: Row(children: [
-                Text(widget.driverRating != null
-                    ? double.parse((widget.jeepRating!
-                                    .map((e) => e.feedback_jeepney_rating)
-                                    .toList()
-                                    .reduce(
-                                        (value, element) => value + element) /
-                                widget.jeepRating!.length)
-                            .toString())
-                        .toStringAsFixed(1)
+                Text(widget.jeepRating != null
+                    ? widget.jeepRating!.isNotEmpty
+                        ? double.parse((widget.jeepRating!
+                                        .map((e) => e.feedback_jeepney_rating)
+                                        .toList()
+                                        .reduce((value, element) =>
+                                            value + element) /
+                                    widget.jeepRating!.length)
+                                .toString())
+                            .toStringAsFixed(1)
+                        : "N/A"
                     : "..."),
                 const SizedBox(
                   width: Constants.defaultPadding / 5,
@@ -305,14 +307,16 @@ class _SelectedJeepInfoBoxState extends State<SelectedJeepInfoBox> {
               visualDensity: VisualDensity.compact,
               icon: Row(children: [
                 Text(widget.driverRating != null
-                    ? double.parse((widget.driverRating!
-                                    .map((e) => e.feedback_driving_rating)
-                                    .toList()
-                                    .reduce(
-                                        (value, element) => value + element) /
-                                widget.driverRating!.length)
-                            .toString())
-                        .toStringAsFixed(1)
+                    ? widget.driverRating!.isNotEmpty
+                        ? double.parse((widget.driverRating!
+                                        .map((e) => e.feedback_driving_rating)
+                                        .toList()
+                                        .reduce((value, element) =>
+                                            value + element) /
+                                    widget.driverRating!.length)
+                                .toString())
+                            .toStringAsFixed(1)
+                        : "N/A"
                     : "..."),
                 const SizedBox(
                   width: Constants.defaultPadding / 5,

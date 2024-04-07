@@ -59,7 +59,7 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
     query = query.orderBy(orderBy.filterSearch,
         descending: orderBy.filterDescending);
 
-    QuerySnapshot querySnapshot = await query.limit(20).get();
+    QuerySnapshot querySnapshot = await query.limit(50).get();
 
     setState(() {
       feedbacks = querySnapshot.docs.map((DocumentSnapshot document) {
@@ -260,7 +260,7 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                                'Feedback by ${feedbackAdditionalInfo.senderData != null? feedbackAdditionalInfo.senderData!.account_name:"No Data"}'),
+                                                'Feedback by ${feedbackAdditionalInfo.senderData != null ? feedbackAdditionalInfo.senderData!.account_name : "No Data"}'),
                                             Text(
                                                 '<${selectedFeedback!.feedback_sender}>',
                                                 style: TextStyle(
@@ -321,11 +321,13 @@ class _FeedbacksTableState extends State<FeedbacksTable> {
                                                         TextOverflow.ellipsis,
                                                   ),
                                                   Text(
-                                                    feedbackAdditionalInfo.recepientData != null
-                                                    ? feedbackAdditionalInfo
-                                                        .recepientData!
-                                                        .account_name
-                                                    : "No Data",
+                                                    feedbackAdditionalInfo
+                                                                .recepientData !=
+                                                            null
+                                                        ? feedbackAdditionalInfo
+                                                            .recepientData!
+                                                            .account_name
+                                                        : "No Data",
                                                     textAlign: TextAlign.right,
                                                     maxLines: 1,
                                                     overflow:

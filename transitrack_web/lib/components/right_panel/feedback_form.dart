@@ -23,8 +23,8 @@ class FeedbackForm extends StatefulWidget {
 class _FeedbackFormState extends State<FeedbackForm> {
   final feedBackController = TextEditingController();
 
-  int _drivingRating = -1;
-  int _jeepRating = -1;
+  int _drivingRating = 0;
+  int _jeepRating = 0;
 
   void sendFeedback() async {
     // show loading circle
@@ -36,7 +36,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
 
     // feedback field is not empty
     if (feedBackController.text.isNotEmpty) {
-      if (_drivingRating != -1 && _jeepRating != -1) {
+      if (_drivingRating + _jeepRating > 0) {
         if (widget.user!.account_email != widget.jeep.driver!.account_email) {
           try {
             // Add a new document with auto-generated ID
@@ -71,7 +71,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
         // pop loading circle
         Navigator.pop(context);
 
-        errorMessage("You need to rate!");
+        errorMessage("You need to rate either PUV or Driver!");
       }
     } else {
       // pop loading circle
@@ -153,96 +153,58 @@ class _FeedbackFormState extends State<FeedbackForm> {
           const Divider(color: Colors.white),
           const SizedBox(height: Constants.defaultPadding),
           const Text("Driver"),
-          if (_drivingRating != -1)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (index) {
-                return IconButton(
-                  icon: Icon(
-                    index < _drivingRating ? Icons.star : Icons.star_border,
-                    color: index < _drivingRating
-                        ? Color(widget.route.routeColor)
-                        : Colors.grey,
-                    size: 30,
-                  ),
-                  onPressed: () {
-                    if (_drivingRating == index + 1) {
-                      setState(() {
-                        _drivingRating = -1;
-                      });
-                    } else {
-                      setState(() {
-                        _drivingRating = index + 1;
-                      });
-                    }
-                  },
-                );
-              }),
-            ),
-          if (_drivingRating == -1)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (index) {
-                return IconButton(
-                  icon: const Icon(
-                    Icons.star_border,
-                    color: Colors.grey,
-                    size: 30,
-                  ),
-                  onPressed: () {
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(5, (index) {
+              return IconButton(
+                icon: Icon(
+                  index < _drivingRating ? Icons.star : Icons.star_border,
+                  color: index < _drivingRating
+                      ? Color(widget.route.routeColor)
+                      : Colors.grey,
+                  size: 30,
+                ),
+                onPressed: () {
+                  if (_drivingRating == index + 1) {
+                    setState(() {
+                      _drivingRating = 0;
+                    });
+                  } else {
                     setState(() {
                       _drivingRating = index + 1;
                     });
-                  },
-                );
-              }),
-            ),
+                  }
+                },
+              );
+            }),
+          ),
           const SizedBox(height: Constants.defaultPadding),
-          const Text("Jeepney"),
-          if (_jeepRating != -1)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (index) {
-                return IconButton(
-                  icon: Icon(
-                    index < _jeepRating ? Icons.star : Icons.star_border,
-                    color: index < _jeepRating
-                        ? Color(widget.route.routeColor)
-                        : Colors.grey,
-                    size: 30,
-                  ),
-                  onPressed: () {
-                    if (_jeepRating == index + 1) {
-                      setState(() {
-                        _jeepRating = -1;
-                      });
-                    } else {
-                      setState(() {
-                        _jeepRating = index + 1;
-                      });
-                    }
-                  },
-                );
-              }),
-            ),
-          if (_jeepRating == -1)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (index) {
-                return IconButton(
-                  icon: const Icon(
-                    Icons.star_border,
-                    color: Colors.grey,
-                    size: 30,
-                  ),
-                  onPressed: () {
+          const Text("PUV"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(5, (index) {
+              return IconButton(
+                icon: Icon(
+                  index < _jeepRating ? Icons.star : Icons.star_border,
+                  color: index < _jeepRating
+                      ? Color(widget.route.routeColor)
+                      : Colors.grey,
+                  size: 30,
+                ),
+                onPressed: () {
+                  if (_jeepRating == index + 1) {
+                    setState(() {
+                      _jeepRating = 0;
+                    });
+                  } else {
                     setState(() {
                       _jeepRating = index + 1;
                     });
-                  },
-                );
-              }),
-            ),
+                  }
+                },
+              );
+            }),
+          ),
           const SizedBox(height: Constants.defaultPadding),
           const Divider(color: Colors.white),
           const SizedBox(height: Constants.defaultPadding),
@@ -255,7 +217,9 @@ class _FeedbackFormState extends State<FeedbackForm> {
           const SizedBox(height: Constants.defaultPadding),
           Button(
             onTap: () => sendFeedback(),
-            text: "Send Feedback",
+            text: _drivingRating + _jeepRating == 0
+                ? "Rate Driver or PUV"
+                : "Send Feedback for ${_drivingRating != 0 && _jeepRating != 0 ? "Driver and PUV" : _jeepRating != 0 ? "PUV" : "Driver"}",
           ),
         ],
       ),
