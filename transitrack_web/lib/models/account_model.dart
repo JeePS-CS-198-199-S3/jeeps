@@ -20,7 +20,8 @@ class AccountData {
       required this.route_id,
       this.jeep_driving});
 
-  factory AccountData.fromSnapshot(DocumentSnapshot<Object?> snapshot) {
+  factory AccountData.fromSnapshot(DocumentSnapshot<Object?> snapshot,
+      {bool isCommuterVerified = false}) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
 
     String account_email = data['account_email'];
@@ -29,6 +30,10 @@ class AccountData {
     bool is_verified = data['is_verified'] as bool;
     int route_id = data['route_id'];
     String? jeep_driving = data['jeep_driving'] ?? null;
+
+    if (account_type == 0) {
+      is_verified = isCommuterVerified;
+    }
 
     return AccountData(
         account_email: account_email,

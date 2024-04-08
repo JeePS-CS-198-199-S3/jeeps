@@ -84,7 +84,7 @@ class _AccountStreamState extends State<AccountStream> {
                   ],
                 ),
                 Text(
-                    "${widget.admin}${AccountData.accountType[widget.user!.account_type]}",
+                    "${widget.user!.account_type > 0 ? widget.admin : ''}${AccountData.accountType[widget.user!.account_type]}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis),
                 const SizedBox(height: Constants.defaultPadding),

@@ -1,6 +1,8 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:transitrack_web/models/route_model.dart';
 
 import '../../models/account_model.dart';
@@ -19,6 +21,11 @@ class SignupForm extends StatefulWidget {
 }
 
 class _SignupFormState extends State<SignupForm> {
+  List<String> registerPrompts = [
+    "Congratulations on registering your commuter account!\n\nTo access the commuter features, please verify your account by clicking the link we've sent to your email\ninbox/spam folder.",
+    "Congratulations on registering your driver account!\n\nTo access the driver features, contact your route manager for verification and install the JeePS Driver App.",
+    "Congratulations on registering your route manager account!\n\nTo access the route manager features, please wait while we verify your account.\n\n-JeePS Team"
+  ];
   List<RouteData>? routes;
   List<String>? names;
   String? chosenRoute;
@@ -78,10 +85,29 @@ class _SignupFormState extends State<SignupForm> {
                     .routeId,
               });
 
+              value.user!.sendEmailVerification();
+
               // pop loading circle
               Navigator.pop(context);
             });
+
+            AwesomeDialog(
+                context: context,
+                dialogType: DialogType.info,
+                padding: const EdgeInsets.only(
+                    left: Constants.defaultPadding,
+                    right: Constants.defaultPadding,
+                    bottom: Constants.defaultPadding),
+                width: 400,
+                onDismissCallback: (_) => Navigator.pop(context),
+                body: PointerInterceptor(
+                  child: Text(
+                    registerPrompts[AccountData.accountTypeMap[accountType]!],
+                    textAlign: TextAlign.center,
+                  ),
+                )).show();
           } else {
+            Navigator.pop(context);
             // password dont match
             errorMessage("Select a route you wish to associate to.");
           }

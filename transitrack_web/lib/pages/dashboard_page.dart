@@ -152,7 +152,8 @@ class _DashboardState extends State<Dashboard> {
         .listen((QuerySnapshot snapshot) {
       if (snapshot.docs.isNotEmpty) {
         setState(() {
-          currentUserFirestore = AccountData.fromSnapshot(snapshot.docs.first);
+          currentUserFirestore = AccountData.fromSnapshot(snapshot.docs.first,
+              isCommuterVerified: currentUserAuth!.emailVerified);
         });
       }
     });

@@ -9,17 +9,13 @@ class SelectJeepPrompt extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(Constants.defaultPadding),
       decoration: BoxDecoration(
-          border: Border.all(
-              color: Colors.white,
-              width: 2
-          ),
-          borderRadius: BorderRadius.circular(Constants.defaultPadding)
-      ),
+          border: Border.all(color: Colors.white, width: 2),
+          borderRadius: BorderRadius.circular(Constants.defaultPadding)),
       child: const Row(
         children: [
           Icon(Icons.touch_app_rounded),
           SizedBox(width: Constants.defaultPadding),
-          Text("Select a jeepney")
+          Text("Select a PUV on the map")
         ],
       ),
     );

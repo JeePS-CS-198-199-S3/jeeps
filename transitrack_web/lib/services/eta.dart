@@ -88,10 +88,10 @@ Future<EtaData?> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter,
 
       List<LatLng> coords2 = extractCoordinates(decoded2);
 
-      downsample.addAll(coords2.reversed.toList());
+      reduced.addAll(coords2.reversed.toList());
       return EtaData(
           etaTime: formatSeconds(duration1 + duration2),
-          etaCoordinates: downsample);
+          etaCoordinates: reduced);
     } else {
       return null;
     }
