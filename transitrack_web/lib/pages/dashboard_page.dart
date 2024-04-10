@@ -50,8 +50,6 @@ class _DashboardState extends State<Dashboard> {
   // Ensure map is loaded
   bool mapLoaded = false;
 
-  JeepData? selectedJeepMobile;
-
   bool gpsPermission = false;
 
   @override

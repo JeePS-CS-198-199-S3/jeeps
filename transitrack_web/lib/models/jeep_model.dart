@@ -72,6 +72,10 @@ class JeepEntity {
     required this.jeepAndDriver,
     required this.jeepSymbol,
   });
+
+  void setJeepsAndDrivers(JeepsAndDrivers newData) {
+    jeepAndDriver = newData;
+  }
 }
 
 class JeepsAndDrivers {

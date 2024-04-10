@@ -123,53 +123,58 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
       });
 
       updateJeeps();
-
-      if (selectedJeep != null &&
-          jeeps != null &&
-          jeeps!.any((jeep) =>
-              jeep.jeep.device_id ==
-              selectedJeep!.jeepAndDriver.jeep.device_id)) {
-        setState(() {
-          selectedJeep = jeepEntities.firstWhere((jeepEntity) =>
-              jeepEntity.jeepAndDriver.jeep.device_id ==
-              selectedJeep!.jeepAndDriver.jeep.device_id);
-        });
-      } else {
-        setState(() {
-          selectedJeep = null;
-        });
-      }
     }
   }
 
   void updateJeeps() {
     List<JeepsAndDrivers>? toUpdate = jeeps;
-    if (toUpdate != null) {
-      for (JeepsAndDrivers jeep in toUpdate) {
-        int index = jeepEntities.indexWhere((entity) =>
-            entity.jeepAndDriver.jeep.device_id == jeep.jeep.device_id);
+    if (toUpdate != null && toUpdate.isNotEmpty) {
+      if (selectedJeep != null) {
+        if (toUpdate.any((element) =>
+            element.jeep.device_id ==
+                selectedJeep!.jeepAndDriver.jeep.device_id &&
+            element.driver != null)) {
+          JeepsAndDrivers jeepsAndDrivers = toUpdate.firstWhere((element) =>
+              element.jeep.device_id ==
+              selectedJeep!.jeepAndDriver.jeep.device_id);
+          selectedJeep!.setJeepsAndDrivers(jeepsAndDrivers);
+        } else {
+          _mapController.updateSymbol(
+              selectedJeep!.jeepSymbol,
+              const SymbolOptions(
+                  iconSize: 0, textSize: 0, iconImage: 'jeepTop'));
+          setState(() {
+            selectedJeep = null;
+          });
+        }
+      }
 
-        if (index != -1) {
-          JeepEntity? specificJeepEntity = jeepEntities[index];
-          JeepData specificJeep = specificJeepEntity.jeepAndDriver.jeep;
-          if (specificJeepEntity.jeepAndDriver.driver != null) {
-            _mapController.updateSymbol(
-                specificJeepEntity.jeepSymbol,
-                SymbolOptions(
-                    iconRotate: specificJeep.bearing,
-                    textRotate: specificJeep.bearing + 90,
-                    textColor: intToHexColor(_value!.routeColor),
-                    geometry: LatLng(specificJeep.location.latitude,
-                        specificJeep.location.longitude)));
+      for (var device_id in jeepEntities
+          .map((e) => e.jeepAndDriver.jeep.device_id)
+          .toSet()
+          .difference(toUpdate.map((e) => e.jeep.device_id).toSet())) {
+        int index = jeepEntities.indexWhere(
+            (element) => element.jeepAndDriver.jeep.device_id == device_id);
+        _mapController.removeSymbol(jeepEntities[index].jeepSymbol);
+        jeepEntities.removeAt(index);
+      }
 
-            jeepEntities[index] = JeepEntity(
-                jeepAndDriver: jeep, jeepSymbol: specificJeepEntity.jeepSymbol);
-          } else {
-            _mapController
-                .removeSymbol(specificJeepEntity.jeepSymbol)
-                .then((value) => jeepEntities.removeAt(index));
-          }
-        } else if (jeep.driver != null) {
+      for (var jeep in toUpdate) {
+        if (jeepEntities.any((element) =>
+            element.jeepAndDriver.jeep.device_id == jeep.jeep.device_id)) {
+          int index = jeepEntities.indexWhere((element) =>
+              element.jeepAndDriver.jeep.device_id == jeep.jeep.device_id);
+          _mapController.updateSymbol(
+              jeepEntities[index].jeepSymbol,
+              SymbolOptions(
+                  geometry: LatLng(jeep.jeep.location.latitude,
+                      jeep.jeep.location.longitude),
+                  iconRotate: jeep.jeep.bearing,
+                  iconSize: jeep.driver != null ? 1 : 0,
+                  textSize: jeep.driver != null ? 50 : 0,
+                  textRotate: jeep.jeep.bearing + 90));
+          jeepEntities[index].setJeepsAndDrivers(jeep);
+        } else {
           _mapController
               .addSymbol(SymbolOptions(
                   geometry: LatLng(jeep.jeep.location.latitude,
@@ -177,15 +182,19 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                   iconImage: "jeepTop",
                   textField: "▬▬",
                   textLetterSpacing: -0.35,
-                  textSize: 50,
-                  textColor: intToHexColor(_value!.routeColor),
+                  textColor: intToHexColor(widget.route!.routeColor),
                   textRotate: jeep.jeep.bearing + 90,
                   iconRotate: jeep.jeep.bearing,
-                  iconSize: 1))
-              .then((circle) => jeepEntities
-                  .add(JeepEntity(jeepAndDriver: jeep, jeepSymbol: circle)));
+                  iconSize: jeep.driver != null ? 1 : 0,
+                  textSize: jeep.driver != null ? 50 : 0))
+              .then((value) => jeepEntities
+                  .add(JeepEntity(jeepAndDriver: jeep, jeepSymbol: value)));
         }
       }
+    } else {
+      selectedJeep = null;
+      _mapController.clearSymbols();
+      jeepEntities.clear();
     }
   }
 
