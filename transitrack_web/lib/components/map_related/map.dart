@@ -437,6 +437,11 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  void resetCamera() {
+    _mapController.animateCamera(
+        CameraUpdate.newLatLngZoom(Keys.MapCenter, mapStartZoom));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -452,7 +457,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                     MinMaxZoomPreference(mapMinZoom, mapMaxZoom),
                 compassEnabled: true,
                 compassViewPosition: Responsive.isDesktop(context)
-                    ? CompassViewPosition.BottomLeft
+                    ? CompassViewPosition.TopLeft
                     : CompassViewPosition.TopRight,
                 onMapCreated: (controller) {
                   _onMapCreated(controller);
@@ -519,6 +524,28 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                           },
                           myLocation: myLocation))
           ]),
+          Positioned(
+              right: Responsive.isDesktop(context)
+                  ? null
+                  : Constants.defaultPadding * 3,
+              left: Responsive.isDesktop(context)
+                  ? Constants.defaultPadding * 3
+                  : null,
+              top: Constants.defaultPadding * 0.75,
+              child: PointerInterceptor(
+                child: CircleAvatar(
+                  radius: 13,
+                  backgroundColor: Colors.grey[100],
+                  child: IconButton(
+                    onPressed: () => resetCamera(),
+                    icon: const Icon(Icons.center_focus_strong),
+                    tooltip: "Reset Map Location",
+                    visualDensity: VisualDensity.compact,
+                    iconSize: 10,
+                    color: Colors.black,
+                  ),
+                ),
+              )),
           if (Responsive.isDesktop(context))
             Positioned(
                 top: 0,
