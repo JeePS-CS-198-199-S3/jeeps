@@ -2,6 +2,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:transitrack_web/components/account_related/forgot_password.dart';
 import 'package:transitrack_web/style/style.dart';
 
 import '../../style/constants.dart';
@@ -94,14 +95,15 @@ class _LoginFormState extends State<LoginForm> {
               children: [
                 GestureDetector(
                   onTap: () => AwesomeDialog(
-                      context: context,
-                      dialogType: DialogType.noHeader,
-                      width: 400,
-                      padding: const EdgeInsets.only(
-                          left: Constants.defaultPadding,
-                          right: Constants.defaultPadding,
-                          bottom: Constants.defaultPadding),
-                      body: const Text("SECTION UNDER CONSTRUCTION")),
+                          context: context,
+                          dialogType: DialogType.noHeader,
+                          width: 500,
+                          padding: const EdgeInsets.only(
+                              left: Constants.defaultPadding,
+                              right: Constants.defaultPadding,
+                              bottom: Constants.defaultPadding),
+                          body: const ForgotPassword())
+                      .show(),
                   child: Text(
                     "Forgot Password?",
                     style: TextStyle(color: Colors.grey[600]),

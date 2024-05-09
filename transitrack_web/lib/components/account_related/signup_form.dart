@@ -85,7 +85,9 @@ class _SignupFormState extends State<SignupForm> {
                     .routeId,
               });
 
-              value.user!.sendEmailVerification();
+              if (AccountData.accountTypeMap[accountType] == 1) {
+                value.user!.sendEmailVerification();
+              }
 
               // pop loading circle
               Navigator.pop(context);
