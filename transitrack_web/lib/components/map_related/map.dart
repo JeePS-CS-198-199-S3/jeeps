@@ -442,6 +442,11 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
         CameraUpdate.newLatLngZoom(Keys.MapCenter, mapStartZoom));
   }
 
+  void resetToLocation() {
+    _mapController
+        .animateCamera(CameraUpdate.newLatLngZoom(myLocation!, mapStartZoom));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -532,19 +537,40 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                   ? Constants.defaultPadding * 3
                   : null,
               top: Constants.defaultPadding * 0.75,
-              child: PointerInterceptor(
-                child: CircleAvatar(
-                  radius: 13,
-                  backgroundColor: Colors.grey[100],
-                  child: IconButton(
-                    onPressed: () => resetCamera(),
-                    icon: const Icon(Icons.center_focus_strong),
-                    tooltip: "Reset Map Location",
-                    visualDensity: VisualDensity.compact,
-                    iconSize: 10,
-                    color: Colors.black,
+              child: Row(
+                children: [
+                  PointerInterceptor(
+                    child: CircleAvatar(
+                      radius: 13,
+                      backgroundColor: Colors.grey[100],
+                      child: IconButton(
+                        onPressed: () => resetCamera(),
+                        icon: const Icon(Icons.center_focus_strong),
+                        tooltip: "Reset Map Location",
+                        visualDensity: VisualDensity.compact,
+                        iconSize: 10,
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
-                ),
+                  if (myLocation != null)
+                    const SizedBox(width: Constants.defaultPadding / 2),
+                  if (myLocation != null)
+                    PointerInterceptor(
+                      child: CircleAvatar(
+                        radius: 13,
+                        backgroundColor: Colors.grey[100],
+                        child: IconButton(
+                          onPressed: () => resetToLocation(),
+                          icon: const Icon(Icons.person),
+                          tooltip: "Reset to your Location",
+                          visualDensity: VisualDensity.compact,
+                          iconSize: 10,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                ],
               )),
           if (Responsive.isDesktop(context))
             Positioned(
