@@ -23,7 +23,7 @@ class FeedBackViewer extends StatefulWidget {
 }
 
 class _FeedBackViewerState extends State<FeedBackViewer> {
-  late List<RouteData>? routes;
+  List<RouteData> routes = [];
   int index = 0;
 
   @override
@@ -76,40 +76,41 @@ class _FeedBackViewerState extends State<FeedBackViewer> {
                 ),
               ],
             ),
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: '${index + 1}',
-                    style: Theme.of(context).textTheme.headline4?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 25,
-                        ),
-                  ),
-                  TextSpan(
-                    text: "/${widget.feedbacks.length}",
-                    style: Theme.of(context).textTheme.headline4?.copyWith(
-                          color: Colors.white.withOpacity(0.75),
-                          fontWeight: FontWeight.w800,
-                          fontSize: 16,
-                        ),
-                  )
-                ],
+            if (widget.feedbacks.isNotEmpty)
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '${index + 1}',
+                      style: Theme.of(context).textTheme.headline4?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 25,
+                          ),
+                    ),
+                    TextSpan(
+                      text: "/${widget.feedbacks.length}",
+                      style: Theme.of(context).textTheme.headline4?.copyWith(
+                            color: Colors.white.withOpacity(0.75),
+                            fontWeight: FontWeight.w800,
+                            fontSize: 16,
+                          ),
+                    )
+                  ],
+                ),
               ),
-            ),
           ],
         ),
         const Divider(color: Colors.white),
         const SizedBox(height: Constants.defaultPadding),
-        if (routes != null)
+        if (widget.feedbacks.isNotEmpty && routes.isNotEmpty)
           Column(
             children: [
               SizedBox(
                   height: 200,
                   child: FeedbackTab(
-                      route: routes![widget.feedbacks[index].feedback_route],
+                      route: routes[widget.feedbacks[index].feedback_route],
                       isDriver: widget.isDriver,
                       feedBack: widget.feedbacks[index])),
               Row(
