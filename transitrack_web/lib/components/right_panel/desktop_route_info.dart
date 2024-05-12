@@ -184,64 +184,49 @@ class _DesktopRouteInfoState extends State<DesktopRouteInfo> {
             )),
             const SizedBox(width: Constants.defaultPadding / 2),
             if (widget.user != null)
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    vertical: Constants.defaultPadding / 3,
-                    horizontal: Constants.defaultPadding / 2),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white, width: 2),
-                    borderRadius:
-                        BorderRadius.circular(Constants.defaultPadding)),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("Wait a Ride",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 12)),
-                      const SizedBox(width: Constants.defaultPadding / 3),
-                      if (_gpsPermission)
-                        CooldownButton(
-                            onPressed: () async {
-                              int result = await sendPing(
-                                  widget.user!.account_email,
-                                  _myLocation!,
-                                  _value.routeId);
-                              if (result == 0) {
-                                widget.sendPing(true);
-                              } else {
-                                errorMessage(
-                                    "Failed to send your current location");
-                              }
-                            },
-                            alert: "Broadcasting your location...",
-                            verified:
-                                widget.user!.is_verified && _myLocation != null,
-                            child: _myLocation != null
-                                ? const Icon(Icons.location_on, size: 15)
-                                : const SizedBox(
-                                    width: 15,
-                                    height: 15,
-                                    child: CircularProgressIndicator(
-                                      color: Constants.bgColor,
-                                    ))),
-                      if (!_gpsPermission)
-                        Container(
-                          width: 25,
-                          height: 25,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Center(
-                              child: Icon(
-                            Icons.location_off,
-                            size: 15,
-                            color: Colors.red[600],
-                          )),
-                        ),
-                    ]),
-              )
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                const Text("Wait a Ride",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 10)),
+                const SizedBox(width: Constants.defaultPadding / 3),
+                if (_gpsPermission)
+                  CooldownButton(
+                      onPressed: () async {
+                        int result = await sendPing(widget.user!.account_email,
+                            _myLocation!, _value.routeId);
+                        if (result == 0) {
+                          widget.sendPing(true);
+                        } else {
+                          errorMessage("Failed to send your current location");
+                        }
+                      },
+                      alert: "Broadcasting your location...",
+                      verified: widget.user!.is_verified && _myLocation != null,
+                      child: _myLocation != null
+                          ? const Icon(Icons.location_on, size: 15)
+                          : const SizedBox(
+                              width: 15,
+                              height: 15,
+                              child: CircularProgressIndicator(
+                                color: Constants.bgColor,
+                              ))),
+                if (!_gpsPermission)
+                  Container(
+                    width: 25,
+                    height: 25,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: Center(
+                        child: Icon(
+                      Icons.location_off,
+                      size: 15,
+                      color: Colors.red[600],
+                    )),
+                  ),
+              ])
           ]),
           const SizedBox(height: Constants.defaultPadding),
           Stack(children: [

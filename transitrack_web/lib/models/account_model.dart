@@ -8,9 +8,11 @@ class AccountData {
   String account_email;
   String account_name;
   int account_type;
+  String account_id;
   bool is_verified;
   int route_id;
   String? jeep_driving;
+  bool show_discounted;
 
   AccountData(
       {required this.account_email,
@@ -18,7 +20,9 @@ class AccountData {
       required this.account_type,
       required this.is_verified,
       required this.route_id,
-      this.jeep_driving});
+      required this.account_id,
+      this.jeep_driving,
+      required this.show_discounted});
 
   factory AccountData.fromSnapshot(DocumentSnapshot<Object?> snapshot,
       {bool isCommuterVerified = false}) {
@@ -30,6 +34,8 @@ class AccountData {
     bool is_verified = data['is_verified'] as bool;
     int route_id = data['route_id'];
     String? jeep_driving = data['jeep_driving'] ?? null;
+    bool show_discounted = data['show_discounted'] ?? false;
+    String account_id = snapshot.id;
 
     if (account_type == 0) {
       is_verified = isCommuterVerified;
@@ -41,7 +47,9 @@ class AccountData {
         account_type: account_type,
         is_verified: is_verified,
         route_id: route_id,
-        jeep_driving: jeep_driving);
+        jeep_driving: jeep_driving,
+        show_discounted: show_discounted,
+        account_id: account_id);
   }
 
   static Future<AccountData?> getAccountByEmail(String email) async {
