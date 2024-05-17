@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:transitrack_web/components/left_drawer/live_test_instructions.dart';
+import 'package:transitrack_web/components/left_drawer/live_test_instructions_desktop.dart';
 import 'package:transitrack_web/style/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class MobileResearch extends StatefulWidget {
-  final Function pin;
-  const MobileResearch({super.key, required this.pin});
+class DesktopResearch extends StatefulWidget {
+  const DesktopResearch({super.key});
 
   @override
-  State<MobileResearch> createState() => _MobileResearchState();
+  State<DesktopResearch> createState() => _DesktopResearchState();
 }
 
-class _MobileResearchState extends State<MobileResearch> {
+class _DesktopResearchState extends State<DesktopResearch> {
   List<Widget> pages = [];
   int page = 0;
 
@@ -30,7 +30,7 @@ class _MobileResearchState extends State<MobileResearch> {
             // ),
             // const Text("5 random respondents will be rewarded 200 pesos!"),
             const Divider(color: Colors.white),
-            Row(
+            Column(
               children: [
                 const Text("Step 1: Fill out our pretest survey "),
                 GestureDetector(
@@ -49,39 +49,20 @@ class _MobileResearchState extends State<MobileResearch> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 500,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               children: [
-                const Text("Step 2: Explore the JeePS app!"),
-                const SizedBox(
+                Text("Step 2: Explore the JeePS app!"),
+                SizedBox(
                   height: Constants.defaultPadding,
                 ),
-                const Text(
+                Text(
                     "Follow the instructions down below.\n\nCreate a commuter account, have it verified, log in, and make sure location tracking is enabled!"),
-                const SizedBox(
-                  height: Constants.defaultPadding,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Pin instructions to dashboard"),
-                    IconButton(
-                        onPressed: () => widget.pin(),
-                        icon: const CircleAvatar(
-                          backgroundColor: Colors.blue,
-                          radius: 24,
-                          child: Icon(
-                            Icons.pin_invoke,
-                            color: Constants.bgColor,
-                          ),
-                        ))
-                  ],
-                ),
-                const Divider(color: Colors.white),
-                const LiveTestInstructions()
+                Divider(color: Colors.white),
+                LiveTestInstructionsDesktop()
               ],
             ),
           ),
@@ -95,7 +76,7 @@ class _MobileResearchState extends State<MobileResearch> {
             ),
             const Text("Please use the same email for this step."),
             const Divider(color: Colors.white),
-            Row(
+            Column(
               children: [
                 const Text("Step 3: Fill out our post test survey "),
                 GestureDetector(
@@ -128,43 +109,37 @@ class _MobileResearchState extends State<MobileResearch> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(Constants.defaultPadding),
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.white, width: 2),
-          borderRadius: BorderRadius.circular(Constants.defaultPadding)),
-      child: Column(
-        children: [
-          pages[page],
-          const SizedBox(height: Constants.defaultPadding),
-          Row(
-            children: [
-              Expanded(
-                child: IconButton(
-                    onPressed: () {
-                      if (page > 0) {
-                        setState(() {
-                          page--;
-                        });
-                      }
-                    },
-                    icon: Icon(Icons.arrow_back)),
-              ),
-              Expanded(
-                child: IconButton(
-                    onPressed: () {
-                      if (page < pages.length - 1) {
-                        setState(() {
-                          page++;
-                        });
-                      }
-                    },
-                    icon: Icon(Icons.arrow_forward)),
-              )
-            ],
-          )
-        ],
-      ),
+    return Column(
+      children: [
+        pages[page],
+        const SizedBox(height: Constants.defaultPadding),
+        Row(
+          children: [
+            Expanded(
+              child: IconButton(
+                  onPressed: () {
+                    if (page > 0) {
+                      setState(() {
+                        page--;
+                      });
+                    }
+                  },
+                  icon: Icon(Icons.arrow_back)),
+            ),
+            Expanded(
+              child: IconButton(
+                  onPressed: () {
+                    if (page < pages.length - 1) {
+                      setState(() {
+                        page++;
+                      });
+                    }
+                  },
+                  icon: Icon(Icons.arrow_forward)),
+            )
+          ],
+        )
+      ],
     );
   }
 }

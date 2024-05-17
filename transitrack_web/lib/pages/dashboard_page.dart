@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:provider/provider.dart';
+import 'package:transitrack_web/components/left_drawer/desktop_research_prompt.dart';
 import 'package:transitrack_web/components/left_drawer/live_test_instructions.dart';
 import 'package:transitrack_web/components/left_drawer/mobile_research_prompt.dart';
 import '../MenuController.dart';
@@ -334,6 +335,10 @@ class _DashboardState extends State<Dashboard> {
                               : "",
                           route: routeChoice,
                         ),
+                        const SizedBox(
+                          height: Constants.defaultPadding,
+                        ),
+                        const DesktopResearchPrompt()
                       ],
                     ),
                   ),

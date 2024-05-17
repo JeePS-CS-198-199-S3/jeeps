@@ -1,6 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:transitrack_web/components/left_drawer/mobile_research.dart';
@@ -24,7 +23,7 @@ class MobileResearchPrompt extends StatelessWidget {
             borderRadius: const BorderRadius.all(
                 Radius.circular(Constants.defaultPadding)),
           ),
-          child: const Text("We'd love to hear from you!"),
+          child: const Text("Join our Survey"),
         ),
         GestureDetector(
           onTap: () => AwesomeDialog(
@@ -47,7 +46,7 @@ class MobileResearchPrompt extends StatelessWidget {
                 borderRadius: const BorderRadius.all(
                     Radius.circular(Constants.defaultPadding)),
               ),
-              child: const Text("We'd love to hear from you!"),
+              child: const Text("Join our Survey"),
             ),
           ),
         ),
