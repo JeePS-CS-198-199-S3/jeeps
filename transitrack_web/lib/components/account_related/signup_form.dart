@@ -85,7 +85,7 @@ class _SignupFormState extends State<SignupForm> {
                     .routeId,
               });
 
-              if (AccountData.accountTypeMap[accountType] == 1) {
+              if (AccountData.accountTypeMap[accountType] == 0) {
                 value.user!.sendEmailVerification();
               }
 

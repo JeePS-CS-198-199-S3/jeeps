@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:provider/provider.dart';
+import 'package:transitrack_web/components/left_drawer/live_test_instructions.dart';
+import 'package:transitrack_web/components/left_drawer/mobile_research_prompt.dart';
 import '../MenuController.dart';
 
 import '../components/account_related/account_stream.dart';
@@ -27,6 +30,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  bool mobileTutorial = false;
   bool drawerOpen = false;
 
   // Account Detection
@@ -267,6 +271,12 @@ class _DashboardState extends State<Dashboard> {
                         : "",
                     route: routeChoice,
                   ),
+                  const SizedBox(height: Constants.defaultPadding),
+                  MobileResearchPrompt(
+                    pin: () => setState(() {
+                      mobileTutorial = !mobileTutorial;
+                    }),
+                  ),
                   const SizedBox(height: Constants.defaultPadding)
                 ],
               ),
@@ -346,6 +356,48 @@ class _DashboardState extends State<Dashboard> {
                   }),
                 ),
                 if (!Responsive.isDesktop(context)) const Header(),
+                if (Responsive.isMobile(context) && mobileTutorial)
+                  Positioned(
+                      bottom: 220,
+                      child: PointerInterceptor(
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.all(
+                                    Constants.defaultPadding),
+                                decoration: const BoxDecoration(
+                                  color: Constants.bgColor,
+                                ),
+                                child: const Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 100,
+                                      child: SingleChildScrollView(
+                                          physics:
+                                              AlwaysScrollableScrollPhysics(),
+                                          child: LiveTestInstructions()),
+                                    ),
+                                  ],
+                                )),
+                            Positioned(
+                              bottom: 115,
+                              right: 0,
+                              child: IconButton(
+                                  iconSize: 30,
+                                  visualDensity: VisualDensity.compact,
+                                  onPressed: () => setState(() {
+                                        mobileTutorial = false;
+                                      }),
+                                  icon: const Icon(
+                                    Icons.cancel,
+                                    color: Colors.red,
+                                  )),
+                            )
+                          ],
+                        ),
+                      ))
               ]),
             )
           ],

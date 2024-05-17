@@ -7,13 +7,13 @@ class CooldownButton extends StatefulWidget {
   final bool verified;
   final String alert;
 
-  const CooldownButton({
-    Key? key,
-    required this.child,
-    required this.onPressed,
-    required this.verified,
-    required this.alert
-  }) : super(key: key);
+  const CooldownButton(
+      {Key? key,
+      required this.child,
+      required this.onPressed,
+      required this.verified,
+      required this.alert})
+      : super(key: key);
 
   @override
   _CooldownButtonState createState() => _CooldownButtonState();
@@ -81,9 +81,7 @@ class _CooldownButtonState extends State<CooldownButton> {
           color: (_isCooldown || !widget.verified) ? Colors.grey : Colors.blue,
           borderRadius: BorderRadius.circular(50),
         ),
-        child: Center(
-          child: _buttonText
-        ),
+        child: Center(child: _buttonText),
       ),
     );
   }
