@@ -5,6 +5,8 @@ import 'package:transitrack_web/models/account_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 import '../../models/route_model.dart';
 
+// Widget containing all active routes
+
 class RouteList extends StatefulWidget {
   final List<RouteData>? routes;
   final int routeChoice;

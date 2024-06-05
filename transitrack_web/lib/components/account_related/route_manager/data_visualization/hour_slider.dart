@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 
+// A component of the hour selector panel in the historical puv tab of the data visualization panel of the route manager account.
+
 class HourSlider extends StatefulWidget {
   final RouteData routeData;
   final double hour;

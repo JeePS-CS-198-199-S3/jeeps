@@ -10,6 +10,8 @@ import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 import 'package:transitrack_web/style/style.dart';
 
+// This widget holds all data visualization features for the route manager account.
+
 class DataVisualizationTab extends StatefulWidget {
   final RouteData route;
   const DataVisualizationTab({super.key, required this.route});

@@ -3,6 +3,8 @@ import '../../models/route_model.dart';
 import '../../services/format_time.dart';
 import '../../style/constants.dart';
 
+// Widget containing route information
+
 class RouteListTile extends StatefulWidget {
   final RouteData route;
   final bool isSelected;

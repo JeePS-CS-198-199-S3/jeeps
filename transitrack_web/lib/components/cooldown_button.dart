@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
+// Used in Wait a Ride Feature to prevent abuse of use
+
 class CooldownButton extends StatefulWidget {
   final Widget child;
   final VoidCallback onPressed;

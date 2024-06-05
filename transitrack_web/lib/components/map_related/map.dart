@@ -27,6 +27,8 @@ import '../right_panel/unselected_desktop_route_info.dart';
 import '../right_panel/mobile_dashboard_unselected.dart';
 import '../right_panel/mobile_route_info.dart';
 
+// This is the main map
+
 class MapWidget extends StatefulWidget {
   final RouteData? route;
   final List<JeepsAndDrivers>? jeeps;

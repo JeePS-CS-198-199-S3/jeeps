@@ -7,6 +7,8 @@ import '../../style/style.dart';
 import '../button.dart';
 import '../text_field.dart';
 
+// This widget displays the account settings page
+
 class AccountSettings extends StatelessWidget {
   final User user;
   final AccountData account;

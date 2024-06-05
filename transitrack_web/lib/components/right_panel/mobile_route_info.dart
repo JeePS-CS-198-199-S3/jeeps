@@ -14,6 +14,8 @@ import 'selected_jeep_info.dart';
 import '../cooldown_button.dart';
 import '../../services/send_ping.dart';
 
+// This widget displays all the information for the route for the mobile view
+
 class MobileRouteInfo extends StatefulWidget {
   final bool gpsPermission;
   final RouteData route;

@@ -6,6 +6,8 @@ import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 import 'package:transitrack_web/style/style.dart';
 
+// This widget is called when user selects either the PUV or the Driver Name to view the feedbacks for them.
+
 class FeedBackViewer extends StatefulWidget {
   final bool isDriver;
   final String feedbackRecepient;

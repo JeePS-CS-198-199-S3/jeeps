@@ -4,6 +4,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 
+// Used in the Historical Data Tab
+
 class CalendarWidget extends StatefulWidget {
   final RouteData routeData;
   final DateTime selectedDate;

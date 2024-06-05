@@ -6,6 +6,8 @@ import 'package:transitrack_web/models/ping_model.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/services/int_to_hex.dart';
 
+// This Map widget is called under the shared locations tab of the data visualization panel
+
 class SharedLocationsMap extends StatefulWidget {
   final RouteData routeData;
   final List<PingData>? pings;

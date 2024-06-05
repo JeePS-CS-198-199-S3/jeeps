@@ -3,6 +3,8 @@ import 'package:transitrack_web/components/account_related/signup_form.dart';
 
 import 'login_form.dart';
 
+// Login/Register Widget
+
 class LoginSignupForm extends StatefulWidget {
   const LoginSignupForm({
     super.key,
@@ -26,15 +28,9 @@ class _LoginSignupFormState extends State<LoginSignupForm> {
   @override
   Widget build(BuildContext context) {
     if (showLoginPage) {
-      return LoginForm(
-          onTap: togglePages
-      );
+      return LoginForm(onTap: togglePages);
     } else {
-      return SignupForm(
-          onTap: togglePages);
+      return SignupForm(onTap: togglePages);
     }
   }
 }
-
-
-

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:transitrack_web/style/constants.dart';
 
+// Handy Multi-purpose Big Icon Button
+
 class IconButtonBig extends StatelessWidget {
   Color color;
   Widget icon;

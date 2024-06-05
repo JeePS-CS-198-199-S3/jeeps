@@ -9,6 +9,8 @@ import '../../../style/constants.dart';
 import '../../account_related/route_manager/route_vehicles_settings.dart';
 import '../../../models/jeep_model.dart';
 
+// This widget allows the route manager to modify the route's properties, coordinates, and PUVs
+
 class RouteManagerOptions extends StatefulWidget {
   final RouteData route;
   final List<JeepsAndDrivers> jeeps;

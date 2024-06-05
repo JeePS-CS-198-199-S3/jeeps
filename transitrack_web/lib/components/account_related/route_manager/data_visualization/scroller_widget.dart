@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:transitrack_web/models/route_model.dart';
 
+// Range Slider widget used for the hour selector of the historical data tab.
+
 class ScrollerWidget extends StatefulWidget {
   final RouteData routeData;
   final int earliest;

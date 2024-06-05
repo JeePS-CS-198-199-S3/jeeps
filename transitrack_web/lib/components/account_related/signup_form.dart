@@ -12,6 +12,8 @@ import '../../style/style.dart';
 import '../button.dart';
 import '../text_field.dart';
 
+// Register Page
+
 class SignupForm extends StatefulWidget {
   final Function()? onTap;
   const SignupForm({super.key, required this.onTap});

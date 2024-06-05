@@ -13,6 +13,8 @@ import '../select_jeep_prompt.dart';
 import '../../components/cooldown_button.dart';
 import '../../services/send_ping.dart';
 
+// This widget displays all the information for the route for the desktop view
+
 class DesktopRouteInfo extends StatefulWidget {
   final bool gpsPermission;
   final RouteData route;

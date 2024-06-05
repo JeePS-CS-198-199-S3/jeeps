@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../style/constants.dart';
 
+// This widget is visible when no route is selected.
+
 class UnselectedDesktopRouteInfo extends StatelessWidget {
   const UnselectedDesktopRouteInfo({
     super.key,

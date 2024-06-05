@@ -14,6 +14,8 @@ import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/services/find_location.dart';
 import 'package:transitrack_web/style/constants.dart';
 
+// This is the Manage Driver tab of the data visualization panel of the route manager.
+
 class ManageDriversTable extends StatefulWidget {
   final RouteData route;
   const ManageDriversTable({super.key, required this.route});

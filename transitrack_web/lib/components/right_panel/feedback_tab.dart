@@ -7,6 +7,8 @@ import 'package:transitrack_web/models/feedback_model.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 
+// This widget is called when user selects the feedback button
+
 class FeedbackTab extends StatelessWidget {
   final RouteData route;
   final bool isDriver;

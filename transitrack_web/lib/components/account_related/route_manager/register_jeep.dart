@@ -7,6 +7,8 @@ import '../../../style/style.dart';
 import '../../text_field.dart';
 import '../../button.dart';
 
+// This widget allows the route manager to register a PUV
+
 class RegisterJeep extends StatefulWidget {
   final RouteData route;
   const RegisterJeep({super.key, required this.route});

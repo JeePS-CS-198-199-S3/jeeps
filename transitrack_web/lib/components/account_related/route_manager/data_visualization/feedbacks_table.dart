@@ -11,6 +11,8 @@ import 'package:transitrack_web/models/filter_model.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 
+// This widget is called when route manager opens the feedback tab in the data visualization panel
+
 class FeedbacksTable extends StatefulWidget {
   final RouteData route;
   const FeedbacksTable({super.key, required this.route});

@@ -9,6 +9,8 @@ import '../../style/style.dart';
 import '../button.dart';
 import '../text_field.dart';
 
+// This widget is called when user selects the feedback button
+
 class FeedbackForm extends StatefulWidget {
   AccountData? user;
   JeepsAndDrivers jeep;

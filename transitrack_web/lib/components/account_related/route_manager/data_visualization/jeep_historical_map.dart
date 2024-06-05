@@ -7,6 +7,8 @@ import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/services/int_to_hex.dart';
 import 'package:transitrack_web/services/mapbox/add_image_from_asset.dart';
 
+// The Map Widget that appears when the jeep historical tab is selected in the data visualization panel of the route manager account.
+
 class JeepHistoricalMap extends StatefulWidget {
   final ValueChanged<bool> mapLoaded;
   final List<JeepHistoricalData>? jeepHistoricalData;

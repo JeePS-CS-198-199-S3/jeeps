@@ -5,6 +5,8 @@ import 'package:transitrack_web/config/map_settings.dart';
 import 'package:transitrack_web/models/report_model.dart';
 import 'package:transitrack_web/services/int_to_hex.dart';
 
+// This map appears when the Reports tab is selected in the data visualization panel of the route manager account.
+
 class ReportsMap extends StatefulWidget {
   final bool isHover;
   final bool isDispose;
@@ -71,7 +73,9 @@ class _ReportsMapState extends State<ReportsMap> {
     }
 
     if (widget.selectedReport != selectedReport) {
-      if (selectedReport != null && selectedReport!.report_type > 0 && selectedReport!.report_type < 4) {
+      if (selectedReport != null &&
+          selectedReport!.report_type > 0 &&
+          selectedReport!.report_type < 4) {
         _mapController.updateCircle(
             reportEntities
                 .firstWhere((reportEntity) =>
@@ -84,7 +88,9 @@ class _ReportsMapState extends State<ReportsMap> {
         selectedReport = widget.selectedReport;
       });
 
-      if (selectedReport != null && selectedReport!.report_type > 0 && selectedReport!.report_type < 4) {
+      if (selectedReport != null &&
+          selectedReport!.report_type > 0 &&
+          selectedReport!.report_type < 4) {
         _mapController.updateCircle(
             reportEntities
                 .firstWhere((element) =>
@@ -100,7 +106,9 @@ class _ReportsMapState extends State<ReportsMap> {
   }
 
   void onCircleTapped(Circle pressedCircle) {
-    if (selectedReport != null && selectedReport!.report_type > 0 && selectedReport!.report_type < 4) {
+    if (selectedReport != null &&
+        selectedReport!.report_type > 0 &&
+        selectedReport!.report_type < 4) {
       if (pressedCircle ==
           reportEntities
               .firstWhere((element) =>
@@ -136,8 +144,8 @@ class _ReportsMapState extends State<ReportsMap> {
       _mapController.clearCircles().then((value) => reportEntities.clear());
     }
 
-    for (ReportData report
-        in reportData.where((report) => report.report_type > 0 && report.report_type < 4)) {
+    for (ReportData report in reportData
+        .where((report) => report.report_type > 0 && report.report_type < 4)) {
       _mapController
           .addCircle(CircleOptions(
               circleRadius: 5,
@@ -185,7 +193,8 @@ class _ReportsMapState extends State<ReportsMap> {
       ),
       onMapClick: (point, latLng) {
         if (selectedReport != null) {
-          if (selectedReport!.report_type > 0 && selectedReport!.report_type < 4) {
+          if (selectedReport!.report_type > 0 &&
+              selectedReport!.report_type < 4) {
             _mapController.updateCircle(
                 reportEntities
                     .firstWhere((report) =>

@@ -6,6 +6,8 @@ import '../../../style/constants.dart';
 import '../../../style/style.dart';
 import '../../button.dart';
 
+// This widget allows the route manager to deletea PUV
+
 class DeleteJeep extends StatefulWidget {
   final JeepData jeepData;
   const DeleteJeep({super.key, required this.jeepData});

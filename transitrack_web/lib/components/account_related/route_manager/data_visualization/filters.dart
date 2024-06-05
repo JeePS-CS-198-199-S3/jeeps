@@ -5,6 +5,8 @@ import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 import 'package:transitrack_web/style/style.dart';
 
+// Used primarily in the feedbacks and routes filter
+
 class Filters extends StatefulWidget {
   final RouteData route;
   final List<FilterName> dropdownList;

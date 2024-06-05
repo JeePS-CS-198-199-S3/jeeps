@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 
+// This widget is found in the historical data tab to run through the entire hour selected.
+
 class SecondSlider extends StatefulWidget {
   final RouteData routeData;
   final double second;

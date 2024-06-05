@@ -10,6 +10,8 @@ import 'package:transitrack_web/models/jeep_model.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 
+// This is the Historical Data panel of the data visualization panel of the route manager account.
+
 class JeepHistoricalPage extends StatefulWidget {
   final RouteData routeData;
   const JeepHistoricalPage({super.key, required this.routeData});

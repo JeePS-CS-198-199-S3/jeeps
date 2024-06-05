@@ -6,6 +6,8 @@ import 'package:transitrack_web/components/text_field.dart';
 import 'package:transitrack_web/style/constants.dart';
 import 'package:transitrack_web/style/style.dart';
 
+// This widget handles the password reset process
+
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
 

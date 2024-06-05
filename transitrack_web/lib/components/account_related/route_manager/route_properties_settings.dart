@@ -8,6 +8,8 @@ import '../../../style/constants.dart';
 import '../../button.dart';
 import '../../text_field.dart';
 
+// This widget allows the route manager to modify the properties of the route
+
 class PropertiesSettings extends StatefulWidget {
   RouteData route;
   PropertiesSettings({super.key, required this.route});

@@ -10,6 +10,8 @@ import '../../../style/constants.dart';
 import '../../button.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 
+// This widget displays the vehicle settings page
+
 class VehiclesSettings extends StatefulWidget {
   final RouteData route;
   final List<JeepsAndDrivers> jeeps;

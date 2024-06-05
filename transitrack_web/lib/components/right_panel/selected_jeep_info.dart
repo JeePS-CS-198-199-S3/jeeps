@@ -16,6 +16,8 @@ import '../../config/responsive.dart';
 import '../../style/constants.dart';
 import 'feedback_form.dart';
 
+// This widget displays relevant information of the PUV
+
 class SelectedJeepInfo extends StatefulWidget {
   final bool gpsPermission;
   final JeepsAndDrivers jeep;

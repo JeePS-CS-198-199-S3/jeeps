@@ -11,6 +11,8 @@ import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/services/find_location.dart';
 import 'package:transitrack_web/style/constants.dart';
 
+// This widget appears when a driver is selected in the Manager Driver Tab of the Data visualization panel of the route manager account.
+
 class SelectedDriverDetails extends StatefulWidget {
   final List<RouteData> routes;
   final RouteData route;

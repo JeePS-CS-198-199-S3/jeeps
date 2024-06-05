@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../style/constants.dart';
 
+// UI that prompts user to select a PUV
+
 class SelectJeepPrompt extends StatelessWidget {
   const SelectJeepPrompt({super.key});
 

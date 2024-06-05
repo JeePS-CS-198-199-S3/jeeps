@@ -8,6 +8,8 @@ import '../../../style/style.dart';
 import '../../text_field.dart';
 import '../../button.dart';
 
+// This widget allows the route manager to edit the properties of a PUV
+
 class EditJeep extends StatefulWidget {
   final RouteData route;
   final JeepData jeepData;

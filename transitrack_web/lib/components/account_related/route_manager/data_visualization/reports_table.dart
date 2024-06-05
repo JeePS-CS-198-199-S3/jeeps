@@ -13,6 +13,8 @@ import 'package:transitrack_web/models/report_model.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 
+// This widget is used in the Reports tab of the Data visualization panel of the route manager to list all the reports issued in the route.
+
 class ReportsTable extends StatefulWidget {
   final RouteData route;
   final bool isDispose;
@@ -385,7 +387,9 @@ class ReportContents extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(usersAdditionalInfo.senderData != null?usersAdditionalInfo.senderData!.account_name:"No Data"),
+                      Text(usersAdditionalInfo.senderData != null
+                          ? usersAdditionalInfo.senderData!.account_name
+                          : "No Data"),
                       Text("<${reportData.report_sender}>",
                           style: TextStyle(
                               fontSize: 13,
@@ -404,7 +408,9 @@ class ReportContents extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(usersAdditionalInfo.recepientData != null?usersAdditionalInfo.recepientData!.account_name:"No Data"),
+                      Text(usersAdditionalInfo.recepientData != null
+                          ? usersAdditionalInfo.recepientData!.account_name
+                          : "No Data"),
                       Text("<${reportData.report_recepient}>",
                           style: TextStyle(
                               fontSize: 13,

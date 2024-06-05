@@ -6,6 +6,8 @@ import 'package:transitrack_web/models/jeep_model.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 
+// This widget contains the selected PUV under the historical data tab of the data visualization panel of the route manager.
+
 class SelectedJeepInfoBoxHistorical extends StatefulWidget {
   final JeepHistoricalData jeep;
   final RouteData routeData;

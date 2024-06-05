@@ -10,6 +10,8 @@ import '../../models/account_model.dart';
 import '../../style/constants.dart';
 import 'login_signup_form.dart';
 
+// This widget listens whether there is a logged in account or not.
+
 class AccountStream extends StatefulWidget {
   User? currentUser;
   AccountData? user;
