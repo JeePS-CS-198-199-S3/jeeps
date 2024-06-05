@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:transitrack_web/style/constants.dart';
 
+// Function to request permission to user if GPS permission is still disabled.
+
 Future<bool> requestLocationPermission(BuildContext context) async {
   PermissionStatus permissionStatus = await Permission.location.request();
 

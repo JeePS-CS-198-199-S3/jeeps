@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 
-class SizeConfig{
+// Setup for Responsive Screen
+
+class SizeConfig {
   static MediaQueryData? _mediaQueryData;
   static double? screenWidth;
   static double? screenHeight;

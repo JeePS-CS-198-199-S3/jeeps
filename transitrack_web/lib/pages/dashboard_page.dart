@@ -23,6 +23,8 @@ import '../models/jeep_model.dart';
 import '../models/route_model.dart';
 import '../style/constants.dart';
 
+// The one and only page of the app. This .dart file includes stream set up for the user account, routes, and puvs.
+
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
@@ -34,19 +36,29 @@ class _DashboardState extends State<Dashboard> {
   bool mobileTutorial = false;
   bool drawerOpen = false;
 
-  // Account Detection
+  // Keeps track of the current FirebaseAuth information
   User? currentUserAuth;
+
+  // Keeps track of the current Firebase Firestore information
   AccountData? currentUserFirestore;
+
+  // All Enabled Routes
   List<RouteData> _routes = [];
+
+  // All PUVs in selected Route
   List<JeepsAndDrivers> jeeps = [];
+
+  // All Drivers that are Operating
   List<AccountData?> drivers = [];
-  late StreamSubscription<User?> userAuthStream; // Firebase Auth
-  late StreamSubscription userFirestoreStream; // Firebase Firestore Accounts
-  late StreamSubscription routesFirestoreStream; // Firebase Firestore Routes
+
+  // Stream Listeners
+  late StreamSubscription<User?> userAuthStream;
+  late StreamSubscription userFirestoreStream;
+  late StreamSubscription routesFirestoreStream;
   late StreamSubscription jeepsFirestoreStream;
   late StreamSubscription driversFirestoreStream;
 
-  // Route Selection
+  // Route Selection (unselected = -1)
   int routeChoice = -1;
 
   // Device Location Found
@@ -55,8 +67,11 @@ class _DashboardState extends State<Dashboard> {
   // Ensure map is loaded
   bool mapLoaded = false;
 
+  // Ensure GPS Permission is allowed
   bool gpsPermission = false;
 
+  // Upon initialization, load the current user (if there is) and load the firestore information of this user.
+  // Also start listening for all enabled routes.
   @override
   void initState() {
     super.initState();

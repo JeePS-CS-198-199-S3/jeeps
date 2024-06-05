@@ -4,9 +4,12 @@ import 'dart:html' as html;
 
 import 'package:transitrack_web/models/route_model.dart';
 
+// Broadcasted Location model
+
 class PingData {
   String ping_id;
-  String ping_email;
+  String
+      ping_email; // not really being used since we keep the broadcasted locations annonymous
   GeoPoint ping_location;
   int ping_route;
   Timestamp ping_timestamp;

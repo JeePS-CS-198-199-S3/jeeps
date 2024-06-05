@@ -9,12 +9,8 @@ String formatTime(List<int> times) {
   int endMinutes = times[1] % 60;
 
   // Determine AM or PM for start and end times
-  String startPeriod = (startHours >= 12 && startHours != 24
-      ? 'PM'
-      : 'AM');
-  String endPeriod = endHours >= 12 && endHours != 24
-      ? 'PM'
-      : 'AM';
+  String startPeriod = (startHours >= 12 && startHours != 24 ? 'PM' : 'AM');
+  String endPeriod = endHours >= 12 && endHours != 24 ? 'PM' : 'AM';
 
   // Convert hours to 12-hour format
   if (startHours > 12) {
@@ -33,8 +29,10 @@ String formatTime(List<int> times) {
   }
 
   // Format the time strings
-  String startTime = '$startHours:${startMinutes.toString().padLeft(2, '0')} $startPeriod';
-  String endTime = '$endHours:${endMinutes.toString().padLeft(2, '0')} $endPeriod';
+  String startTime =
+      '$startHours:${startMinutes.toString().padLeft(2, '0')} $startPeriod';
+  String endTime =
+      '$endHours:${endMinutes.toString().padLeft(2, '0')} $endPeriod';
 
   return '$startTime - $endTime';
 }

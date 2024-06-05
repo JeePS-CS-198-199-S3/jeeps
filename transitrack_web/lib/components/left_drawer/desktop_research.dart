@@ -25,10 +25,11 @@ class _DesktopResearchState extends State<DesktopResearch> {
           children: [
             const Text(
                 "We are studying the effectiveness of JeePS in improving the commute experience in UP Diliman."),
-            // const SizedBox(
-            //   height: Constants.defaultPadding,
-            // ),
-            // const Text("5 random respondents will be rewarded 200 pesos!"),
+            const SizedBox(
+              height: Constants.defaultPadding,
+            ),
+            const Text(
+                "5 random respondents will be rewarded 200 pesos! To qualify, make sure you fill up the pretest and post test forms with your email."),
             const Divider(color: Colors.white),
             Column(
               children: [

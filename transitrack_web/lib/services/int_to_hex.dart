@@ -1,3 +1,5 @@
+// Auxiliary Function to easily convert into to hex strings since some Mapbox functions take in hex strings instead of int values
+
 String intToHexColor(int colorValue) {
   String hexColor = colorValue.toRadixString(16).toUpperCase();
   // Take only the leftmost 6 hex digits

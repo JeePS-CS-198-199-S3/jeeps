@@ -2,14 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import '../models/account_model.dart';
 
+// PUV Model
+
 class JeepData {
   String device_id;
   Timestamp timestamp;
-  int passenger_count;
+  int passenger_count; // -1 for passive broadcasting mode
   int max_capacity;
   GeoPoint location;
   int route_id;
-  double bearing;
+  double bearing; // rotation of PUV symbol (0-360)
 
   JeepData(
       {required this.device_id,

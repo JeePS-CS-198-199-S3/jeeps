@@ -572,7 +572,7 @@ class _MapWidgetState extends State<MapWidget> with TickerProviderStateMixin {
                     ),
                 ],
               )),
-          if (Responsive.isDesktop(context))
+          if (!Responsive.isMobile(context))
             Positioned(
                 top: 0,
                 right: 0,

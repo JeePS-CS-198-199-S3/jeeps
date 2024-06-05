@@ -7,6 +7,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../services/format_seconds.dart';
 
+// This builds up the API call for Mapbox Directions API.
+
 Future<EtaData?> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter,
     LatLng jeep) async {
   List<LatLng> correctOrientation = coords;
@@ -42,7 +44,7 @@ Future<EtaData?> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter,
     }
   }
 
-  // Downsample List if longer than 22 entries
+  // Downsample List if longer than 22 entries since Mapbox only allows up to 22 points for pathfinding calculation
   List<LatLng> downsample = [];
   if (reduced.length > 23) {
     double step = reduced.length / 23;
@@ -54,8 +56,6 @@ Future<EtaData?> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter,
     downsample = reduced;
   }
 
-  // downsample.add(commuter);
-
   String query = "";
 
   for (LatLng point in downsample) {
@@ -64,9 +64,12 @@ Future<EtaData?> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter,
 
   query = query.substring(0, query.length - 1);
 
+  // First API Url is to calculate the ETA between the PUV location and the nearest route coordinate to the device of the client
   String apiUrl =
       'https://api.mapbox.com/directions/v5/mapbox/driving-traffic/$query?geometries=geojson&access_token=${Keys.MapBoxKey}';
 
+  // Second API Url is to calculate the ETA between the nearest route coordinate to the device of the client and the device of the client. This might sound
+  // confusing, but this is essentially the cases when the device is far from the entire route, so this second API call will calculate that.
   String apiUrl2 =
       'https://api.mapbox.com/directions/v5/mapbox/walking/${commuter.longitude},${commuter.latitude};${downsample.last.longitude},${downsample.last.latitude}?geometries=geojson&access_token=${Keys.MapBoxKey}';
 
@@ -76,8 +79,6 @@ Future<EtaData?> eta(List<LatLng> coords, bool is_clockwise, LatLng commuter,
     final decoded = json.decode(response.body);
     final routes = decoded['routes'] as List<dynamic>;
     double duration1 = routes[0]['duration'] as double;
-
-    List<LatLng> coords1 = extractCoordinates(decoded);
 
     final response2 = await http.get(Uri.parse(apiUrl2));
 

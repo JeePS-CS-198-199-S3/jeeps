@@ -2,6 +2,8 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 
 import '../services/calculate_distance.dart';
 
+// Returns index of the nearest latlng on the coordinate list
+
 int findNearestLatLngIndex(LatLng targetPoint, List<LatLng> latLngList) {
   double minDistance = double.infinity;
   int nearestIndex = -1;

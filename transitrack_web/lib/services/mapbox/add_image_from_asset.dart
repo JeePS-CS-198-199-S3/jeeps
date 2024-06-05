@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 
+// Load the necessary map assets
+
 Future<void> addImageFromAsset(MapboxMapController mapController) async {
   final ByteData bytes1 = await rootBundle.load("assets/jeep.png");
   final Uint8List list1 = bytes1.buffer.asUint8List();

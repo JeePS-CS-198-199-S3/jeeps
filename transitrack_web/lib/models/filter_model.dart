@@ -1,3 +1,5 @@
+// Auxiliary Model for Filtering results
+
 class FilterParameters {
   String filterSearch;
   bool filterDescending;

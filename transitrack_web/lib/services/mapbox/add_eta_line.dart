@@ -1,5 +1,7 @@
 import 'package:mapbox_gl/mapbox_gl.dart';
 
+// Auxiliary function to process the ETA route coordinates and place them on the map.
+
 etaListToGeoJSON(List<LatLng> routeCoordinates) {
   Map<String, dynamic> featureCollection = {
     'type': 'FeatureCollection',

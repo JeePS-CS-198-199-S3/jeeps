@@ -4,15 +4,19 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:transitrack_web/models/feedback_model.dart';
 import 'package:transitrack_web/services/find_location.dart';
 
+// Model for Accounts
+
 class AccountData {
-  String account_email;
-  String account_name;
-  int account_type;
-  String account_id;
-  bool is_verified;
+  String account_email; // email
+  String account_name; // username
+  int account_type; // 0 for commuters, 1 for drivers, and 2 for route managers
+  String account_id; // Generated Document ID by firestore.
+  bool is_verified; // Only used for Driver and Route Manager Accounts.
   int route_id;
-  String? jeep_driving;
-  bool show_discounted;
+  String?
+      jeep_driving; // Used for Driver Accounts. If this is empty (""), it means the driver account is currently not operating.
+  bool
+      show_discounted; // Used to set if we show the discounted or regular fare when there is an account logged in.
 
   AccountData(
       {required this.account_email,

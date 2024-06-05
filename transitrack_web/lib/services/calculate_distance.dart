@@ -1,6 +1,8 @@
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'dart:math';
 
+// Distance calculation to find the nearest point from the device to the route coordinates
+
 double calculateDistance(LatLng point1, LatLng point2) {
   double lat1 = point1.latitude;
   double lon1 = point1.longitude;
@@ -12,4 +14,3 @@ double calculateDistance(LatLng point1, LatLng point2) {
 
   return sqrt(x + y);
 }
-

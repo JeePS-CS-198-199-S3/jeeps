@@ -3,6 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:transitrack_web/config/keys.dart';
 
+// API Call Function for extracting the coordinate name. This is used in the Reporting Feature since there are
+// location sensitive report types like crime, accidents, and mechanical problems
+
 Future<String> findAddress(LatLng latLng) async {
   String loc = '${latLng.longitude},${latLng.latitude}';
   String apiUrl =

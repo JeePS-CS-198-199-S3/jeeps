@@ -7,6 +7,8 @@ import 'package:transitrack_web/style/constants.dart';
 import 'package:transitrack_web/pages/dashboard_page.dart';
 import 'firebase_options.dart';
 
+// Start Here! Since JeePS is a single page app, main() calls the one and only page which is the dashboard.
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

@@ -5,6 +5,8 @@ import 'package:transitrack_web/components/calendar.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/style/constants.dart';
 
+// This widget is used for the historical puv data to select a specific hour.
+
 class CalendarSelector extends StatefulWidget {
   final RouteData routeData;
   final DateTime selectedDate;

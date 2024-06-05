@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+// This file is the config for the colors and dimensions
+
 class Constants {
   static const white = Colors.white;
   static const secondary = Color(0xffa6a6a6);
@@ -18,9 +20,9 @@ class Constants {
 
   static const defaultPadding = 16.0;
 
-  static const  ikotColor = Color(0xFFFFC107);
-  static const  tokiColor = Color(0xFFF57F17);
-  static const  katipColor = Color(0xFFC62828);
-  static const  philcoaColor = Color(0xFF388E3C);
-  static const  smColor = Color(0xFF1565C0);
+  static const ikotColor = Color(0xFFFFC107);
+  static const tokiColor = Color(0xFFF57F17);
+  static const katipColor = Color(0xFFC62828);
+  static const philcoaColor = Color(0xFF388E3C);
+  static const smColor = Color(0xFF1565C0);
 }

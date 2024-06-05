@@ -1,13 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
-import 'package:transitrack_web/components/map_related/map.dart';
 import 'package:transitrack_web/models/account_model.dart';
 
+// Model for Feedbacks. Recommendation: Should be using document IDs instead of emails and plate numbers. Users can rate either driver, puv or both.
+
 class FeedbackData {
-  String feedback_sender;
-  String feedback_recepient;
-  String feedback_jeepney;
+  String feedback_sender; // Email of Sender
+  String feedback_recepient; // Email of Driver
+  String feedback_jeepney; // Plate Number of PUV
   Timestamp timestamp;
   int feedback_driving_rating;
   int feedback_jeepney_rating;

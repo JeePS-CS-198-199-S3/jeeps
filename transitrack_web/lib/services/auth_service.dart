@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/account_model.dart';
 
+// This is for account creation
+
 class AuthService {
   void createUserDocument(User? user, AccountData account) async {
     if (user != null) {

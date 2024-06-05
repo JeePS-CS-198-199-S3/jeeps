@@ -5,6 +5,8 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:transitrack_web/models/route_model.dart';
 import 'package:transitrack_web/services/int_to_hex.dart';
 
+// Ripple effect for Pings and Reports
+
 class RippleTween extends Tween<double> {
   RippleTween({required double begin, required double end})
       : super(begin: begin, end: end);

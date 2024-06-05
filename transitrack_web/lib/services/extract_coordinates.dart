@@ -1,5 +1,7 @@
 import 'package:mapbox_gl/mapbox_gl.dart';
 
+// Auxiliary function to parse the coordinates from the response JSON Data after an API call.
+
 List<LatLng> extractCoordinates(dynamic jsonData) {
   List<LatLng> coordinates = [];
 

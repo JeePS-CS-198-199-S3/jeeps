@@ -202,14 +202,7 @@ class _SignupFormState extends State<SignupForm> {
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: accountType, // Initial value
-                onChanged: (String? newValue) {
-                  // Handle dropdown value change
-                  if (newValue != null) {
-                    setState(() {
-                      accountType = newValue;
-                    });
-                  }
-                },
+                onChanged: null,
                 items: AccountData.accountTypeMap.keys
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
